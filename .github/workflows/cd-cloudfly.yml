@@ -1,0 +1,90 @@
+name: CD - Cloudfly
+
+on:
+  workflow_run:
+    workflows: ['CI']
+    types: [completed]
+    branches: [main]
+  # Deploy lại tay commit mới nhất của main (vd. sau khi sửa .env.production trên server)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cloudfly-admin-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: >-
+      github.repository == 'kailearndev/amb-portal' &&
+      vars.CLOUDFLY_CD_ENABLED == 'true' &&
+      (
+        (
+          github.event_name == 'workflow_run' &&
+          github.event.workflow_run.head_repository.full_name == 'kailearndev/amb-portal' &&
+          github.event.workflow_run.event == 'push' &&
+          github.event.workflow_run.head_branch == 'main' &&
+          github.event.workflow_run.conclusion == 'success'
+        ) ||
+        (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production
+    env:
+      VERIFIED_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+      CLOUDFLY_HOST: ${{ secrets.CLOUDFLY_HOST }}
+      CLOUDFLY_SSH_USER: ${{ vars.CLOUDFLY_SSH_USER }}
+      CLOUDFLY_SSH_PORT: ${{ vars.CLOUDFLY_SSH_PORT }}
+
+    steps:
+      # Lấy deploy script đúng commit đã qua CI (không dùng bản đang nằm trên server)
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ env.VERIFIED_SHA }}
+          persist-credentials: false
+
+      - name: Configure strict SSH trust
+        shell: bash
+        env:
+          CLOUDFLY_SSH_PRIVATE_KEY: ${{ secrets.CLOUDFLY_SSH_PRIVATE_KEY }}
+          CLOUDFLY_KNOWN_HOSTS: ${{ secrets.CLOUDFLY_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          : "${CLOUDFLY_HOST:?CLOUDFLY_HOST is required}"
+          : "${CLOUDFLY_SSH_USER:?CLOUDFLY_SSH_USER is required}"
+          : "${CLOUDFLY_SSH_PORT:?CLOUDFLY_SSH_PORT is required}"
+          [[ "$CLOUDFLY_SSH_PORT" =~ ^[0-9]+$ ]]
+          [[ "$VERIFIED_SHA" =~ ^[0-9a-f]{40}$ ]]
+          umask 077
+          printf 'SSH_KEY_PATH=%s\n' "$RUNNER_TEMP/amb-storage-admin-key" >> "$GITHUB_ENV"
+          printf 'KNOWN_HOSTS_PATH=%s\n' "$RUNNER_TEMP/amb-storage-admin-known-hosts" >> "$GITHUB_ENV"
+          printf '%s\n' "$CLOUDFLY_SSH_PRIVATE_KEY" > "$RUNNER_TEMP/amb-storage-admin-key"
+          printf '%s\n' "$CLOUDFLY_KNOWN_HOSTS" > "$RUNNER_TEMP/amb-storage-admin-known-hosts"
+          test -s "$RUNNER_TEMP/amb-storage-admin-key"
+          test -s "$RUNNER_TEMP/amb-storage-admin-known-hosts"
+          ssh-keygen -y -f "$RUNNER_TEMP/amb-storage-admin-key" >/dev/null
+
+      - name: Build and deploy the verified commit
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          ssh_opts=(
+            -i "$SSH_KEY_PATH"
+            -p "$CLOUDFLY_SSH_PORT"
+            -o BatchMode=yes
+            -o IdentitiesOnly=yes
+            -o PasswordAuthentication=no
+            -o KbdInteractiveAuthentication=no
+            -o StrictHostKeyChecking=yes
+            -o UserKnownHostsFile="$KNOWN_HOSTS_PATH"
+          )
+          ssh "${ssh_opts[@]}" "$CLOUDFLY_SSH_USER@$CLOUDFLY_HOST" \
+            bash -s -- "$VERIFIED_SHA" < deploy/cloudfly/cd-deploy.sh
+
+      - name: Remove temporary SSH material
+        if: always()
+        shell: bash
+        run: rm -f -- "${SSH_KEY_PATH:-}" "${KNOWN_HOSTS_PATH:-}"

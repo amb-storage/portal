@@ -1,0 +1,23 @@
+# Admin portal chạy chung server với API (amb/api, project amb-storage-prod) và web.
+# Không publish port ra ngoài: reverse proxy có TLS trên amb-network gọi vào amb-admin:8080.
+services:
+  admin:
+    build:
+      context: ../..
+    image: ${AMB_STORAGE_ADMIN_IMAGE:?set AMB_STORAGE_ADMIN_IMAGE}
+    environment:
+      # Caddy trong image proxy /api/* tới đây (cùng domain → cookie + kiểm tra Origin như lúc dev)
+      API_UPSTREAM: ${API_UPSTREAM:?set API_UPSTREAM}
+    expose:
+      - '8080'
+    networks:
+      amb-network:
+        aliases:
+          - amb-admin
+    restart: unless-stopped
+    stop_grace_period: 10s
+
+networks:
+  amb-network:
+    name: amb-network
+    external: true

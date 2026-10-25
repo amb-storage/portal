@@ -47,7 +47,46 @@ origin của portal vào `CORS_ORIGINS` của API.
 
 Scripts: `pnpm dev`, `pnpm build` (tsc + vite), `pnpm lint` (oxlint), `pnpm preview`.
 
-## Cấu trúc thư mục
+## CI/CD (CloudFly)
+
+Cùng khung với `api` và `web`:
+
+- **CI** (`.github/workflows/ci.yml`, push/PR vào `main`): `pnpm install --frozen-lockfile` →
+  `lint` → `build` (tsc + vite) → kiểm tra `routeTree.gen.ts` đã commit đúng → `docker build` →
+  smoke test image (SPA fallback, asset thiếu trả 404, `/healthz`) → `git diff --check`.
+- **CD** (`.github/workflows/cd-cloudfly.yml`): chạy khi CI của `main` thành công (hoặc bấm tay
+  `workflow_dispatch`), SSH vào server và chạy `deploy/cloudfly/cd-deploy.sh <sha>`: fetch đúng
+  commit đã qua CI, build image `amb-storage-admin:<sha>`, chờ healthy (SPA + proxy `/api` tới API),
+  lỗi thì tự rollback về image trước; giữ 3 image gần nhất.
+- Bật CD bằng biến repo `CLOUDFLY_CD_ENABLED=true`; dùng chung `CLOUDFLY_HOST`,
+  `CLOUDFLY_SSH_PRIVATE_KEY`, `CLOUDFLY_KNOWN_HOSTS` (secrets) và `CLOUDFLY_SSH_USER`,
+  `CLOUDFLY_SSH_PORT` (vars) với web, trong environment `production`.
+
+Image: build bằng `node:24.22.1-alpine` (bản vá bảo mật), chạy bằng `caddy:2.10.2-alpine` không
+root, cổng 8080 chỉ trong `amb-network` (alias `amb-admin`). Caddy trong image:
+
+- proxy `/api/*` → `API_UPSTREAM` (mặc định `http://amb-storage-prod-api-1:8000`), nên trình duyệt
+  gọi API **cùng domain** như lúc dev: cookie `amb_admin_session` và kiểm tra Origin hoạt động.
+  Domain admin vẫn phải có trong `CORS_ORIGINS` của API (Origin guard).
+- route SPA → `index.html` với `Cache-Control: no-store`; `/assets/*` có hash → cache 1 năm,
+  file không tồn tại trả **404 (không fallback)**.
+
+Chống trắng trang sau deploy: tab mở từ bản cũ khi chuyển route sẽ tải chunk đã bị xoá →
+`vite:preloadError` tự reload 1 lần (`src/lib/chunk-reload.ts`); nếu lỗi lọt tới router thì
+`errorComponent` hiện nút "Tải lại trang" thay vì màn hình trắng.
+
+Thiết lập server lần đầu (một lần):
+
+```bash
+sudo git clone https://github.com/kailearndev/amb-portal.git /amb-storage-admin
+sudo cp /amb-storage-admin/deploy/cloudfly/env.production.example /amb-storage-admin/.env.production
+sudo chown root:root /amb-storage-admin/.env.production && sudo chmod 600 /amb-storage-admin/.env.production
+sudo bash /amb-storage-admin/deploy/cloudfly/cd-deploy.sh "$(git -C /amb-storage-admin rev-parse origin/main)"
+```
+
+Rồi trỏ domain admin vào `amb-admin:8080` ở reverse proxy có TLS trên `amb-network`.
+
+
 
 ```
 src/
