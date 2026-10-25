@@ -99,7 +99,7 @@ for command_name in docker git awk mktemp stat flock; do require_command "$comma
 
 cd "$APP_DIR"
 case "$(git remote get-url origin)" in
-  git@github.com:kailearndev/amb-portal.git|https://github.com/kailearndev/amb-portal|https://github.com/kailearndev/amb-portal.git) ;;
+  git@github.com:amb-storage/portal.git|https://github.com/amb-storage/portal|https://github.com/amb-storage/portal.git) ;;
   *) fail 'origin is not the canonical admin repository' ;;
 esac
 [[ -z "$(git status --porcelain --untracked-files=all)" ]] || fail 'server checkout has uncommitted changes'

@@ -78,7 +78,7 @@ Chống trắng trang sau deploy: tab mở từ bản cũ khi chuyển route s�
 Thiết lập server lần đầu (một lần):
 
 ```bash
-sudo git clone https://github.com/kailearndev/amb-portal.git /amb-storage-admin
+sudo git clone git@github.com:amb-storage/portal.git /amb-storage-admin
 sudo cp /amb-storage-admin/deploy/cloudfly/env.production.example /amb-storage-admin/.env.production
 sudo chown root:root /amb-storage-admin/.env.production && sudo chmod 600 /amb-storage-admin/.env.production
 sudo bash /amb-storage-admin/deploy/cloudfly/cd-deploy.sh "$(git -C /amb-storage-admin rev-parse origin/main)"

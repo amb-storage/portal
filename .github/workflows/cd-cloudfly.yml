@@ -18,12 +18,12 @@ concurrency:
 jobs:
   deploy:
     if: >-
-      github.repository == 'kailearndev/amb-portal' &&
+      github.repository == 'amb-storage/portal' &&
       vars.CLOUDFLY_CD_ENABLED == 'true' &&
       (
         (
           github.event_name == 'workflow_run' &&
-          github.event.workflow_run.head_repository.full_name == 'kailearndev/amb-portal' &&
+          github.event.workflow_run.head_repository.full_name == 'amb-storage/portal' &&
           github.event.workflow_run.event == 'push' &&
           github.event.workflow_run.head_branch == 'main' &&
           github.event.workflow_run.conclusion == 'success'
