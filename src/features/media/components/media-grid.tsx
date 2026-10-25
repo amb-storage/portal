@@ -1,0 +1,76 @@
+import { Archive, CheckCircle2, Pencil } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
+import { ConfirmButton } from '@/components/common/confirm-button'
+import { MediaThumb } from '@/components/common/media-thumb'
+import { StatusBadge } from '@/components/common/status-badge'
+import { formatBytes } from '@/lib/format'
+import type { MediaAsset } from '../types'
+
+interface MediaGridProps {
+  items: MediaAsset[] | undefined
+  isLoading: boolean
+  canManage: boolean
+  onOpen: (asset: MediaAsset) => void
+  onEdit: (asset: MediaAsset) => void
+  onFinalize: (id: string) => void
+  onArchive: (id: string) => void
+}
+
+export function MediaGrid({ items, isLoading, canManage, onOpen, onEdit, onFinalize, onArchive }: MediaGridProps) {
+  if (isLoading && !items)
+    return (
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        {Array.from({ length: 10 }, (_, index) => (
+          <Skeleton key={index} className="aspect-square" />
+        ))}
+      </div>
+    )
+  if (!items?.length) return <p className="py-12 text-center text-sm text-muted-foreground">Chưa có ảnh nào. Bấm “Tải ảnh lên” để bắt đầu.</p>
+
+  return (
+    <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+      {items.map((asset) => (
+        <li key={asset.id} className="group overflow-hidden rounded-xl border bg-card">
+          <button type="button" onClick={() => onOpen(asset)} className="relative block w-full" aria-label={`Xem ${asset.originalFilename ?? 'ảnh'}`}>
+            <MediaThumb id={asset.id} status={asset.status} alt={asset.altEn ?? asset.altJa} className="aspect-square rounded-none transition group-hover:opacity-90" />
+            <span className="absolute top-2 left-2">
+              <StatusBadge status={asset.status} />
+            </span>
+          </button>
+          <div className="grid gap-1 p-3">
+            <span className="truncate text-sm font-medium">{asset.originalFilename ?? asset.id}</span>
+            <span className="truncate text-xs text-muted-foreground">
+              {asset.width && asset.height ? `${asset.width}×${asset.height} · ` : ''}
+              {formatBytes(asset.sizeBytes)}
+            </span>
+            <span className="truncate text-xs text-muted-foreground">{asset.altEn || asset.altJa || 'Chưa có mô tả'}</span>
+            {canManage && asset.status !== 'ARCHIVED' ? (
+              <div className="-mb-1 flex justify-end gap-1">
+                {asset.status === 'PENDING' ? (
+                  <Button size="icon" variant="ghost" aria-label="Hoàn tất xử lý" onClick={() => onFinalize(asset.id)}>
+                    <CheckCircle2 />
+                  </Button>
+                ) : null}
+                <Button size="icon" variant="ghost" aria-label="Sửa mô tả ảnh" onClick={() => onEdit(asset)}>
+                  <Pencil />
+                </Button>
+                <ConfirmButton
+                  size="icon"
+                  variant="ghost"
+                  aria-label="Lưu trữ"
+                  title="Lưu trữ ảnh?"
+                  description="Ảnh đang được sản phẩm hoặc trang dùng có thể không lưu trữ được."
+                  confirmLabel="Lưu trữ"
+                  onConfirm={() => onArchive(asset.id)}
+                >
+                  <Archive />
+                </ConfirmButton>
+              </div>
+            ) : null}
+          </div>
+        </li>
+      ))}
+    </ul>
+  )
+}

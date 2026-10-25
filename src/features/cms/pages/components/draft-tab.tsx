@@ -1,0 +1,45 @@
+import { useQuery } from '@tanstack/react-query'
+import { usePageProfile } from '../hooks/use-page-profile'
+import { QueryState } from '@/components/common/query-state'
+import { fixedContentQuery } from '../queries'
+import { useDraftEditor } from '../hooks/use-draft-editor'
+import { useFixedContentEditor } from '../hooks/use-fixed-content-editor'
+import type { CmsPage, FixedContent, PageVersion } from '../types'
+import { DraftForm } from './draft-form'
+
+function PageDraftEditor({ page, draft, readOnly }: { page: CmsPage; draft: PageVersion; readOnly: boolean }) {
+  const form = useDraftEditor(page.id, draft)
+  const profile = usePageProfile(page)
+  return <DraftForm form={form} readOnly={readOnly} profile={profile} revisionLabel={`Nháp v${draft.version} · lần sửa ${draft.revision}`} />
+}
+
+function FixedContentEditor({ page, fixed, readOnly }: { page: CmsPage; fixed: FixedContent; readOnly: boolean }) {
+  const form = useFixedContentEditor(page.id, fixed)
+  const profile = fixed.pageType === 'ABOUT' ? 'FIXED_ABOUT' : 'FIXED_POLICY'
+  return <DraftForm form={form} readOnly={readOnly} profile={profile} revisionLabel={`Nội dung cố định ${fixed.pageType} · lần sửa ${fixed.expectedRevision}`} />
+}
+
+interface DraftTabProps {
+  page: CmsPage
+  draft: { data: PageVersion | undefined; error: unknown; isPending: boolean }
+  readOnly: boolean
+}
+
+export function DraftTab({ page, draft, readOnly }: DraftTabProps) {
+  const isFixed = page.type === 'ABOUT' || page.type === 'POLICY'
+  const fixed = useQuery({ ...fixedContentQuery(page.id), enabled: isFixed && page.status === 'ACTIVE' })
+
+  if (page.status !== 'ACTIVE') return <p className="text-sm text-muted-foreground">Trang đã lưu trữ không còn bản nháp để sửa.</p>
+  if (isFixed) {
+    return (
+      <QueryState query={fixed}>
+        {(data) => <FixedContentEditor key={`${data.draftVersionId}:${data.expectedRevision}`} page={page} fixed={data} readOnly={readOnly} />}
+      </QueryState>
+    )
+  }
+  return (
+    <QueryState query={draft}>
+      {(data) => <PageDraftEditor key={`${data.id}:${data.revision}`} page={page} draft={data} readOnly={readOnly} />}
+    </QueryState>
+  )
+}
