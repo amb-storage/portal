@@ -87,6 +87,7 @@ export const ERROR_MESSAGES: Record<string, string> = {
   NAVIGATION_CATEGORY_INVALID: 'Có mục trỏ tới danh mục không tồn tại.',
   NAVIGATION_PRODUCT_INVALID: 'Có mục trỏ tới sản phẩm không tồn tại.',
   NAVIGATION_MILI_TALK_INVALID: 'Có mục trỏ tới bài viết không tồn tại.',
+  STORE_SETTINGS_NOT_FOUND: 'Cửa hàng chưa được khởi tạo dữ liệu mặc định. Kỹ thuật cần chạy lệnh cms:bootstrap-content trong container API.',
   STORE_SETTINGS_CONFLICT: 'Cài đặt đã bị người khác sửa.',
   STORE_SETTINGS_INVALID: 'Cài đặt không hợp lệ.',
   ORDER_NOT_FOUND: 'Không tìm thấy đơn hàng.',
