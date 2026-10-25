@@ -234,3 +234,4 @@ có ở controller dù doc không liệt kê; fixed content dùng `PUT` (doc ghi
 5. `pages/<name>-page.tsx`: chỉ render.
 6. `src/routes/_app/<path>.tsx`: route mỏng; plugin tự cập nhật `routeTree.gen.ts`.
 7. Thêm vào `components/layout/nav-items.ts` kèm permission.
+# portal
