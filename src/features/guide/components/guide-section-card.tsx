@@ -3,6 +3,7 @@ import { ArrowRight, Lightbulb } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import type { GuideSection } from '../guide-content'
+import { GuideDiagramView } from './guide-diagram'
 
 export function GuideSectionCard({ section }: { section: GuideSection }) {
   return (
@@ -21,6 +22,7 @@ export function GuideSectionCard({ section }: { section: GuideSection }) {
         ) : null}
       </CardHeader>
       <CardContent className="grid gap-4 text-sm">
+        {section.diagram ? <GuideDiagramView diagram={section.diagram} /> : null}
         <ol className="grid gap-2">
           {section.steps.map((step, index) => (
             <li key={step} className="flex gap-3">
