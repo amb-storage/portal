@@ -7,8 +7,7 @@ import { Label } from '@/components/ui/label'
 import { ConfirmButton } from '@/components/common/confirm-button'
 import { RichTextEditor } from '@/features/cms/editor/rich-text-editor'
 import type { RichNode } from '@/features/cms/editor/types'
-import { aboutTemplateValues, type AboutForm } from '../hooks/use-about-form'
-import type { RichDoc } from '../hooks/use-fixed-form'
+import { aboutTemplateValues, type AboutForm, type RichDoc } from '../hooks/use-about-form'
 
 type RichKey = 'philosophy' | 'mission' | 'vision' | 'promise' | 'knowledge' | 'contact'
 

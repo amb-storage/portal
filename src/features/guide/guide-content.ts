@@ -115,7 +115,7 @@ export const GUIDE_SECTIONS: GuideSection[] = [
     tips: [
       'Ô có dấu * là bắt buộc. Khung vàng phía trên liệt kê những chỗ còn thiếu; chưa sửa xong thì chưa lưu được.',
       'Giới thiệu và Chính sách có mục riêng ở menu bên trái. Trang Giới thiệu chia sẵn theo mục giống website (会社概要, ブランド理念, Mission, Vision, Core Values, Our Promise, Knowledge & Community, お問い合わせ); mỗi mục điền tiếng Nhật và tiếng Anh. Nút “Nội dung mẫu” điền lại nội dung theo amb-storage.com.',
-      'Chính sách cần tiêu đề, nội dung tiếng Nhật/Anh và ngày hiệu lực. Xoá trang chính sách bằng biểu tượng thùng rác trong danh sách.',
+      'Chính sách chia theo mục (tiêu đề, đoạn văn, gạch đầu dòng, khối chi tiết, ghi chú), tiếng Nhật và tiếng Anh, cần ngày hiệu lực khi xuất bản. Website gộp mọi chính sách đã xuất bản vào trang /policy theo thứ tự slug. Nút “Nội dung mẫu” ở màn Chính sách tạo sẵn các trang theo amb-storage.com.',
       'Trang chủ dùng cấu trúc riêng nên tạm thời vẫn sửa bằng JSON.',
       'Có thể quay về phiên bản cũ ở tab Phiên bản → biểu tượng khôi phục.',
     ],

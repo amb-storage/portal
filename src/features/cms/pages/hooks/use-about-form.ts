@@ -9,7 +9,6 @@ import { ABOUT_TEMPLATE } from '../about-template'
 import { cmsPageService } from '../cms-page.service'
 import { cmsPageKeys } from '../queries'
 import type { FixedContent } from '../types'
-import type { RichDoc } from './use-fixed-form'
 
 /** The eight ABOUT slots of the API's structured (schemaVersion 2) profile, in page order. */
 export const ABOUT_SLOTS = [
@@ -23,6 +22,9 @@ export const ABOUT_SLOTS = [
   'CONTACT',
 ] as const
 type AboutSlot = (typeof ABOUT_SLOTS)[number]
+
+/** Rich-text docs kept opaque: their recursive type would blow up the form's path inference. */
+export type RichDoc = Record<string, unknown>
 
 export interface OverviewRow {
   id: string
