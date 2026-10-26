@@ -24,7 +24,10 @@ function useTrail(): Trail[] {
   const title = typeof resolve === 'function' ? (match.loaderData ? resolve(match.loaderData) : undefined) : resolve
   const trail: Trail[] = []
   if (match.pathname !== '/') trail.push({ title: 'Bảng điều khiển', to: '/' })
-  if (crumb.parent) trail.push(crumb.parent)
+  const parent = typeof crumb.parent === 'function'
+    ? match.loaderData ? (crumb.parent as (data: unknown) => Trail | undefined)(match.loaderData) : undefined
+    : crumb.parent
+  if (parent) trail.push(parent)
   trail.push({ title: title ?? '…' })
   return trail
 }

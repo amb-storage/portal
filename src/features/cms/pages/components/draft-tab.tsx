@@ -6,6 +6,8 @@ import { useDraftEditor } from '../hooks/use-draft-editor'
 import { useFixedContentEditor } from '../hooks/use-fixed-content-editor'
 import type { CmsPage, FixedContent, PageVersion } from '../types'
 import { DraftForm } from './draft-form'
+import { FixedContentForm } from './fixed-content-form'
+import { useFixedForm } from '../hooks/use-fixed-form'
 
 function PageDraftEditor({ page, draft, readOnly }: { page: CmsPage; draft: PageVersion; readOnly: boolean }) {
   const form = useDraftEditor(page.id, draft)
@@ -13,10 +15,21 @@ function PageDraftEditor({ page, draft, readOnly }: { page: CmsPage; draft: Page
   return <DraftForm form={form} readOnly={readOnly} profile={profile} revisionLabel={`Nháp v${draft.version} · lần sửa ${draft.revision}`} />
 }
 
-function FixedContentEditor({ page, fixed, readOnly }: { page: CmsPage; fixed: FixedContent; readOnly: boolean }) {
+/** Canonical fixed content gets the simple bilingual form; legacy slot documents keep the JSON editor. */
+function SimpleFixedEditor({ page, fixed, readOnly }: { page: CmsPage; fixed: FixedContent; readOnly: boolean }) {
+  const form = useFixedForm(page.id, fixed)
+  return <FixedContentForm form={form} isPolicy={fixed.pageType === 'POLICY'} readOnly={readOnly} />
+}
+
+/** Legacy schemaVersion 2 slot documents (ABOUT/POLICY) are still edited as JSON. */
+function JsonFixedEditor({ page, fixed, readOnly }: { page: CmsPage; fixed: FixedContent; readOnly: boolean }) {
   const form = useFixedContentEditor(page.id, fixed)
   const profile = fixed.pageType === 'ABOUT' ? 'FIXED_ABOUT' : 'FIXED_POLICY'
   return <DraftForm form={form} readOnly={readOnly} profile={profile} revisionLabel={`Nội dung cố định ${fixed.pageType} · lần sửa ${fixed.expectedRevision}`} />
+}
+
+function FixedContentEditor(props: { page: CmsPage; fixed: FixedContent; readOnly: boolean }) {
+  return props.fixed.content ? <JsonFixedEditor {...props} /> : <SimpleFixedEditor {...props} />
 }
 
 interface DraftTabProps {

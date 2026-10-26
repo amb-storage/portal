@@ -21,6 +21,8 @@ import { Route as AppMediaRouteImport } from './routes/_app/media'
 import { Route as AppNavigationRouteImport } from './routes/_app/navigation'
 import { Route as AppSettingsRouteImport } from './routes/_app/settings'
 import { Route as AppCatalogCategoriesRouteImport } from './routes/_app/catalog/categories'
+import { Route as AppCmsAboutRouteImport } from './routes/_app/cms/about'
+import { Route as AppCmsPoliciesRouteImport } from './routes/_app/cms/policies'
 import { Route as AppCmsStoriesRouteImport } from './routes/_app/cms/stories'
 import { Route as AppOrdersIndexRouteImport } from './routes/_app/orders/index'
 import { Route as AppOrdersOrderIdRouteImport } from './routes/_app/orders/$orderId'
@@ -89,6 +91,16 @@ const AppCatalogCategoriesRoute = AppCatalogCategoriesRouteImport.update({
   path: '/catalog/categories',
   getParentRoute: () => AppRoute,
 } as any)
+const AppCmsAboutRoute = AppCmsAboutRouteImport.update({
+  id: '/cms/about',
+  path: '/cms/about',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCmsPoliciesRoute = AppCmsPoliciesRouteImport.update({
+  id: '/cms/policies',
+  path: '/cms/policies',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppCmsStoriesRoute = AppCmsStoriesRouteImport.update({
   id: '/cms/stories',
   path: '/cms/stories',
@@ -143,6 +155,8 @@ export interface FileRoutesByFullPath {
   '/navigation': typeof AppNavigationRoute
   '/settings': typeof AppSettingsRoute
   '/catalog/categories': typeof AppCatalogCategoriesRoute
+  '/cms/about': typeof AppCmsAboutRoute
+  '/cms/policies': typeof AppCmsPoliciesRoute
   '/cms/stories': typeof AppCmsStoriesRoute
   '/orders/$orderId': typeof AppOrdersOrderIdRoute
   '/orders/': typeof AppOrdersIndexRoute
@@ -164,6 +178,8 @@ export interface FileRoutesByTo {
   '/settings': typeof AppSettingsRoute
   '/': typeof AppIndexRoute
   '/catalog/categories': typeof AppCatalogCategoriesRoute
+  '/cms/about': typeof AppCmsAboutRoute
+  '/cms/policies': typeof AppCmsPoliciesRoute
   '/cms/stories': typeof AppCmsStoriesRoute
   '/orders/$orderId': typeof AppOrdersOrderIdRoute
   '/orders': typeof AppOrdersIndexRoute
@@ -187,6 +203,8 @@ export interface FileRoutesById {
   '/_app/settings': typeof AppSettingsRoute
   '/_app/': typeof AppIndexRoute
   '/_app/catalog/categories': typeof AppCatalogCategoriesRoute
+  '/_app/cms/about': typeof AppCmsAboutRoute
+  '/_app/cms/policies': typeof AppCmsPoliciesRoute
   '/_app/cms/stories': typeof AppCmsStoriesRoute
   '/_app/orders/$orderId': typeof AppOrdersOrderIdRoute
   '/_app/orders/': typeof AppOrdersIndexRoute
@@ -210,6 +228,8 @@ export interface FileRouteTypes {
     | '/navigation'
     | '/settings'
     | '/catalog/categories'
+    | '/cms/about'
+    | '/cms/policies'
     | '/cms/stories'
     | '/orders/$orderId'
     | '/orders/'
@@ -231,6 +251,8 @@ export interface FileRouteTypes {
     | '/settings'
     | '/'
     | '/catalog/categories'
+    | '/cms/about'
+    | '/cms/policies'
     | '/cms/stories'
     | '/orders/$orderId'
     | '/orders'
@@ -253,6 +275,8 @@ export interface FileRouteTypes {
     | '/_app/settings'
     | '/_app/'
     | '/_app/catalog/categories'
+    | '/_app/cms/about'
+    | '/_app/cms/policies'
     | '/_app/cms/stories'
     | '/_app/orders/$orderId'
     | '/_app/orders/'
@@ -356,6 +380,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCatalogCategoriesRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/cms/about': {
+      id: '/_app/cms/about'
+      path: '/cms/about'
+      fullPath: '/cms/about'
+      preLoaderRoute: typeof AppCmsAboutRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/cms/policies': {
+      id: '/_app/cms/policies'
+      path: '/cms/policies'
+      fullPath: '/cms/policies'
+      preLoaderRoute: typeof AppCmsPoliciesRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/cms/stories': {
       id: '/_app/cms/stories'
       path: '/cms/stories'
@@ -424,6 +462,8 @@ interface AppRouteChildren {
   AppSettingsRoute: typeof AppSettingsRoute
   AppIndexRoute: typeof AppIndexRoute
   AppCatalogCategoriesRoute: typeof AppCatalogCategoriesRoute
+  AppCmsAboutRoute: typeof AppCmsAboutRoute
+  AppCmsPoliciesRoute: typeof AppCmsPoliciesRoute
   AppCmsStoriesRoute: typeof AppCmsStoriesRoute
   AppOrdersOrderIdRoute: typeof AppOrdersOrderIdRoute
   AppOrdersIndexRoute: typeof AppOrdersIndexRoute
@@ -443,6 +483,8 @@ const AppRouteChildren: AppRouteChildren = {
   AppSettingsRoute: AppSettingsRoute,
   AppIndexRoute: AppIndexRoute,
   AppCatalogCategoriesRoute: AppCatalogCategoriesRoute,
+  AppCmsAboutRoute: AppCmsAboutRoute,
+  AppCmsPoliciesRoute: AppCmsPoliciesRoute,
   AppCmsStoriesRoute: AppCmsStoriesRoute,
   AppOrdersOrderIdRoute: AppOrdersOrderIdRoute,
   AppOrdersIndexRoute: AppOrdersIndexRoute,

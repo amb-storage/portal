@@ -112,7 +112,8 @@ export const GUIDE_SECTIONS: GuideSection[] = [
     ],
     tips: [
       'Ô có dấu * là bắt buộc. Khung vàng phía trên liệt kê những chỗ còn thiếu; chưa sửa xong thì chưa lưu được.',
-      'Trang chủ, Giới thiệu, Chính sách dùng cấu trúc riêng nên tạm thời vẫn sửa bằng JSON.',
+      'Giới thiệu và Chính sách có mục riêng ở menu bên trái: chỉ cần tiêu đề và nội dung tiếng Nhật/Anh (Chính sách thêm ngày hiệu lực). Xoá trang chính sách bằng biểu tượng thùng rác trong danh sách.',
+      'Trang chủ dùng cấu trúc riêng nên tạm thời vẫn sửa bằng JSON.',
       'Có thể quay về phiên bản cũ ở tab Phiên bản → biểu tượng khôi phục.',
     ],
   },

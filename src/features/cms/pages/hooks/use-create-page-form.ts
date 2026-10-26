@@ -10,7 +10,8 @@ import { PAGE_TYPES, type PageType } from '../types'
 
 const schema = z.object({ slug: z.string().trim().min(1, 'Nhập slug').max(255), type: z.enum(PAGE_TYPES) })
 
-export function useCreatePageForm() {
+/** `lockedType` pre-selects and fixes the type (e.g. the Policies screen). */
+export function useCreatePageForm(lockedType?: PageType) {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const create = useMutation({
@@ -24,7 +25,7 @@ export function useCreatePageForm() {
   })
 
   return useAppForm({
-    defaultValues: { slug: '', type: 'STANDARD' as PageType },
+    defaultValues: { slug: '', type: lockedType ?? ('STANDARD' as PageType) },
     validators: { onSubmit: schema },
     onSubmit: ({ value }) => create.mutateAsync(value).catch(() => undefined),
   })

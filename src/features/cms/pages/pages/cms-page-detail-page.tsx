@@ -1,4 +1,5 @@
 import { Badge } from '@/components/ui/badge'
+import { statusLabel } from '@/lib/labels'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { PageHeader } from '@/components/common/page-header'
 import { PublishChecklistCard } from '@/components/common/publish-checklist-card'
@@ -14,6 +15,8 @@ import { useCmsPageDetailPage } from '../hooks/use-cms-page-detail-page'
 export function CmsPageDetailPage() {
   const { page, draft, tab, setTab, lifecycle, issuePreview, preview, setPreview, canEdit, canPublish, canPreview, checklist, ready } =
     useCmsPageDetailPage()
+  // About/Policy use the simple bilingual editor; the section registry is irrelevant there.
+  const isFixed = page.type === 'ABOUT' || page.type === 'POLICY'
   const showChecklist = tab === 'draft' && page.status === 'ACTIVE' && checklist.length > 0
 
   return (
@@ -21,7 +24,7 @@ export function CmsPageDetailPage() {
       <PageHeader
         title={
           <span className="flex items-center gap-3">
-            {page.slug} <Badge variant="outline">{page.type}</Badge> <StatusBadge status={page.status} />
+            {page.slug} <Badge variant="outline">{statusLabel(page.type)}</Badge> <StatusBadge status={page.status} />
             {page.publishedVersionId ? <StatusBadge status="PUBLISHED" /> : null}
           </span>
         }
@@ -45,7 +48,7 @@ export function CmsPageDetailPage() {
             <TabsTrigger value="draft">Nháp</TabsTrigger>
             <TabsTrigger value="versions">Phiên bản</TabsTrigger>
             <TabsTrigger value="settings">Cài đặt</TabsTrigger>
-            <TabsTrigger value="registry">Cấu trúc section</TabsTrigger>
+            {isFixed ? null : <TabsTrigger value="registry">Cấu trúc section</TabsTrigger>}
           </TabsList>
           <TabsContent value="draft" className="pt-4">
             <DraftTab page={page} draft={draft} readOnly={!canEdit} />

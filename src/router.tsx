@@ -14,7 +14,13 @@ export const router = createRouter({
 export interface Crumb {
   /** Static label, or derived from the route's loader data (e.g. a product name). */
   title: string | ((loaderData: never) => string | undefined)
-  parent?: { title: string; to: string }
+  /** Static parent, or derived from loader data (e.g. Policies vs Pages). */
+  parent?: CrumbLink | ((loaderData: never) => CrumbLink | undefined)
+}
+
+export interface CrumbLink {
+  title: string
+  to: string
 }
 
 declare module '@tanstack/react-router' {

@@ -2,6 +2,8 @@ import type { LinkProps } from '@tanstack/react-router'
 import type { LucideIcon } from 'lucide-react'
 import {
   FileText,
+  Info,
+  ScrollText,
   FolderTree,
   HelpCircle,
   History,
@@ -53,6 +55,8 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     label: 'Nội dung',
     items: [
+      { title: 'Giới thiệu', to: '/cms/about', icon: Info, permission: PERMISSIONS.pageRead },
+      { title: 'Chính sách', to: '/cms/policies', icon: ScrollText, permission: PERMISSIONS.pageRead },
       { title: 'Trang', to: '/cms/pages', icon: FileText, permission: PERMISSIONS.pageRead },
       { title: 'Bài viết', to: '/cms/stories', icon: MessagesSquare, permission: PERMISSIONS.storyRead },
       { title: 'Menu điều hướng', to: '/navigation', icon: Menu, permission: PERMISSIONS.navigationRead },

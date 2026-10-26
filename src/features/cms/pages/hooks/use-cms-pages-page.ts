@@ -6,6 +6,7 @@ import { useListSearch } from '@/hooks/use-list-search'
 import { PERMISSIONS } from '@/lib/permissions'
 import { LIST_LIMIT } from '@/lib/search'
 import { pageListQuery } from '../queries'
+import { useDeletePage } from './use-delete-page'
 import type { CmsPageSearch } from '../search'
 
 export function useCmsPagesPage() {
@@ -15,5 +16,6 @@ export function useCmsPagesPage() {
   const list = useQuery(pageListQuery({ ...search, limit: LIST_LIMIT }))
   const navigate = useNavigate()
   const openPage = (pageId: string) => navigate({ to: '/cms/pages/$pageId', params: { pageId } })
-  return { search, setSearch, list, canEdit, creating, setCreating, openPage }
+  const remove = useDeletePage()
+  return { search, setSearch, list, canEdit, creating, setCreating, openPage, remove }
 }

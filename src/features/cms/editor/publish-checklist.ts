@@ -1,4 +1,5 @@
 import type { PublishChecklistItem } from '@/components/common/publish-checklist-card'
+import { hasText } from './rich-text'
 import type { CmsSection, ContentProfile } from './types'
 
 /** Mirrors validateStoryArticlePublication's body-section set. */
@@ -24,9 +25,19 @@ export function cmsPublishChecklist(draft: DraftLike, profile: ContentProfile): 
     { key: 'titleEn', label: 'Tiêu đề tiếng Anh', done: filled(draft.titleEn) },
   ]
   if (profile === 'FIXED_POLICY') items.push({ key: 'effectiveAt', label: 'Ngày hiệu lực', done: Boolean(draft.effectiveAt) })
+  if (profile === 'FIXED_ABOUT' && draft.effectiveAt) items.push({ key: 'effectiveAt', label: 'Trang Giới thiệu không dùng ngày hiệu lực', done: false })
 
   const content = draft.content as { schemaVersion?: number; sections?: CmsSection[] } | undefined
   if (content?.schemaVersion !== 1 || !Array.isArray(content.sections)) return items
+  if (profile === 'FIXED_ABOUT' || profile === 'FIXED_POLICY') {
+    // Canonical fixed content: one LOCALIZED_RICH_TEXT section; both bodies need real text.
+    const settings = content.sections[0]?.settings ?? {}
+    items.push(
+      { key: 'bodyJa', label: 'Nội dung tiếng Nhật', done: hasText(settings.bodyJa) },
+      { key: 'bodyEn', label: 'Nội dung tiếng Anh', done: hasText(settings.bodyEn) },
+    )
+    return items
+  }
   const enabled = content.sections.filter((section) => section.enabled)
   items.push({ key: 'sections', label: 'Ít nhất một khối đang hiển thị', done: enabled.length > 0 })
 

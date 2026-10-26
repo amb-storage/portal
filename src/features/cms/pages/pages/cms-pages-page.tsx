@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { FilterSelect, ListToolbar, SearchInput } from '@/components/common/list-toolbar'
@@ -7,13 +8,15 @@ import { DataTable } from '@/components/data-table/data-table'
 import { DataTablePagination } from '@/components/data-table/data-table-pagination'
 import { LIST_LIMIT } from '@/lib/search'
 import { CreatePageDialog } from '../components/create-page-dialog'
-import { pageColumns } from '../components/pages-columns'
+import { buildPageColumns } from '../components/pages-columns'
 import { useCmsPagesPage } from '../hooks/use-cms-pages-page'
 import type { CmsPageSearch } from '../search'
 import { PAGE_STATUSES, PAGE_TYPES } from '../types'
 
 export function CmsPagesPage() {
-  const { search, setSearch, list, canEdit, creating, setCreating, openPage } = useCmsPagesPage()
+  const { search, setSearch, list, canEdit, creating, setCreating, openPage, remove } = useCmsPagesPage()
+  const removePage = remove.mutate
+  const columns = useMemo(() => buildPageColumns({ canDelete: canEdit, onDelete: (id) => removePage(id) }), [canEdit, removePage])
 
   return (
     <>
@@ -29,7 +32,7 @@ export function CmsPagesPage() {
       </ListToolbar>
       <ErrorAlert error={list.error} />
       <DataTable
-        columns={pageColumns}
+        columns={columns}
         data={list.data?.items}
         isLoading={list.isPending}
         getRowId={(row) => row.id}

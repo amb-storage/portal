@@ -51,12 +51,12 @@ export function PageActions({ page, hasDraft, canEdit, canPublish, canPreview, r
         <ConfirmButton
           variant="destructive"
           disabled={isPending}
-          title="Lưu trữ trang?"
-          description="Trang đã lưu trữ không thể khôi phục."
-          confirmLabel="Lưu trữ"
+          title="Xoá trang này?"
+          description="Trang sẽ bị gỡ khỏi website và không khôi phục được. Nhớ gỡ các mục menu đang trỏ tới trang này."
+          confirmLabel="Xoá"
           onConfirm={() => onAction('archive')}
         >
-          Lưu trữ
+          Xoá trang
         </ConfirmButton>
       ) : null}
     </>
