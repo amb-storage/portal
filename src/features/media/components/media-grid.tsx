@@ -60,7 +60,7 @@ export function MediaGrid({ items, isLoading, canManage, onOpen, onEdit, onFinal
                   variant="ghost"
                   aria-label="Lưu trữ"
                   title="Lưu trữ ảnh?"
-                  description="Ảnh đang được sản phẩm hoặc trang dùng có thể không lưu trữ được."
+                  description="Ảnh sẽ không hiển thị trên website nữa và không khôi phục được. Không lưu trữ được nếu ảnh thuộc sản phẩm đang bán; ảnh dùng trong trang hoặc bài viết đã xuất bản sẽ bị mất trên website."
                   confirmLabel="Lưu trữ"
                   onConfirm={() => onArchive(asset.id)}
                 >
