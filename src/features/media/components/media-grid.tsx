@@ -16,9 +16,11 @@ interface MediaGridProps {
   onFinalize: (id: string) => void
   onArchive: (id: string) => void
   onDelete: (id: string) => void
+  emptyMessage?: string
+  onOpenFolder?: (folder: string) => void
 }
 
-export function MediaGrid({ items, isLoading, canManage, onOpen, onEdit, onFinalize, onArchive, onDelete }: MediaGridProps) {
+export function MediaGrid({ items, isLoading, canManage, onOpen, onEdit, onFinalize, onArchive, onDelete, emptyMessage = 'Chưa có ảnh nào. Bấm “Tải ảnh lên” để bắt đầu.', onOpenFolder }: MediaGridProps) {
   if (isLoading && !items)
     return (
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
@@ -27,7 +29,7 @@ export function MediaGrid({ items, isLoading, canManage, onOpen, onEdit, onFinal
         ))}
       </div>
     )
-  if (!items?.length) return <p className="py-12 text-center text-sm text-muted-foreground">Chưa có ảnh nào. Bấm “Tải ảnh lên” để bắt đầu.</p>
+  if (!items?.length) return <p className="py-12 text-center text-sm text-muted-foreground">{emptyMessage}</p>
 
   return (
     <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
@@ -48,10 +50,16 @@ export function MediaGrid({ items, isLoading, canManage, onOpen, onEdit, onFinal
                 {formatBytes(asset.sizeBytes)}
               </span>
               {folder ? (
-                <span className="flex items-center gap-1 truncate text-xs text-muted-foreground">
+                <button
+                  type="button"
+                  disabled={!onOpenFolder}
+                  onClick={() => onOpenFolder?.(folder)}
+                  className="flex min-w-0 items-center gap-1 text-left text-xs text-muted-foreground enabled:hover:text-foreground enabled:hover:underline"
+                  title={onOpenFolder ? `Mở thư mục ${folder}` : undefined}
+                >
                   <Folder className="size-3 shrink-0" />
                   <span className="truncate">{folder}</span>
-                </span>
+                </button>
               ) : null}
               <span className="truncate text-xs text-muted-foreground">{asset.altEn || asset.altJa || 'Chưa có mô tả'}</span>
               {canManage ? (

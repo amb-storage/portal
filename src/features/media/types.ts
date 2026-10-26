@@ -9,12 +9,25 @@ export const MAX_MEDIA_SIZE_BYTES = 20 * 1024 * 1024
 
 const OBJECT_PREFIX = 'media/products/'
 
+/** `folder` search value for images uploaded without a folder (API folders never start with "/"). */
+export const ROOT_FOLDER = '/'
+
 /** Folder segment of an object key (`media/products/<folder>/<id>/<file>`), like extractMediaFolder on the API. */
 export function mediaFolderOf(objectKey: string): string | null {
   if (!objectKey.startsWith(OBJECT_PREFIX)) return null
   const segments = objectKey.slice(OBJECT_PREFIX.length).split('/')
   return segments.length >= 3 ? segments.slice(0, -2).join('/') : null
 }
+
+/** "a/b/c" → ["a", "a/b", "a/b/c"]. */
+export const folderAncestors = (folder: string) => folder.split('/').map((_, index, parts) => parts.slice(0, index + 1).join('/'))
+
+export const parentFolder = (folder: string) => (folder.includes('/') ? folder.slice(0, folder.lastIndexOf('/')) : null)
+
+export const folderName = (folder: string) => folder.slice(folder.lastIndexOf('/') + 1)
+
+/** True when `folder` is `target` or one of its subfolders. */
+export const isInFolder = (folder: string | null, target: string) => folder === target || Boolean(folder?.startsWith(`${target}/`))
 
 export interface MediaAsset {
   id: string

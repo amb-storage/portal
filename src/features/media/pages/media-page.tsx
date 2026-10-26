@@ -3,6 +3,8 @@ import { PageHeader } from '@/components/common/page-header'
 import { ErrorAlert } from '@/components/common/query-state'
 import { DataTablePagination } from '@/components/data-table/data-table-pagination'
 import { LIST_LIMIT } from '@/lib/search'
+import { FolderBar } from '../components/folder-bar'
+import { FolderTree } from '../components/folder-tree'
 import { MediaAltDialog } from '../components/media-alt-dialog'
 import { MediaGrid } from '../components/media-grid'
 import { MediaPreviewDialog } from '../components/media-preview-dialog'
@@ -11,7 +13,7 @@ import { UploadFolderInput } from '../components/upload-folder-input'
 import { UploadProgressList } from '../components/upload-progress-list'
 import { useMediaPage } from '../hooks/use-media-page'
 import type { MediaSearch } from '../search'
-import { MEDIA_STATUSES, SUPPORTED_MIME_TYPES } from '../types'
+import { MEDIA_STATUSES, ROOT_FOLDER, SUPPORTED_MIME_TYPES } from '../types'
 
 export function MediaPage() {
   const {
@@ -22,6 +24,10 @@ export function MediaPage() {
     folder,
     setFolder,
     folders,
+    browsing,
+    openFolder,
+    subfolders,
+    deleteFolder,
     upload,
     uploads,
     clearUploads,
@@ -49,32 +55,60 @@ export function MediaPage() {
         }
       />
       <UploadProgressList items={uploads} busy={upload.isPending} onDismiss={clearUploads} />
-      <ListToolbar>
-        <FilterSelect
-          value={search.status}
-          onChange={(status) => setSearch({ status: status as MediaSearch['status'] })}
-          options={MEDIA_STATUSES}
-          placeholder="Mọi trạng thái"
-        />
-        <FilterSelect
-          value={search.mimeType}
-          onChange={(mimeType) => setSearch({ mimeType: mimeType as MediaSearch['mimeType'] })}
-          options={SUPPORTED_MIME_TYPES}
-          placeholder="Mọi định dạng"
-        />
-      </ListToolbar>
-      <ErrorAlert error={list.error} />
-      <MediaGrid
-        items={list.data?.items}
-        isLoading={list.isPending}
-        canManage={canManage}
-        onOpen={setPreviewing}
-        onEdit={setEditing}
-        onFinalize={(id) => finalize.mutate(id)}
-        onArchive={(id) => archive.mutate(id)}
-        onDelete={(id) => remove.mutate(id)}
-      />
-      <DataTablePagination page={search.page} limit={LIST_LIMIT} total={list.data?.total} onPageChange={(page) => setSearch({ page })} />
+      <div className="grid items-start gap-6 lg:grid-cols-[240px_1fr]">
+        <aside className="lg:sticky lg:top-40">
+          <FolderTree folders={folders} current={browsing} onSelect={openFolder} />
+        </aside>
+        <div className="grid min-w-0 gap-4">
+          <ListToolbar>
+            <FilterSelect
+              value={search.status}
+              onChange={(status) => setSearch({ status: status as MediaSearch['status'] })}
+              options={MEDIA_STATUSES}
+              placeholder="Mọi trạng thái"
+            />
+            <FilterSelect
+              value={search.mimeType}
+              onChange={(mimeType) => setSearch({ mimeType: mimeType as MediaSearch['mimeType'] })}
+              options={SUPPORTED_MIME_TYPES}
+              placeholder="Mọi định dạng"
+            />
+          </ListToolbar>
+          <ErrorAlert error={list.error} />
+          {browsing !== undefined ? (
+            <FolderBar
+              current={browsing}
+              subfolders={subfolders}
+              imageCount={list.data?.total}
+              canManage={canManage}
+              isDeleting={deleteFolder.isPending}
+              onOpen={openFolder}
+              onDelete={(folder) => deleteFolder.mutate(folder)}
+            />
+          ) : null}
+          <MediaGrid
+            items={list.data?.items}
+            isLoading={list.isPending}
+            canManage={canManage}
+            onOpen={setPreviewing}
+            onEdit={setEditing}
+            onFinalize={(id) => finalize.mutate(id)}
+            onArchive={(id) => archive.mutate(id)}
+            onDelete={(id) => remove.mutate(id)}
+            onOpenFolder={browsing === undefined ? openFolder : undefined}
+            emptyMessage={
+              browsing === undefined
+                ? undefined
+                : browsing === ROOT_FOLDER
+                  ? 'Không có ảnh nào nằm ngoài thư mục.'
+                  : subfolders.length
+                    ? 'Không có ảnh nằm trực tiếp trong thư mục này. Mở thư mục con ở trên.'
+                    : 'Thư mục trống.'
+            }
+          />
+          <DataTablePagination page={search.page} limit={LIST_LIMIT} total={list.data?.total} onPageChange={(page) => setSearch({ page })} />
+        </div>
+      </div>
       {editing ? <MediaAltDialog asset={editing} onClose={() => setEditing(null)} /> : null}
       {previewing ? <MediaPreviewDialog asset={previewing} onClose={() => setPreviewing(null)} /> : null}
     </>

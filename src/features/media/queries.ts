@@ -6,6 +6,7 @@ export const mediaKeys = {
   all: ['media'] as const,
   list: (query: MediaListQuery) => [...mediaKeys.all, 'list', query] as const,
   folders: () => [...mediaKeys.all, 'folders'] as const,
+  everything: (filters: Omit<MediaListQuery, 'page' | 'limit'>) => [...mediaKeys.all, 'everything', filters] as const,
 }
 
 export const mediaListQuery = (query: MediaListQuery) =>
@@ -19,4 +20,11 @@ export const mediaFoldersQuery = () =>
   queryOptions({
     queryKey: mediaKeys.folders(),
     queryFn: async () => (await mediaService.folders()).folders,
+  })
+
+export const mediaEverythingQuery = (filters: Omit<MediaListQuery, 'page' | 'limit'>) =>
+  queryOptions({
+    queryKey: mediaKeys.everything(filters),
+    queryFn: () => mediaService.listAll(filters),
+    placeholderData: keepPreviousData,
   })

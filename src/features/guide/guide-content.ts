@@ -97,6 +97,7 @@ export const GUIDE_SECTIONS: GuideSection[] = [
       'Bấm “Tải ảnh lên” và chọn một hoặc nhiều ảnh (JPEG, PNG, WebP, AVIF; tối đa 20 MB mỗi ảnh).',
       'Chờ trạng thái chuyển sang “Sẵn sàng”. Bấm biểu tượng bút để thêm mô tả ảnh (alt) tiếng Nhật và tiếng Anh.',
       'Ảnh tải nhầm thì bấm biểu tượng thùng rác để xoá hẳn. Ảnh đang gắn với sản phẩm hoặc dùng trong trang/bài viết thì không xoá được.',
+      'Cột bên trái để xem ảnh theo thư mục (“Chưa phân thư mục” là ảnh tải lên không chọn thư mục). Đang mở thư mục nào thì ảnh tải lên mặc định vào thư mục đó. Nút “Xoá thư mục” xoá toàn bộ ảnh bên trong, trừ ảnh đang được dùng.',
     ],
   },
   {

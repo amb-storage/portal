@@ -6,6 +6,19 @@ import type { MediaAsset, MediaListQuery, UploadIntent } from './types'
 /** /api/v1/admin/media/* plus the direct-to-storage upload step. */
 export const mediaService = {
   list: (query: MediaListQuery) => api.get<Paginated<MediaAsset>>('/media', { ...query }),
+  /**
+   * Every asset matching the filters. GET /media has no folder filter, so folder views and
+   * folder deletion filter by objectKey client-side (API caps: limit 100 × page 100).
+   */
+  async listAll(query: Omit<MediaListQuery, 'page' | 'limit'>): Promise<MediaAsset[]> {
+    const items: MediaAsset[] = []
+    for (let page = 1; page <= 100; page++) {
+      const result = await api.get<Paginated<MediaAsset>>('/media', { ...query, page, limit: 100 })
+      items.push(...result.items)
+      if (result.items.length < 100 || items.length >= result.total) break
+    }
+    return items
+  },
   folders: () => api.get<{ folders: string[] }>('/media/folders'),
   createUpload: (body: { filename: string; mimeType: string; sizeBytes: number; folder?: string }) =>
     api.post<UploadIntent>('/media/uploads', body),
