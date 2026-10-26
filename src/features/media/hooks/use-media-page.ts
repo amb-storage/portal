@@ -11,6 +11,7 @@ import { mediaEverythingQuery, mediaFoldersQuery, mediaKeys, mediaListQuery } fr
 import type { MediaSearch } from '../search'
 import { folderAncestors, folderName, isInFolder, mediaFolderOf, parentFolder, ROOT_FOLDER, type MediaAsset } from '../types'
 import { useDeleteFolder } from './use-delete-folder'
+import { useMediaSelection } from './use-media-selection'
 import { useMediaUpload } from './use-media-upload'
 
 export function useMediaPage() {
@@ -51,6 +52,9 @@ export function useMediaPage() {
     setSyncedFolder(viewFolder)
     setFolder(viewFolder)
   }
+
+  const selection = useMediaSelection(JSON.stringify(search))
+  const pageIds = list.data?.items.map((asset) => asset.id) ?? []
 
   const openFolder = (next: string | undefined) => setSearch({ folder: next, page: 1 })
   const deleteFolder = useDeleteFolder((deleted, result) => {
@@ -100,6 +104,8 @@ export function useMediaPage() {
     openFolder,
     subfolders: subfolders.map((path) => ({ path, name: folderName(path), count: countIn(path) })),
     deleteFolder,
+    selection,
+    pageIds,
     upload,
     uploads,
     clearUploads,

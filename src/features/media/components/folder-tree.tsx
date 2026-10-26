@@ -18,9 +18,10 @@ export function FolderTree({ folders, current, onSelect }: FolderTreeProps) {
   const item = (key: string, label: string, icon: React.ReactNode, value: string | undefined, depth = 0) => {
     const active = current === value
     return (
-      <li key={key}>
+      <li key={key} className="min-w-0">
         <button
           type="button"
+          title={value && value !== ROOT_FOLDER ? value : label}
           onClick={() => onSelect(value)}
           aria-current={active ? 'page' : undefined}
           style={{ paddingLeft: `${0.5 + depth * 0.9}rem` }}
@@ -30,14 +31,14 @@ export function FolderTree({ folders, current, onSelect }: FolderTreeProps) {
           )}
         >
           {icon}
-          <span className="truncate">{label}</span>
+          <span className="min-w-0 flex-1 truncate">{label}</span>
         </button>
       </li>
     )
   }
 
   return (
-    <nav aria-label="Thư mục ảnh" className="rounded-xl border bg-card p-2">
+    <nav aria-label="Thư mục ảnh" className="min-w-0 rounded-xl border bg-card p-2">
       <ul className="grid gap-0.5">
         {item('all', 'Tất cả ảnh', <Images className="size-4 shrink-0" />, undefined)}
         {item('root', 'Chưa phân thư mục', <Inbox className="size-4 shrink-0" />, ROOT_FOLDER)}

@@ -36,9 +36,11 @@ export function FolderBar({ current, subfolders, imageCount, canManage, isDeleti
               <Fragment key={path}>
                 <ChevronRight className="size-4 text-muted-foreground" />
                 {index === all.length - 1 ? (
-                  <span className="font-medium">{folderName(path)}</span>
+                  <span className="max-w-60 truncate font-medium" title={path}>
+                    {folderName(path)}
+                  </span>
                 ) : (
-                  <button type="button" className="text-muted-foreground hover:text-foreground hover:underline" onClick={() => onOpen(path)}>
+                  <button type="button" className="max-w-40 truncate text-muted-foreground hover:text-foreground hover:underline" title={path} onClick={() => onOpen(path)}>
                     {folderName(path)}
                   </button>
                 )}
@@ -69,14 +71,15 @@ export function FolderBar({ current, subfolders, imageCount, canManage, isDeleti
       {subfolders.length > 0 ? (
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {subfolders.map((folder) => (
-            <li key={folder.path}>
+            <li key={folder.path} className="min-w-0">
               <button
                 type="button"
+                title={folder.path}
                 onClick={() => onOpen(folder.path)}
-                className="flex w-full items-center gap-3 rounded-xl border bg-card p-3 text-left transition-colors hover:bg-muted"
+                className="flex w-full min-w-0 items-center gap-3 rounded-xl border bg-card p-3 text-left transition-colors hover:bg-muted"
               >
                 <Folder className="size-8 shrink-0 text-primary" />
-                <span className="grid min-w-0">
+                <span className="grid min-w-0 flex-1">
                   <span className="truncate text-sm font-medium">{folder.name}</span>
                   <span className="text-xs text-muted-foreground">{folder.count === undefined ? 'Thư mục' : `${folder.count} ảnh`}</span>
                 </span>

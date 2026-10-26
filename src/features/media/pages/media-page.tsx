@@ -8,6 +8,7 @@ import { FolderTree } from '../components/folder-tree'
 import { MediaAltDialog } from '../components/media-alt-dialog'
 import { MediaGrid } from '../components/media-grid'
 import { MediaPreviewDialog } from '../components/media-preview-dialog'
+import { SelectionBar } from '../components/selection-bar'
 import { UploadButton } from '../components/upload-button'
 import { UploadFolderInput } from '../components/upload-folder-input'
 import { UploadProgressList } from '../components/upload-progress-list'
@@ -28,6 +29,8 @@ export function MediaPage() {
     openFolder,
     subfolders,
     deleteFolder,
+    selection,
+    pageIds,
     upload,
     uploads,
     clearUploads,
@@ -56,7 +59,7 @@ export function MediaPage() {
       />
       <UploadProgressList items={uploads} busy={upload.isPending} onDismiss={clearUploads} />
       <div className="grid items-start gap-6 lg:grid-cols-[240px_1fr]">
-        <aside className="lg:sticky lg:top-40">
+        <aside className="min-w-0 lg:sticky lg:top-40">
           <FolderTree folders={folders} current={browsing} onSelect={openFolder} />
         </aside>
         <div className="grid min-w-0 gap-4">
@@ -86,6 +89,17 @@ export function MediaPage() {
               onDelete={(folder) => deleteFolder.mutate(folder)}
             />
           ) : null}
+          {canManage && selection.selected.size > 0 ? (
+            <SelectionBar
+              count={selection.selected.size}
+              pageCount={pageIds.length}
+              allOnPageSelected={pageIds.every((id) => selection.selected.has(id))}
+              isDeleting={selection.removeSelected.isPending}
+              onSelectPage={() => selection.selectAll(pageIds)}
+              onClear={selection.clear}
+              onDelete={() => selection.removeSelected.mutate([...selection.selected])}
+            />
+          ) : null}
           <MediaGrid
             items={list.data?.items}
             isLoading={list.isPending}
@@ -96,6 +110,8 @@ export function MediaPage() {
             onArchive={(id) => archive.mutate(id)}
             onDelete={(id) => remove.mutate(id)}
             onOpenFolder={browsing === undefined ? openFolder : undefined}
+            selected={canManage ? selection.selected : undefined}
+            onToggleSelect={canManage ? selection.toggle : undefined}
             emptyMessage={
               browsing === undefined
                 ? undefined
