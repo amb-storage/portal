@@ -8,6 +8,8 @@ import type { CmsPage, FixedContent, PageVersion } from '../types'
 import { DraftForm } from './draft-form'
 import { FixedContentForm } from './fixed-content-form'
 import { useFixedForm } from '../hooks/use-fixed-form'
+import { isAboutTemplateDraft, useAboutForm } from '../hooks/use-about-form'
+import { AboutContentForm } from './about-form'
 
 function PageDraftEditor({ page, draft, readOnly }: { page: CmsPage; draft: PageVersion; readOnly: boolean }) {
   const form = useDraftEditor(page.id, draft)
@@ -28,7 +30,14 @@ function JsonFixedEditor({ page, fixed, readOnly }: { page: CmsPage; fixed: Fixe
   return <DraftForm form={form} readOnly={readOnly} profile={profile} revisionLabel={`Nội dung cố định ${fixed.pageType} · lần sửa ${fixed.expectedRevision}`} />
 }
 
+/** About uses the structured section layout of the website (schemaVersion 2). */
+function AboutEditor({ page, fixed, readOnly }: { page: CmsPage; fixed: FixedContent; readOnly: boolean }) {
+  const form = useAboutForm(page.id, fixed)
+  return <AboutContentForm form={form} readOnly={readOnly} fromTemplate={isAboutTemplateDraft(fixed)} />
+}
+
 function FixedContentEditor(props: { page: CmsPage; fixed: FixedContent; readOnly: boolean }) {
+  if (props.fixed.pageType === 'ABOUT') return <AboutEditor {...props} />
   return props.fixed.content ? <JsonFixedEditor {...props} /> : <SimpleFixedEditor {...props} />
 }
 
