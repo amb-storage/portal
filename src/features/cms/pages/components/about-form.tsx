@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label'
 import { ConfirmButton } from '@/components/common/confirm-button'
 import { RichTextEditor } from '@/features/cms/editor/rich-text-editor'
 import type { RichNode } from '@/features/cms/editor/types'
+import { BackToToc, SectionToc } from './section-toc'
 import { aboutTemplateValues, type AboutForm, type RichDoc } from '../hooks/use-about-form'
 
 type RichKey = 'philosophy' | 'mission' | 'vision' | 'promise' | 'knowledge' | 'contact'
@@ -18,15 +19,29 @@ interface AboutFormProps {
   fromTemplate: boolean
 }
 
-function Section({ title, description, actions, children }: { title: string; description?: string; actions?: ReactNode; children: ReactNode }) {
+/** Website sections in page order; ids are the scroll targets of the table of contents. */
+const ABOUT_TOC = [
+  { id: 'about-company', label: '会社概要 · Thông tin công ty' },
+  { id: 'about-philosophy', label: 'ブランド理念 · Triết lý thương hiệu' },
+  { id: 'about-mission', label: 'Mission' },
+  { id: 'about-vision', label: 'Vision' },
+  { id: 'about-values', label: 'Core Values' },
+  { id: 'about-promise', label: 'Our Promise' },
+  { id: 'about-knowledge', label: 'Knowledge & Community' },
+  { id: 'about-contact', label: 'お問い合わせ · Liên hệ' },
+] as const
+type TocId = (typeof ABOUT_TOC)[number]['id']
+const tocLabel = (id: TocId) => ABOUT_TOC.find((item) => item.id === id)!.label
+
+function Section({ id, title, description, actions, children }: { id?: TocId; title?: string; description?: string; actions?: ReactNode; children: ReactNode }) {
   return (
-    <Card>
+    <Card id={id} className="scroll-mt-40">
       <CardHeader className="flex flex-row items-start justify-between gap-4">
         <div className="grid gap-1">
-          <CardTitle>{title}</CardTitle>
+          <CardTitle>{title ?? (id ? tocLabel(id) : '')}</CardTitle>
           {description ? <CardDescription>{description}</CardDescription> : null}
         </div>
-        {actions}
+        {actions ?? (id ? <BackToToc /> : null)}
       </CardHeader>
       <CardContent className="grid gap-4">{children}</CardContent>
     </Card>
@@ -121,7 +136,9 @@ export function AboutContentForm({ form, readOnly, fromTemplate }: AboutFormProp
           </div>
         </Section>
 
-        <Section title="会社概要 · Thông tin công ty" description="Mỗi dòng gồm nhãn và nội dung; nội dung có thể xuống dòng.">
+        <SectionToc items={[...ABOUT_TOC]} />
+
+        <Section id="about-company" description="Mỗi dòng gồm nhãn và nội dung; nội dung có thể xuống dòng.">
           <form.Field name="overview" mode="array">
             {(rows) => (
               <div className="grid gap-3">
@@ -167,15 +184,15 @@ export function AboutContentForm({ form, readOnly, fromTemplate }: AboutFormProp
           </form.Field>
         </Section>
 
-        <Section title="ブランド理念 · Triết lý thương hiệu">
+        <Section id="about-philosophy">
           {headingPair('philosophy')}
           {richPair('philosophy')}
         </Section>
 
-        <Section title="Mission">{richPair('mission')}</Section>
-        <Section title="Vision">{richPair('vision')}</Section>
+        <Section id="about-mission">{richPair('mission')}</Section>
+        <Section id="about-vision">{richPair('vision')}</Section>
 
-        <Section title="Core Values" description="Website tự đánh số 1, 2, 3… theo thứ tự bên dưới.">
+        <Section id="about-values" description="Website tự đánh số 1, 2, 3… theo thứ tự bên dưới.">
           <form.Field name="values" mode="array">
             {(items) => (
               <div className="grid gap-3">
@@ -221,10 +238,10 @@ export function AboutContentForm({ form, readOnly, fromTemplate }: AboutFormProp
           </form.Field>
         </Section>
 
-        <Section title="Our Promise">{richPair('promise')}</Section>
-        <Section title="Knowledge & Community">{richPair('knowledge')}</Section>
+        <Section id="about-promise">{richPair('promise')}</Section>
+        <Section id="about-knowledge">{richPair('knowledge')}</Section>
 
-        <Section title="お問い合わせ · Liên hệ">
+        <Section id="about-contact">
           {headingPair('contact')}
           {richPair('contact')}
         </Section>

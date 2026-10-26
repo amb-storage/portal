@@ -24,6 +24,9 @@ export const STATUS_LABELS: Record<string, string> = {
   ABOUT: 'Giới thiệu',
   POLICY: 'Chính sách',
   LANDING: 'Landing',
+  NEW: 'Mới',
+  READ: 'Đã đọc',
+  REPLIED: 'Đã trả lời',
 }
 
 export function statusLabel(value: string) {

@@ -23,6 +23,8 @@ import { Route as AppSettingsRouteImport } from './routes/_app/settings'
 import { Route as AppCatalogCategoriesRouteImport } from './routes/_app/catalog/categories'
 import { Route as AppCmsAboutRouteImport } from './routes/_app/cms/about'
 import { Route as AppCmsStoriesRouteImport } from './routes/_app/cms/stories'
+import { Route as AppInquiriesIndexRouteImport } from './routes/_app/inquiries/index'
+import { Route as AppInquiriesInquiryIdRouteImport } from './routes/_app/inquiries/$inquiryId'
 import { Route as AppOrdersIndexRouteImport } from './routes/_app/orders/index'
 import { Route as AppOrdersOrderIdRouteImport } from './routes/_app/orders/$orderId'
 import { Route as AppCatalogProductsIndexRouteImport } from './routes/_app/catalog/products/index'
@@ -102,6 +104,16 @@ const AppCmsStoriesRoute = AppCmsStoriesRouteImport.update({
   path: '/cms/stories',
   getParentRoute: () => AppRoute,
 } as any)
+const AppInquiriesIndexRoute = AppInquiriesIndexRouteImport.update({
+  id: '/inquiries/',
+  path: '/inquiries/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppInquiriesInquiryIdRoute = AppInquiriesInquiryIdRouteImport.update({
+  id: '/inquiries/$inquiryId',
+  path: '/inquiries/$inquiryId',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppOrdersIndexRoute = AppOrdersIndexRouteImport.update({
   id: '/orders/',
   path: '/orders/',
@@ -163,7 +175,9 @@ export interface FileRoutesByFullPath {
   '/catalog/categories': typeof AppCatalogCategoriesRoute
   '/cms/about': typeof AppCmsAboutRoute
   '/cms/stories': typeof AppCmsStoriesRoute
+  '/inquiries/$inquiryId': typeof AppInquiriesInquiryIdRoute
   '/orders/$orderId': typeof AppOrdersOrderIdRoute
+  '/inquiries/': typeof AppInquiriesIndexRoute
   '/orders/': typeof AppOrdersIndexRoute
   '/catalog/products/$productId': typeof AppCatalogProductsProductIdRoute
   '/catalog/products/new': typeof AppCatalogProductsNewRoute
@@ -187,7 +201,9 @@ export interface FileRoutesByTo {
   '/catalog/categories': typeof AppCatalogCategoriesRoute
   '/cms/about': typeof AppCmsAboutRoute
   '/cms/stories': typeof AppCmsStoriesRoute
+  '/inquiries/$inquiryId': typeof AppInquiriesInquiryIdRoute
   '/orders/$orderId': typeof AppOrdersOrderIdRoute
+  '/inquiries': typeof AppInquiriesIndexRoute
   '/orders': typeof AppOrdersIndexRoute
   '/catalog/products/$productId': typeof AppCatalogProductsProductIdRoute
   '/catalog/products/new': typeof AppCatalogProductsNewRoute
@@ -213,7 +229,9 @@ export interface FileRoutesById {
   '/_app/catalog/categories': typeof AppCatalogCategoriesRoute
   '/_app/cms/about': typeof AppCmsAboutRoute
   '/_app/cms/stories': typeof AppCmsStoriesRoute
+  '/_app/inquiries/$inquiryId': typeof AppInquiriesInquiryIdRoute
   '/_app/orders/$orderId': typeof AppOrdersOrderIdRoute
+  '/_app/inquiries/': typeof AppInquiriesIndexRoute
   '/_app/orders/': typeof AppOrdersIndexRoute
   '/_app/catalog/products/$productId': typeof AppCatalogProductsProductIdRoute
   '/_app/catalog/products/new': typeof AppCatalogProductsNewRoute
@@ -239,7 +257,9 @@ export interface FileRouteTypes {
     | '/catalog/categories'
     | '/cms/about'
     | '/cms/stories'
+    | '/inquiries/$inquiryId'
     | '/orders/$orderId'
+    | '/inquiries/'
     | '/orders/'
     | '/catalog/products/$productId'
     | '/catalog/products/new'
@@ -263,7 +283,9 @@ export interface FileRouteTypes {
     | '/catalog/categories'
     | '/cms/about'
     | '/cms/stories'
+    | '/inquiries/$inquiryId'
     | '/orders/$orderId'
+    | '/inquiries'
     | '/orders'
     | '/catalog/products/$productId'
     | '/catalog/products/new'
@@ -288,7 +310,9 @@ export interface FileRouteTypes {
     | '/_app/catalog/categories'
     | '/_app/cms/about'
     | '/_app/cms/stories'
+    | '/_app/inquiries/$inquiryId'
     | '/_app/orders/$orderId'
+    | '/_app/inquiries/'
     | '/_app/orders/'
     | '/_app/catalog/products/$productId'
     | '/_app/catalog/products/new'
@@ -406,6 +430,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCmsStoriesRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/inquiries/': {
+      id: '/_app/inquiries/'
+      path: '/inquiries'
+      fullPath: '/inquiries/'
+      preLoaderRoute: typeof AppInquiriesIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/inquiries/$inquiryId': {
+      id: '/_app/inquiries/$inquiryId'
+      path: '/inquiries/$inquiryId'
+      fullPath: '/inquiries/$inquiryId'
+      preLoaderRoute: typeof AppInquiriesInquiryIdRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/orders/': {
       id: '/_app/orders/'
       path: '/orders'
@@ -483,7 +521,9 @@ interface AppRouteChildren {
   AppCatalogCategoriesRoute: typeof AppCatalogCategoriesRoute
   AppCmsAboutRoute: typeof AppCmsAboutRoute
   AppCmsStoriesRoute: typeof AppCmsStoriesRoute
+  AppInquiriesInquiryIdRoute: typeof AppInquiriesInquiryIdRoute
   AppOrdersOrderIdRoute: typeof AppOrdersOrderIdRoute
+  AppInquiriesIndexRoute: typeof AppInquiriesIndexRoute
   AppOrdersIndexRoute: typeof AppOrdersIndexRoute
   AppCatalogProductsProductIdRoute: typeof AppCatalogProductsProductIdRoute
   AppCatalogProductsNewRoute: typeof AppCatalogProductsNewRoute
@@ -505,7 +545,9 @@ const AppRouteChildren: AppRouteChildren = {
   AppCatalogCategoriesRoute: AppCatalogCategoriesRoute,
   AppCmsAboutRoute: AppCmsAboutRoute,
   AppCmsStoriesRoute: AppCmsStoriesRoute,
+  AppInquiriesInquiryIdRoute: AppInquiriesInquiryIdRoute,
   AppOrdersOrderIdRoute: AppOrdersOrderIdRoute,
+  AppInquiriesIndexRoute: AppInquiriesIndexRoute,
   AppOrdersIndexRoute: AppOrdersIndexRoute,
   AppCatalogProductsProductIdRoute: AppCatalogProductsProductIdRoute,
   AppCatalogProductsNewRoute: AppCatalogProductsNewRoute,

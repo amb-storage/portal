@@ -8,6 +8,7 @@ import {
   HelpCircle,
   History,
   Image,
+  Inbox,
   LayoutDashboard,
   Menu,
   MessagesSquare,
@@ -48,6 +49,8 @@ export const NAV_GROUPS: NavGroup[] = [
     label: 'Vận hành',
     items: [
       { title: 'Đơn hàng', to: '/orders', icon: Receipt, permission: PERMISSIONS.ordersRead },
+      // TODO: gate with an inquiries permission once the API defines one (mock-up for now).
+      { title: 'Liên hệ', to: '/inquiries', icon: Inbox },
       { title: 'Thư viện ảnh', to: '/media', icon: Image, permission: PERMISSIONS.mediaRead },
       { title: 'Nhật ký thao tác', to: '/audit-logs', icon: History, permission: PERMISSIONS.auditRead },
     ],

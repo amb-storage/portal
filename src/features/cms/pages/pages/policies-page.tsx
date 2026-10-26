@@ -11,6 +11,7 @@ import { useCan } from '@/features/auth/hooks/use-permission'
 import { PERMISSIONS } from '@/lib/permissions'
 import { CreatePageDialog } from '../components/create-page-dialog'
 import { buildPageColumns } from '../components/pages-columns'
+import { PolicyWebsiteOrder } from '../components/policy-website-order'
 import { useDeletePage } from '../hooks/use-delete-page'
 import { useSeedPolicies } from '../hooks/use-seed-policies'
 import { POLICY_TEMPLATES } from '../policy-template'
@@ -64,6 +65,7 @@ export function PoliciesPage() {
         onRowClick={(row) => navigate({ to: '/cms/policies/$pageId', params: { pageId: row.id } })}
         emptyMessage="Chưa có trang chính sách nào."
       />
+      {list.data ? <PolicyWebsiteOrder pages={list.data.items} /> : null}
       {creating ? <CreatePageDialog lockedType="POLICY" onClose={() => setCreating(false)} /> : null}
     </>
   )

@@ -5,6 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ConfirmButton } from '@/components/common/confirm-button'
 import { emptyPolicyDetail, emptyPolicySection, toSectionValues, type PolicyForm } from '../hooks/use-policy-form'
 import { policyTemplateContent, type PolicyPageTemplate } from '../policy-template'
+import { policySectionDomId, useScrollToHash } from '../scroll'
+import { BackToToc, SectionToc } from './section-toc'
 
 interface PolicyFormProps {
   form: PolicyForm
@@ -36,6 +38,7 @@ function MoveButtons({ index, length, onMove, onRemove, removeLabel, canRemove =
 
 /** Structured Policy editor: sections rendered as-is on the website's /policy page (menu built from section titles). */
 export function PolicyContentForm({ form, readOnly, template, unstructured }: PolicyFormProps) {
+  useScrollToHash()
   const loadTemplate = () => {
     if (!template) return
     form.setFieldValue('titleJa', template.titleJa)
@@ -101,28 +104,35 @@ export function PolicyContentForm({ form, readOnly, template, unstructured }: Po
           </CardContent>
         </Card>
 
+        <form.Subscribe selector={(state) => state.values.sections.map((section) => ({ id: policySectionDomId(section.anchorKey), label: section.titleJa }))}>
+          {(items) => <SectionToc items={items} />}
+        </form.Subscribe>
+
         <form.Field name="sections" mode="array">
           {(sections) => (
             <div className="grid gap-6">
               {sections.state.value.map((section, index) => {
                 const base = `sections[${index}]`
                 return (
-                  <Card key={section.id}>
+                  <Card key={section.id} id={policySectionDomId(section.anchorKey)} className="scroll-mt-40">
                     <CardHeader className="flex flex-row items-center justify-between gap-4">
                       <CardTitle>
                         Mục {index + 1}
                         {section.titleJa ? <span className="font-normal text-muted-foreground"> · {section.titleJa}</span> : null}
                       </CardTitle>
-                      {readOnly ? null : (
-                        <MoveButtons
-                          index={index}
-                          length={sections.state.value.length}
-                          onMove={sections.moveValue}
-                          onRemove={() => sections.removeValue(index)}
-                          removeLabel="Xoá mục"
-                          canRemove={sections.state.value.length > 1}
-                        />
-                      )}
+                      <div className="flex items-center gap-1">
+                        <BackToToc />
+                        {readOnly ? null : (
+                          <MoveButtons
+                            index={index}
+                            length={sections.state.value.length}
+                            onMove={sections.moveValue}
+                            onRemove={() => sections.removeValue(index)}
+                            removeLabel="Xoá mục"
+                            canRemove={sections.state.value.length > 1}
+                          />
+                        )}
+                      </div>
                     </CardHeader>
                     <CardContent className="grid gap-4">
                       <div className="grid gap-3 md:grid-cols-3">
