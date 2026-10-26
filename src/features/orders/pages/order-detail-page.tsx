@@ -31,7 +31,7 @@ export function OrderDetailPage() {
         <div className="grid content-start gap-6">
           <OrderItemsCard items={items} currency={order.currency} />
           <FulfillmentCard key={version} order={order} canManage={canManage} />
-          <ShippingCard snapshot={order.shipping_snapshot} />
+          <ShippingCard snapshot={order.shipping_snapshot} email={order.email} />
         </div>
         <div className="grid content-start gap-6">
           <OrderSummaryCard order={order} />
