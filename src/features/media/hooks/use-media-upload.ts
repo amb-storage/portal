@@ -28,7 +28,8 @@ function validate(file: File) {
 
 /**
  * Three-step upload per file: create intent → PUT to presigned URL (with
- * progress) → finalize. The object key stays server-side.
+ * progress) → finalize. The server builds the object key, under `folder`
+ * when one is given.
  */
 export function useMediaUpload() {
   const queryClient = useQueryClient()
@@ -41,8 +42,8 @@ export function useMediaUpload() {
   )
 
   const uploadOne = useCallback(
-    async (file: File, key: string) => {
-      const intent = await mediaService.createUpload({ filename: file.name, mimeType: file.type, sizeBytes: file.size })
+    async (file: File, key: string, folder: string | undefined) => {
+      const intent = await mediaService.createUpload({ filename: file.name, mimeType: file.type, sizeBytes: file.size, folder })
       await mediaService.uploadToStorage(intent, file, (event) => {
         patch(key, { percent: Math.round(((event.loaded ?? 0) / (event.total ?? file.size)) * 100) })
       })
@@ -53,7 +54,7 @@ export function useMediaUpload() {
   )
 
   const upload = useMutation({
-    mutationFn: async (files: File[]) => {
+    mutationFn: async ({ files, folder }: { files: File[]; folder?: string }) => {
       const valid = files.filter((file) => {
         const error = validate(file)
         if (error) toast.error(error)
@@ -62,7 +63,7 @@ export function useMediaUpload() {
       const queued = valid.map((file) => ({ file, key: `${file.name}-${crypto.randomUUID()}` }))
       setItems(queued.map(({ file, key }) => ({ key, name: file.name, percent: 0, stage: 'uploading' })))
 
-      const results = await Promise.allSettled(queued.map(({ file, key }) => uploadOne(file, key)))
+      const results = await Promise.allSettled(queued.map(({ file, key }) => uploadOne(file, key, folder?.trim() || undefined)))
       results.forEach((result, index) => {
         const { file, key } = queued[index]
         patch(key, { stage: result.status === 'fulfilled' ? 'done' : 'failed' })

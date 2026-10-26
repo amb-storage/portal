@@ -5,6 +5,7 @@ import type { MediaListQuery } from './types'
 export const mediaKeys = {
   all: ['media'] as const,
   list: (query: MediaListQuery) => [...mediaKeys.all, 'list', query] as const,
+  folders: () => [...mediaKeys.all, 'folders'] as const,
 }
 
 export const mediaListQuery = (query: MediaListQuery) =>
@@ -12,4 +13,10 @@ export const mediaListQuery = (query: MediaListQuery) =>
     queryKey: mediaKeys.list(query),
     queryFn: () => mediaService.list(query),
     placeholderData: keepPreviousData,
+  })
+
+export const mediaFoldersQuery = () =>
+  queryOptions({
+    queryKey: mediaKeys.folders(),
+    queryFn: async () => (await mediaService.folders()).folders,
   })

@@ -7,21 +7,46 @@ import { MediaAltDialog } from '../components/media-alt-dialog'
 import { MediaGrid } from '../components/media-grid'
 import { MediaPreviewDialog } from '../components/media-preview-dialog'
 import { UploadButton } from '../components/upload-button'
+import { UploadFolderInput } from '../components/upload-folder-input'
 import { UploadProgressList } from '../components/upload-progress-list'
 import { useMediaPage } from '../hooks/use-media-page'
 import type { MediaSearch } from '../search'
 import { MEDIA_STATUSES, SUPPORTED_MIME_TYPES } from '../types'
 
 export function MediaPage() {
-  const { search, setSearch, list, canManage, upload, uploads, clearUploads, archive, finalize, editing, setEditing, previewing, setPreviewing } =
-    useMediaPage()
+  const {
+    search,
+    setSearch,
+    list,
+    canManage,
+    folder,
+    setFolder,
+    folders,
+    upload,
+    uploads,
+    clearUploads,
+    archive,
+    remove,
+    finalize,
+    editing,
+    setEditing,
+    previewing,
+    setPreviewing,
+  } = useMediaPage()
 
   return (
     <>
       <PageHeader
         title="Thư viện ảnh"
         description="JPEG, PNG, WebP hoặc AVIF, tối đa 20 MB mỗi ảnh."
-        actions={canManage ? <UploadButton isUploading={upload.isPending} onFiles={(files) => upload.mutate(files)} /> : null}
+        actions={
+          canManage ? (
+            <>
+              <UploadFolderInput value={folder} onChange={setFolder} folders={folders} disabled={upload.isPending} />
+              <UploadButton isUploading={upload.isPending} onFiles={(files) => upload.mutate({ files, folder })} />
+            </>
+          ) : null
+        }
       />
       <UploadProgressList items={uploads} busy={upload.isPending} onDismiss={clearUploads} />
       <ListToolbar>
@@ -47,6 +72,7 @@ export function MediaPage() {
         onEdit={setEditing}
         onFinalize={(id) => finalize.mutate(id)}
         onArchive={(id) => archive.mutate(id)}
+        onDelete={(id) => remove.mutate(id)}
       />
       <DataTablePagination page={search.page} limit={LIST_LIMIT} total={list.data?.total} onPageChange={(page) => setSearch({ page })} />
       {editing ? <MediaAltDialog asset={editing} onClose={() => setEditing(null)} /> : null}

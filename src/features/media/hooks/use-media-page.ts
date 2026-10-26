@@ -7,7 +7,7 @@ import { describeError } from '@/lib/api/errors'
 import { PERMISSIONS } from '@/lib/permissions'
 import { LIST_LIMIT } from '@/lib/search'
 import { mediaService } from '../media.service'
-import { mediaKeys, mediaListQuery } from '../queries'
+import { mediaFoldersQuery, mediaKeys, mediaListQuery } from '../queries'
 import type { MediaSearch } from '../search'
 import type { MediaAsset } from '../types'
 import { useMediaUpload } from './use-media-upload'
@@ -18,7 +18,9 @@ export function useMediaPage() {
   const queryClient = useQueryClient()
   const [editing, setEditing] = useState<MediaAsset | null>(null)
   const [previewing, setPreviewing] = useState<MediaAsset | null>(null)
+  const [folder, setFolder] = useState('')
   const list = useQuery(mediaListQuery({ ...search, limit: LIST_LIMIT }))
+  const folders = useQuery({ ...mediaFoldersQuery(), enabled: canManage })
   const { upload, items: uploads, clearItems: clearUploads } = useMediaUpload()
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: mediaKeys.all })
@@ -27,6 +29,15 @@ export function useMediaPage() {
     mutationFn: mediaService.archive,
     onSuccess: () => {
       toast.success('Đã lưu trữ ảnh')
+      return invalidate()
+    },
+    onError: (error) => toast.error(describeError(error)),
+  })
+
+  const remove = useMutation({
+    mutationFn: mediaService.remove,
+    onSuccess: () => {
+      toast.success('Đã xoá ảnh')
       return invalidate()
     },
     onError: (error) => toast.error(describeError(error)),
@@ -41,5 +52,23 @@ export function useMediaPage() {
     onError: (error) => toast.error(describeError(error)),
   })
 
-  return { search, setSearch, list, canManage, upload, uploads, clearUploads, archive, finalize, editing, setEditing, previewing, setPreviewing }
+  return {
+    search,
+    setSearch,
+    list,
+    canManage,
+    folder,
+    setFolder,
+    folders: folders.data ?? [],
+    upload,
+    uploads,
+    clearUploads,
+    archive,
+    remove,
+    finalize,
+    editing,
+    setEditing,
+    previewing,
+    setPreviewing,
+  }
 }

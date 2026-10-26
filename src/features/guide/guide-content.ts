@@ -93,8 +93,10 @@ export const GUIDE_SECTIONS: GuideSection[] = [
     to: '/media',
     linkLabel: 'Mở Thư viện ảnh',
     steps: [
+      'Muốn gom ảnh theo nhóm thì gõ hoặc chọn thư mục ở ô “Thư mục” (vd. “bracelets/2026”, tối đa 5 cấp). Để trống nếu không cần.',
       'Bấm “Tải ảnh lên” và chọn một hoặc nhiều ảnh (JPEG, PNG, WebP, AVIF; tối đa 20 MB mỗi ảnh).',
       'Chờ trạng thái chuyển sang “Sẵn sàng”. Bấm biểu tượng bút để thêm mô tả ảnh (alt) tiếng Nhật và tiếng Anh.',
+      'Ảnh tải nhầm thì bấm biểu tượng thùng rác để xoá hẳn. Ảnh đang gắn với sản phẩm hoặc dùng trong trang/bài viết thì không xoá được.',
     ],
   },
   {

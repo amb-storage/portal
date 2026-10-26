@@ -62,6 +62,7 @@ export const ERROR_MESSAGES: Record<string, string> = {
   MEDIA_NOT_READY: 'Ảnh chưa xử lý xong.',
   MEDIA_ARCHIVED: 'Ảnh đã lưu trữ.',
   MEDIA_UPLOAD_INVALID: 'Tệp tải lên không hợp lệ.',
+  MEDIA_FOLDER_INVALID: 'Thư mục không hợp lệ: đường dẫn tương đối, tối đa 5 cấp, không chứa “..” hoặc “\\”.',
   MEDIA_STORAGE_UNAVAILABLE: 'Kho lưu trữ ảnh đang không khả dụng.',
   PAGE_SLUG_CONFLICT: 'Slug trang đã tồn tại.',
   PAGE_SLUG_IMMUTABLE: 'Không thể đổi slug của trang này.',

@@ -52,7 +52,7 @@ or attribute-dictionary routes, or migration-management routes.
 
 | Resource | Routes |
 | --- | --- |
-| Media | `GET /api/v1/admin/media`, `POST /api/v1/admin/media/uploads`, `POST /api/v1/admin/media/:id/finalize`, `PATCH /api/v1/admin/media/:id`, `POST /api/v1/admin/media/:id/archive` |
+| Media | `GET /api/v1/admin/media`, `GET /api/v1/admin/media/folders`, `POST /api/v1/admin/media/uploads` (`folder` optional), `POST /api/v1/admin/media/:id/finalize`, `PATCH /api/v1/admin/media/:id`, `POST /api/v1/admin/media/:id/archive`, `DELETE /api/v1/admin/media/:id` |
 | Fixed content | `GET/PATCH /api/v1/admin/cms/content-pages/*` |
 | Pages and preview | Existing routes under `/api/v1/admin/cms/*` |
 | Story | `GET/POST /api/v1/admin/stories`, `GET/PATCH/DELETE /api/v1/admin/stories/:id` |

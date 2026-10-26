@@ -7,6 +7,15 @@ export const MEDIA_STATUSES = ['PENDING', 'READY', 'FAILED', 'ARCHIVED'] as cons
 export const SUPPORTED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'] as const
 export const MAX_MEDIA_SIZE_BYTES = 20 * 1024 * 1024
 
+const OBJECT_PREFIX = 'media/products/'
+
+/** Folder segment of an object key (`media/products/<folder>/<id>/<file>`), like extractMediaFolder on the API. */
+export function mediaFolderOf(objectKey: string): string | null {
+  if (!objectKey.startsWith(OBJECT_PREFIX)) return null
+  const segments = objectKey.slice(OBJECT_PREFIX.length).split('/')
+  return segments.length >= 3 ? segments.slice(0, -2).join('/') : null
+}
+
 export interface MediaAsset {
   id: string
   objectKey: string
