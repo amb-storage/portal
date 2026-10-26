@@ -11,6 +11,7 @@ import { PreviewDialog } from '../components/preview-dialog'
 import { RegistryTab } from '../components/registry-tab'
 import { SettingsTab } from '../components/settings-tab'
 import { VersionsTab } from '../components/versions-tab'
+import { isMiliTalksLanding } from '@/features/cms/stories/mili-talks-template'
 import { useCmsPageDetailPage, type CmsPageDetailOptions } from '../hooks/use-cms-page-detail-page'
 
 const route = getRouteApi('/_app/cms/pages/$pageId')
@@ -26,10 +27,10 @@ export function CmsPageDetailPage() {
 export function CmsPageDetail(options: CmsPageDetailOptions) {
   const { page, draft, tab, setTab, lifecycle, issuePreview, preview, setPreview, canEdit, canPublish, canPreview, checklist, ready } =
     useCmsPageDetailPage(options)
-  // About/Policy use the simple bilingual editor; the section registry is irrelevant there.
-  const isFixed = page.type === 'ABOUT' || page.type === 'POLICY'
+  // About/Policy and the Mili Talks blog home have their own editors: the section registry does not apply.
+  const isFixed = page.type === 'ABOUT' || page.type === 'POLICY' || isMiliTalksLanding(page)
   // About is resolved by type on the website, so its slug is not worth editing.
-  const showSettings = page.type !== 'ABOUT'
+  const showSettings = page.type !== 'ABOUT' && !isMiliTalksLanding(page)
   const showChecklist = tab === 'draft' && page.status === 'ACTIVE' && checklist.length > 0
 
   return (

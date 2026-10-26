@@ -16,7 +16,7 @@ export function useCreateStoryForm() {
     onSuccess: async (story) => {
       toast.success('Đã tạo bài viết')
       await queryClient.invalidateQueries({ queryKey: storyKeys.all })
-      await navigate({ to: '/cms/pages/$pageId', params: { pageId: story.pageId } })
+      await navigate({ to: '/cms/stories/$pageId', params: { pageId: story.pageId } })
     },
     onError: (error) => toast.error(describeError(error)),
   })

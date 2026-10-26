@@ -10,11 +10,20 @@ import type { CmsPage, FixedContent, PageVersion } from '../types'
 import { AboutContentForm } from './about-form'
 import { DraftForm } from './draft-form'
 import { PolicyContentForm } from './policy-form'
+import { MiliTalksContentForm } from '@/features/cms/stories/components/mili-talks-form'
+import { isMiliTalksTemplateDraft, useMiliTalksForm } from '@/features/cms/stories/hooks/use-mili-talks-form'
+import { isMiliTalksLanding } from '@/features/cms/stories/mili-talks-template'
 
 function PageDraftEditor({ page, draft, readOnly }: { page: CmsPage; draft: PageVersion; readOnly: boolean }) {
   const form = useDraftEditor(page.id, draft)
   const profile = usePageProfile(page)
   return <DraftForm form={form} readOnly={readOnly} profile={profile} revisionLabel={`Nháp v${draft.version} · lần sửa ${draft.revision}`} />
+}
+
+/** The Mili Talks blog home has its own section editor (intro, Special Thanks, article list). */
+function MiliTalksEditor({ page, draft, readOnly }: { page: CmsPage; draft: PageVersion; readOnly: boolean }) {
+  const form = useMiliTalksForm(page.id, draft)
+  return <MiliTalksContentForm form={form} readOnly={readOnly} fromTemplate={isMiliTalksTemplateDraft(draft)} />
 }
 
 /** About uses the structured section layout of the website (schemaVersion 2). */
@@ -56,7 +65,13 @@ export function DraftTab({ page, draft, readOnly }: DraftTabProps) {
   }
   return (
     <QueryState query={draft}>
-      {(data) => <PageDraftEditor key={`${data.id}:${data.revision}`} page={page} draft={data} readOnly={readOnly} />}
+      {(data) =>
+        isMiliTalksLanding(page) ? (
+          <MiliTalksEditor key={`${data.id}:${data.revision}`} page={page} draft={data} readOnly={readOnly} />
+        ) : (
+          <PageDraftEditor key={`${data.id}:${data.revision}`} page={page} draft={data} readOnly={readOnly} />
+        )
+      }
     </QueryState>
   )
 }

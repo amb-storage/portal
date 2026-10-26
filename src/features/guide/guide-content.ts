@@ -55,7 +55,7 @@ export const PORTAL_MAP: GuideDiagram = {
   rows: [
     { from: 'Sản phẩm + Danh mục', to: 'Trang Shop, trang chi tiết sản phẩm, bộ lọc danh mục' },
     { from: 'Thư viện ảnh', to: 'Ảnh của sản phẩm, bài viết, trang (chỉ hiện khi được chọn dùng)' },
-    { from: 'Bài viết', to: 'Blog Mili Talks' },
+    { from: 'Mili Talks: Bài viết, Trang chủ blog', to: 'Blog Mili Talks: danh sách bài và từng bài' },
     { from: 'Giới thiệu', to: 'Trang ABOUT US' },
     { from: 'Chính sách', to: 'Trang Privacy Policy (/policy), gộp tất cả chính sách' },
     { from: 'Menu điều hướng', to: 'Menu đầu trang và chân trang' },
@@ -239,8 +239,8 @@ export const GUIDE_GROUPS: GuideGroup[] = [
       },
       {
         id: 'bai-viet',
-        title: 'Bài viết (Mili Talks) và Trang',
-        summary: 'Soạn bài blog và các trang nội dung bằng khối.',
+        title: 'Mili Talks (Blog)',
+        summary: 'Viết bài blog và chỉnh trang chủ blog. Nằm ở nhóm “Mili Talks (Blog)” trên menu.',
         to: '/cms/stories',
         linkLabel: 'Mở Bài viết',
         diagram: {
@@ -254,7 +254,7 @@ export const GUIDE_GROUPS: GuideGroup[] = [
           ],
         },
         steps: [
-          'Vào Bài viết → “Thêm bài viết”, nhập slug. Bạn được đưa tới trang soạn.',
+          'Menu Mili Talks (Blog) → Bài viết → “Thêm bài viết”, nhập slug. Bạn được đưa tới trang soạn.',
           'Ở tab Nháp, điền tiêu đề tiếng Nhật và tiếng Anh.',
           'Bấm “Thêm khối”: “Đầu bài viết” (ảnh bìa + tóm tắt, bắt buộc với bài viết), “Đoạn văn”, “Ảnh”, “Trích dẫn”… Gõ chữ trực tiếp, dùng thanh công cụ để in đậm, tạo tiêu đề, danh sách, link.',
           'Nút lên/xuống đổi thứ tự khối; công tắc “Hiển thị” để tạm ẩn một khối.',
@@ -263,7 +263,8 @@ export const GUIDE_GROUPS: GuideGroup[] = [
         tips: [
           'Khung bên phải liệt kê những gì còn thiếu để xuất bản.',
           'Lỡ sửa sai? Tab Phiên bản → biểu tượng khôi phục để quay về bản cũ.',
-          'Mục Trang dành cho trang chủ, trang thường và landing. Trang chủ có cấu trúc riêng nên tạm thời vẫn sửa bằng JSON.',
+          '“Trang chủ blog” chia 2 phần: Phần cố định ở trên (giới thiệu Mili Talks, Special Thanks: ghi chú nguồn + các cột cảm ơn) ít khi sửa; Phần tự động ở dưới (bài nổi bật, danh sách bài) tự cập nhật khi bạn xuất bản bài mới.',
+          'Các trang khác (trang chủ website, trang thường, landing) nằm ở Trang website → Trang khác. Trang chủ có cấu trúc riêng nên tạm thời vẫn sửa bằng JSON.',
         ],
       },
       {

@@ -28,6 +28,6 @@ export function useStoriesPage() {
   })
 
   const navigate = useNavigate()
-  const openStory = (pageId: string) => navigate({ to: '/cms/pages/$pageId', params: { pageId } })
+  const openStory = (pageId: string) => navigate({ to: '/cms/stories/$pageId', params: { pageId } })
   return { search, setSearch, list, canManage, creating, setCreating, remove, openStory }
 }
