@@ -163,8 +163,8 @@ export function AboutContentForm({ form, readOnly, fromTemplate }: AboutFormProp
                     <div className="grid gap-3 md:grid-cols-2">
                       <form.AppField name={`overview[${index}].labelJa`}>{(field) => <field.TextField label="Nhãn (Nhật)" placeholder="社名" />}</form.AppField>
                       <form.AppField name={`overview[${index}].labelEn`}>{(field) => <field.TextField label="Nhãn (Anh)" placeholder="Company" />}</form.AppField>
-                      <form.AppField name={`overview[${index}].valueJa`}>{(field) => <field.TextareaField label="Nội dung (Nhật)" rows={2} />}</form.AppField>
-                      <form.AppField name={`overview[${index}].valueEn`}>{(field) => <field.TextareaField label="Nội dung (Anh)" rows={2} />}</form.AppField>
+                      <form.AppField name={`overview[${index}].valueJa`}>{(field) => <field.TextareaField label="Nội dung (Nhật)" rows={3} />}</form.AppField>
+                      <form.AppField name={`overview[${index}].valueEn`}>{(field) => <field.TextareaField label="Nội dung (Anh)" rows={3} />}</form.AppField>
                     </div>
                   </div>
                 ))}
@@ -217,8 +217,8 @@ export function AboutContentForm({ form, readOnly, fromTemplate }: AboutFormProp
                     <div className="grid gap-3 md:grid-cols-2">
                       <form.AppField name={`values[${index}].titleJa`}>{(field) => <field.TextField label="Tên (Nhật)" placeholder="Authenticity（オリジナルへのこだわり）" />}</form.AppField>
                       <form.AppField name={`values[${index}].titleEn`}>{(field) => <field.TextField label="Tên (Anh)" placeholder="Authenticity" />}</form.AppField>
-                      <form.AppField name={`values[${index}].bodyJa`}>{(field) => <field.TextareaField label="Mô tả (Nhật)" rows={2} />}</form.AppField>
-                      <form.AppField name={`values[${index}].bodyEn`}>{(field) => <field.TextareaField label="Mô tả (Anh)" rows={2} />}</form.AppField>
+                      <form.AppField name={`values[${index}].bodyJa`}>{(field) => <field.TextareaField label="Mô tả (Nhật)" rows={3} />}</form.AppField>
+                      <form.AppField name={`values[${index}].bodyEn`}>{(field) => <field.TextareaField label="Mô tả (Anh)" rows={3} />}</form.AppField>
                     </div>
                   </div>
                 ))}

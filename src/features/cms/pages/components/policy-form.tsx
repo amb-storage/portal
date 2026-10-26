@@ -50,8 +50,8 @@ export function PolicyContentForm({ form, readOnly, template, unstructured }: Po
     const hint = kind === 'bullets' ? LINES_HINT : BLOCKS_HINT
     return (
       <div className="grid gap-3 md:grid-cols-2">
-        <form.AppField name={`${base}.${kind}Ja` as never}>{(field) => <field.TextareaField label={`${label} (Nhật)`} description={hint} rows={kind === 'bullets' ? 3 : 4} />}</form.AppField>
-        <form.AppField name={`${base}.${kind}En` as never}>{(field) => <field.TextareaField label={`${label} (Anh)`} description="Cùng số mục và cùng thứ tự với tiếng Nhật" rows={kind === 'bullets' ? 3 : 4} />}</form.AppField>
+        <form.AppField name={`${base}.${kind}Ja` as never}>{(field) => <field.TextareaField label={`${label} (Nhật)`} description={hint} rows={kind === 'bullets' ? 4 : 6} />}</form.AppField>
+        <form.AppField name={`${base}.${kind}En` as never}>{(field) => <field.TextareaField label={`${label} (Anh)`} description="Cùng số mục và cùng thứ tự với tiếng Nhật" rows={kind === 'bullets' ? 4 : 6} />}</form.AppField>
       </div>
     )
   }
