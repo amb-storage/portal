@@ -8,6 +8,12 @@ and setting `INQUIRIES_ARE_MOCK` to `false`.
 
 ## Public route (website form)
 
+The website form already exists: `amb-storage-web` →
+`app/[locale]/(legal)/contact` (`/contact`, `/en/contact`). It posts exactly
+this body through the same-origin `/api/v1` rewrite and sends no session or
+CSRF token, so this route must not require one. Until the route exists, the
+form shows an error with the store email as a fallback.
+
 `POST /api/v1/contact`
 
 ```json
