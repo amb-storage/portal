@@ -21,13 +21,13 @@ export function PoliciesPage() {
   const list = useQuery(pageListQuery({ page: 1, limit: 100, type: 'POLICY', status: 'ACTIVE' }))
   const remove = useDeletePage()
   const removePage = remove.mutate
-  const columns = useMemo(() => buildPageColumns({ canDelete: canEdit, onDelete: (id) => removePage(id), showType: false }), [canEdit, removePage])
+  const columns = useMemo(() => buildPageColumns({ canDelete: canEdit, onDelete: (id) => removePage(id), variant: 'policies' }), [canEdit, removePage])
 
   return (
     <>
       <PageHeader
         title="Chính sách"
-        description="Chính sách giao hàng, đổi trả, bảo mật… Mỗi trang có nội dung tiếng Nhật và tiếng Anh, cần ngày hiệu lực khi xuất bản."
+        description="Chính sách giao hàng, đổi trả, bảo mật… Mỗi trang có nội dung tiếng Nhật và tiếng Anh, cần ngày hiệu lực khi xuất bản. Slug là đường dẫn công khai của chính sách."
         actions={canEdit ? <Button onClick={() => setCreating(true)}><Plus /> Thêm chính sách</Button> : null}
       />
       <ErrorAlert error={list.error} />
@@ -36,7 +36,7 @@ export function PoliciesPage() {
         data={list.data?.items}
         isLoading={list.isPending}
         getRowId={(row) => row.id}
-        onRowClick={(row) => navigate({ to: '/cms/pages/$pageId', params: { pageId: row.id } })}
+        onRowClick={(row) => navigate({ to: '/cms/policies/$pageId', params: { pageId: row.id } })}
         emptyMessage="Chưa có trang chính sách nào."
       />
       {creating ? <CreatePageDialog lockedType="POLICY" onClose={() => setCreating(false)} /> : null}

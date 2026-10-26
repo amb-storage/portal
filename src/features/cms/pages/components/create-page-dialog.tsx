@@ -1,7 +1,7 @@
 import { statusLabel } from '@/lib/labels'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useCreatePageForm } from '../hooks/use-create-page-form'
-import { PAGE_TYPES, type PageType } from '../types'
+import { BUILDER_PAGE_TYPES, type PageType } from '../types'
 
 const TYPE_TITLES: Partial<Record<PageType, string>> = { POLICY: 'Thêm trang chính sách', ABOUT: 'Tạo trang Giới thiệu' }
 
@@ -26,7 +26,7 @@ export function CreatePageDialog({ onClose, lockedType }: { onClose: () => void;
           </form.AppField>
           {lockedType ? null : (
             <form.AppField name="type">
-              {(field) => <field.SelectField label="Loại trang" options={PAGE_TYPES.map((type) => ({ value: type, label: statusLabel(type) }))} />}
+              {(field) => <field.SelectField label="Loại trang" options={BUILDER_PAGE_TYPES.map((type) => ({ value: type, label: statusLabel(type) }))} />}
             </form.AppField>
           )}
           <DialogFooter>

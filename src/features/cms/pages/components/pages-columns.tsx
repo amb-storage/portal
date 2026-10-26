@@ -13,19 +13,25 @@ const helper = columnHelper<PageListRow>()
 interface PageColumnOptions {
   canDelete: boolean
   onDelete: (id: string) => void
-  /** Hide the type column on lists that show a single type (e.g. policies). */
-  showType?: boolean
+  /** `policies`: single-type list, so no type column, and rows open the Policy screen. */
+  variant?: 'pages' | 'policies'
 }
 
-export function buildPageColumns({ canDelete, onDelete, showType = true }: PageColumnOptions) {
+export function buildPageColumns({ canDelete, onDelete, variant = 'pages' }: PageColumnOptions) {
+  const showType = variant === 'pages'
   return helper.columns([
     helper.accessor('slug', {
       header: 'Slug',
-      cell: ({ row }) => (
-        <Link to="/cms/pages/$pageId" params={{ pageId: row.original.id }} className="font-medium hover:underline">
-          {row.original.slug}
-        </Link>
-      ),
+      cell: ({ row }) =>
+        variant === 'policies' ? (
+          <Link to="/cms/policies/$pageId" params={{ pageId: row.original.id }} className="font-medium hover:underline">
+            {row.original.slug}
+          </Link>
+        ) : (
+          <Link to="/cms/pages/$pageId" params={{ pageId: row.original.id }} className="font-medium hover:underline">
+            {row.original.slug}
+          </Link>
+        ),
     }),
     ...(showType ? [helper.accessor('type', { header: 'Loại', cell: (info) => <Badge variant="outline">{statusLabel(info.getValue())}</Badge> })] : []),
     helper.display({

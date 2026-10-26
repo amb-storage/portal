@@ -53,11 +53,32 @@ or attribute-dictionary routes, or migration-management routes.
 | Resource | Routes |
 | --- | --- |
 | Media | `GET /api/v1/admin/media`, `GET /api/v1/admin/media/folders`, `POST /api/v1/admin/media/uploads` (`folder` optional), `POST /api/v1/admin/media/:id/finalize`, `PATCH /api/v1/admin/media/:id`, `POST /api/v1/admin/media/:id/archive`, `DELETE /api/v1/admin/media/:id` |
-| Fixed content | `GET/PATCH /api/v1/admin/cms/content-pages/*` |
-| Pages and preview | Existing routes under `/api/v1/admin/cms/*` |
+| Pages | `GET/POST /api/v1/admin/cms/pages`, `GET/PATCH /api/v1/admin/cms/pages/:id`, `GET /api/v1/admin/cms/section-registry` |
+| Page drafts | `GET/PUT /api/v1/admin/cms/pages/:id/draft` |
+| Page lifecycle | `POST /api/v1/admin/cms/pages/:id/publish`, `/unpublish`, `/archive` |
+| Page versions | `GET /api/v1/admin/cms/pages/:id/versions`, `GET /api/v1/admin/cms/pages/:id/versions/:versionId`, `POST /api/v1/admin/cms/pages/:id/versions/:versionId/rollback` |
+| Preview | `POST /api/v1/admin/cms/pages/:id/preview-token`, `GET /api/v1/cms/preview/pages/:id` |
+| Fixed content (About/Policy) | `GET/PUT /api/v1/admin/cms/content-pages/:pageId` |
 | Story | `GET/POST /api/v1/admin/stories`, `GET/PATCH/DELETE /api/v1/admin/stories/:id` |
 | Navigation | `GET /api/v1/admin/navigation/menus`, `GET/PUT /api/v1/admin/navigation/menus/:key` |
 | Store settings | `GET/PUT /api/v1/admin/store-settings` |
+
+About and Policy are separate pages with separate public endpoints
+(`/content/about`, `/content/policies[/:slug]`); the Web About/Policy tabs are
+two routes, not one combined resource. Both are edited through the fixed
+content routes, which accept only pages of type `ABOUT` or `POLICY`:
+
+1. Find the page id with `GET /api/v1/admin/cms/pages`. The CMS bootstrap
+   creates `about`, `shipping-policy` and `returns-policy`; add further
+   policies (for example `privacy-policy`) with `POST /api/v1/admin/cms/pages`
+   and `type: "POLICY"`.
+2. `GET /api/v1/admin/cms/content-pages/:pageId` returns the current draft with
+   its `draftVersionId` and `expectedRevision`.
+3. `PUT` the same route with those two values, titles, SEO fields and
+   `bodyJa`/`bodyEn` rich text. This saves the draft only. Policy drafts must
+   set `effectiveAt` before they can be published; About must not set it.
+4. `POST /api/v1/admin/cms/pages/:id/publish` with the returned
+   `draftVersionId` and `expectedRevision` makes it public.
 
 Story is the sole backend content domain. “Mili Talk(s)” is only the Web
 display label. No duplicate Mili Talk or Blog API exists.

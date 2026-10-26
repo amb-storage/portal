@@ -2,6 +2,8 @@ import type { BlockDef, SectionDef } from '@/features/cms/editor/types'
 import type { ISODate } from '@/lib/api/types'
 
 export const PAGE_TYPES = ['HOME', 'STANDARD', 'ABOUT', 'POLICY', 'LANDING'] as const
+/** Types managed on the generic Pages screen; ABOUT and POLICY have their own screens. */
+export const BUILDER_PAGE_TYPES = ['HOME', 'STANDARD', 'LANDING'] as const
 export const PAGE_STATUSES = ['ACTIVE', 'ARCHIVED'] as const
 export type PageType = (typeof PAGE_TYPES)[number]
 export type PageStatus = (typeof PAGE_STATUSES)[number]

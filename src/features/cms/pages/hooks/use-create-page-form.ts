@@ -19,7 +19,9 @@ export function useCreatePageForm(lockedType?: PageType) {
     onSuccess: async (page) => {
       toast.success('Đã tạo trang kèm bản nháp')
       await queryClient.invalidateQueries({ queryKey: cmsPageKeys.all })
-      await navigate({ to: '/cms/pages/$pageId', params: { pageId: page.id } })
+      if (page.type === 'ABOUT') await navigate({ to: '/cms/about' })
+      else if (page.type === 'POLICY') await navigate({ to: '/cms/policies/$pageId', params: { pageId: page.id } })
+      else await navigate({ to: '/cms/pages/$pageId', params: { pageId: page.id } })
     },
     onError: (error) => toast.error(describeError(error)),
   })

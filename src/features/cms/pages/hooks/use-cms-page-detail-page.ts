@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
-import { getRouteApi } from '@tanstack/react-router'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { usePermissions } from '@/features/auth/hooks/use-permission'
@@ -8,17 +7,20 @@ import { describeError } from '@/lib/api/errors'
 import { PERMISSIONS } from '@/lib/permissions'
 import { cmsPageService } from '../cms-page.service'
 import { cmsPageKeys, pageDetailQuery, pageDraftQuery } from '../queries'
+import type { CmsDetailTab } from '../search'
 import type { PreviewToken } from '../types'
 import { usePageProfile } from './use-page-profile'
 
-const route = getRouteApi('/_app/cms/pages/$pageId')
-
 type Action = 'publish' | 'unpublish' | 'archive'
 
-export function useCmsPageDetailPage() {
-  const { pageId } = route.useParams()
-  const { tab } = route.useSearch()
-  const navigate = route.useNavigate()
+export interface CmsPageDetailOptions {
+  pageId: string
+  tab: CmsDetailTab
+  onTabChange: (tab: CmsDetailTab) => void
+}
+
+/** Route-agnostic: the generic Pages, About and Policy screens each bind their own params/search. */
+export function useCmsPageDetailPage({ pageId, tab, onTabChange }: CmsPageDetailOptions) {
   const { data: page } = useSuspenseQuery(pageDetailQuery(pageId))
   const draft = useQuery({ ...pageDraftQuery(pageId), enabled: page.status === 'ACTIVE' })
   const { can } = usePermissions()
@@ -54,7 +56,7 @@ export function useCmsPageDetailPage() {
   return {
     page, draft, tab, refresh, lifecycle, issuePreview, preview, setPreview, checklist,
     ready: checklist.every((item) => item.done),
-    setTab: (next: string) => navigate({ search: { tab: next as typeof tab }, replace: true }),
+    setTab: (next: string) => onTabChange(next as CmsDetailTab),
     canEdit: can(PERMISSIONS.pageEdit) && isActive,
     canPublish: can(PERMISSIONS.pagePublish) && isActive,
     canPreview: can(PERMISSIONS.pagePreview) && isActive,

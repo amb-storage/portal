@@ -12,6 +12,7 @@ export const cmsPageSearchSchema = z.object({
 export type CmsPageSearch = z.infer<typeof cmsPageSearchSchema>
 
 export const CMS_DETAIL_TABS = ['draft', 'versions', 'settings', 'registry'] as const
+export type CmsDetailTab = (typeof CMS_DETAIL_TABS)[number]
 
 export const cmsPageDetailSearchSchema = z.object({
   tab: z.enum(CMS_DETAIL_TABS).default('draft').catch('draft'),

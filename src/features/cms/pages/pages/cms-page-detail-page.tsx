@@ -1,3 +1,4 @@
+import { getRouteApi } from '@tanstack/react-router'
 import { Badge } from '@/components/ui/badge'
 import { statusLabel } from '@/lib/labels'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -10,13 +11,25 @@ import { PreviewDialog } from '../components/preview-dialog'
 import { RegistryTab } from '../components/registry-tab'
 import { SettingsTab } from '../components/settings-tab'
 import { VersionsTab } from '../components/versions-tab'
-import { useCmsPageDetailPage } from '../hooks/use-cms-page-detail-page'
+import { useCmsPageDetailPage, type CmsPageDetailOptions } from '../hooks/use-cms-page-detail-page'
 
+const route = getRouteApi('/_app/cms/pages/$pageId')
+
+/** Generic Pages screen (HOME/STANDARD/LANDING and Story pages). ABOUT/POLICY are redirected away by the route. */
 export function CmsPageDetailPage() {
+  const { pageId } = route.useParams()
+  const { tab } = route.useSearch()
+  const navigate = route.useNavigate()
+  return <CmsPageDetail pageId={pageId} tab={tab} onTabChange={(next) => navigate({ search: { tab: next }, replace: true })} />
+}
+
+export function CmsPageDetail(options: CmsPageDetailOptions) {
   const { page, draft, tab, setTab, lifecycle, issuePreview, preview, setPreview, canEdit, canPublish, canPreview, checklist, ready } =
-    useCmsPageDetailPage()
+    useCmsPageDetailPage(options)
   // About/Policy use the simple bilingual editor; the section registry is irrelevant there.
   const isFixed = page.type === 'ABOUT' || page.type === 'POLICY'
+  // About is resolved by type on the website, so its slug is not worth editing.
+  const showSettings = page.type !== 'ABOUT'
   const showChecklist = tab === 'draft' && page.status === 'ACTIVE' && checklist.length > 0
 
   return (
@@ -47,7 +60,7 @@ export function CmsPageDetailPage() {
           <TabsList>
             <TabsTrigger value="draft">Nháp</TabsTrigger>
             <TabsTrigger value="versions">Phiên bản</TabsTrigger>
-            <TabsTrigger value="settings">Cài đặt</TabsTrigger>
+            {showSettings ? <TabsTrigger value="settings">Cài đặt</TabsTrigger> : null}
             {isFixed ? null : <TabsTrigger value="registry">Cấu trúc section</TabsTrigger>}
           </TabsList>
           <TabsContent value="draft" className="pt-4">
