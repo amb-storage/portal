@@ -132,3 +132,28 @@
     @apply font-sans;
     }
 }
+/* Login background: slow drifting brand-colored glows. */
+@keyframes auth-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  33% { transform: translate3d(6%, -4%, 0) scale(1.08); }
+  66% { transform: translate3d(-5%, 5%, 0) scale(0.95); }
+}
+
+.auth-glow {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(72px);
+  opacity: 0.55;
+  animation: auth-drift 18s ease-in-out infinite;
+  will-change: transform;
+}
+
+.dark .auth-glow {
+  opacity: 0.35;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-glow {
+    animation: none;
+  }
+}
