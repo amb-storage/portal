@@ -45,6 +45,7 @@ export const QUICK_TASKS: Array<{ label: string; section: string }> = [
   { label: 'Sửa trang chủ blog / Special Thanks', section: 'trang-chu-blog' },
   { label: 'Sửa trang Giới thiệu (About)', section: 'gioi-thieu' },
   { label: 'Sửa chính sách giao hàng, đổi trả…', section: 'chinh-sach' },
+  { label: 'Thêm đánh giá của khách (Customer Voice)', section: 'customer-voice' },
   { label: 'Đổi menu trên website', section: 'menu' },
 ]
 
@@ -60,6 +61,7 @@ export const PORTAL_MAP: GuideDiagram = {
     { from: 'Mili Talks: Bài viết, Trang chủ blog', to: 'Trang /blog (giới thiệu, Special Thanks, danh sách bài) và từng bài /blog/…' },
     { from: 'Giới thiệu', to: 'Trang ABOUT US' },
     { from: 'Chính sách', to: 'Trang Privacy Policy (/policy), gộp tất cả chính sách' },
+    { from: 'Customer Voice', to: 'Thẻ đánh giá của khách ở trang chủ' },
     { from: 'Menu điều hướng', to: 'Menu đầu trang và chân trang' },
     { from: 'Cài đặt cửa hàng', to: 'Tên cửa hàng, email liên hệ, chân trang, mạng xã hội, SEO' },
     { from: 'Đơn hàng, Liên hệ', to: 'Khách không thấy: đây là nơi bạn xử lý đơn và tin nhắn của khách' },
@@ -94,7 +96,10 @@ export const GUIDE_GROUPS: GuideGroup[] = [
           'Đăng nhập bằng email và mật khẩu. Nếu được yêu cầu, đổi mật khẩu ngay (tối thiểu 12 ký tự).',
           'Menu tài khoản (góc dưới thanh bên) → “Tài khoản & phiên đăng nhập”: xem các thiết bị đang đăng nhập và đăng xuất thiết bị lạ.',
         ],
-        tips: ['Mục nào không hiện trên menu bên trái nghĩa là tài khoản của bạn chưa được cấp quyền cho mục đó.'],
+        tips: [
+          'Menu bên trái gom theo nhóm: Bán hàng, Trang website, Mili Talks (Blog), Thiết lập. Bấm tên nhóm để mở/gập; nhóm chứa trang đang mở tự mở ra. Thư viện ảnh và Hướng dẫn luôn hiện sẵn.',
+          'Mục nào không hiện trên menu bên trái nghĩa là tài khoản của bạn chưa được cấp quyền cho mục đó.',
+        ],
       },
     ],
   },
@@ -355,6 +360,33 @@ export const GUIDE_GROUPS: GuideGroup[] = [
         tips: [
           'Nút “Nội dung mẫu” điền lại toàn bộ theo amb-storage.com (phần tiếng Anh là bản dịch, nên đọc lại).',
           'Trang Giới thiệu không cần ngày hiệu lực.',
+        ],
+      },
+      {
+        id: 'customer-voice',
+        title: 'Customer Voice (đánh giá của khách)',
+        summary: 'Các thẻ đánh giá ở trang chủ website. Menu: Trang website → Customer Voice.',
+        to: '/cms/customer-voice',
+        linkLabel: 'Mở Customer Voice',
+        diagram: {
+          kind: 'flow',
+          steps: [
+            { label: 'Thêm đánh giá', note: 'Tên khách (tuỳ chọn), câu đánh giá JA/EN', tone: 'draft' },
+            { label: 'Chọn sản phẩm', note: 'Ảnh sản phẩm là hình của thẻ', tone: 'draft' },
+            { label: 'Lưu nháp', tone: 'draft' },
+            { label: 'Xuất bản', note: 'Hiện ở trang chủ', tone: 'live' },
+          ],
+        },
+        steps: [
+          'Vào Customer Voice, bấm “Thêm đánh giá”.',
+          'Nhập tên khách (không bắt buộc, vd. “T.K 様”) và câu đánh giá tiếng Nhật + tiếng Anh.',
+          'Chọn sản phẩm khách đã mua: gõ tên để tìm. Bắt buộc, vì website dùng ảnh sản phẩm làm hình của thẻ và bấm vào thẻ sẽ mở trang sản phẩm.',
+          'Dùng nút lên/xuống để sắp thứ tự, công tắc “Hiện trên website” để bật/tắt cả mục.',
+          'Bấm “Lưu nháp”, rồi “Xuất bản” ở góc trên.',
+        ],
+        tips: [
+          'Sản phẩm không có ảnh thì thẻ đánh giá đó không hiện.',
+          '“Xuất bản” ở đây xuất bản cả trang chủ: mọi thay đổi khác đã lưu ở trang chủ cũng lên website cùng lúc.',
         ],
       },
       {
