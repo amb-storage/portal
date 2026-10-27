@@ -11,10 +11,15 @@ interface DraftFormProps {
   revisionLabel: string
   readOnly: boolean
   profile: ContentProfile
+  /** Stories have no effective date (POLICY-only). */
+  hideEffectiveAt?: boolean
+  submitLabel?: string
+  /** Notice at the top of the form, e.g. "saving updates the website". */
+  saveHint?: string
 }
 
 /** Shared editor for page drafts and fixed ABOUT/POLICY content. */
-export function DraftForm({ form, revisionLabel, readOnly, profile }: DraftFormProps) {
+export function DraftForm({ form, revisionLabel, readOnly, profile, hideEffectiveAt, submitLabel = 'Lưu nháp', saveHint }: DraftFormProps) {
   const registry = useQuery(sectionRegistryQuery)
   return (
     <form
@@ -24,6 +29,7 @@ export function DraftForm({ form, revisionLabel, readOnly, profile }: DraftFormP
         void form.handleSubmit()
       }}
     >
+      {saveHint && !readOnly ? <p className="rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-400/40 dark:bg-amber-400/10 dark:text-amber-200">{saveHint}</p> : null}
       <fieldset disabled={readOnly} className="grid gap-6">
         <Card>
           <CardHeader>
@@ -37,9 +43,11 @@ export function DraftForm({ form, revisionLabel, readOnly, profile }: DraftFormP
             <form.AppField name="seoTitleEn">{(field) => <field.TextField label="Tiêu đề SEO (Anh)" />}</form.AppField>
             <form.AppField name="seoDescriptionJa">{(field) => <field.TextareaField label="Mô tả SEO (Nhật)" rows={2} />}</form.AppField>
             <form.AppField name="seoDescriptionEn">{(field) => <field.TextareaField label="Mô tả SEO (Anh)" rows={2} />}</form.AppField>
-            <form.AppField name="effectiveAt">
-              {(field) => <field.TextField label="Hiệu lực từ" type="datetime-local" description="Bắt buộc với trang POLICY" />}
-            </form.AppField>
+            {hideEffectiveAt ? null : (
+              <form.AppField name="effectiveAt">
+                {(field) => <field.TextField label="Hiệu lực từ" type="datetime-local" description="Bắt buộc với trang POLICY" />}
+              </form.AppField>
+            )}
           </CardContent>
         </Card>
         <Card>
@@ -62,7 +70,7 @@ export function DraftForm({ form, revisionLabel, readOnly, profile }: DraftFormP
       {readOnly ? null : (
         <form.AppForm>
           <form.StickySaveBar>
-            <form.SubmitButton requireDirty>Lưu nháp</form.SubmitButton>
+            <form.SubmitButton requireDirty>{submitLabel}</form.SubmitButton>
           </form.StickySaveBar>
         </form.AppForm>
       )}

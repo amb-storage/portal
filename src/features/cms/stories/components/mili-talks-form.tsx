@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ConfirmButton } from '@/components/common/confirm-button'
 import { miliTalksTemplateValues, type MiliTalksForm } from '../hooks/use-mili-talks-form'
 import { storyListQuery } from '../queries'
+import { storyTitle } from '../types'
 
 interface MiliTalksFormProps {
   form: MiliTalksForm
@@ -50,7 +51,7 @@ export function MiliTalksContentForm({ form, readOnly, fromTemplate }: MiliTalks
   const stories = useQuery(storyListQuery({ page: 1, limit: 100, status: 'PUBLISHED' }))
   const storyOptions = (stories.data?.items ?? []).map((story) => ({
     value: story.id,
-    label: story.published?.titleJa || story.published?.titleEn || story.slug,
+    label: storyTitle(story),
   }))
 
   const loadTemplate = () => {

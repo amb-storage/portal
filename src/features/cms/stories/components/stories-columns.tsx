@@ -19,21 +19,21 @@ export function buildStoryColumns(actions: ColumnActions) {
       id: 'title',
       header: 'Bài viết',
       cell: ({ row }) => {
-        const title = row.original.published?.titleEn ?? row.original.draft?.titleEn ?? row.original.draft?.titleJa
+        const title = row.original.titleJa || row.original.titleEn
         return (
-          <Link to="/cms/stories/$pageId" params={{ pageId: row.original.pageId }} className="grid gap-0.5 hover:underline">
+          <Link to="/cms/stories/$storyId" params={{ storyId: row.original.id }} className="grid gap-0.5 hover:underline">
             <span className="font-medium">{title || 'Chưa có tiêu đề'}</span>
             <code className="text-xs text-muted-foreground">{row.original.slug}</code>
           </Link>
         )
       },
     }),
-    helper.accessor('publicationStatus', { header: 'Xuất bản', cell: (info) => <StatusBadge status={info.getValue()} /> }),
+    helper.accessor('status', { header: 'Trên website', cell: (info) => <StatusBadge status={info.getValue()} /> }),
     helper.accessor('pageStatus', { header: 'Trang', cell: (info) => <StatusBadge status={info.getValue()} /> }),
     helper.display({
       id: 'publishedAt',
       header: 'Ngày xuất bản',
-      cell: ({ row }) => formatDateTime(row.original.published?.publishedAt),
+      cell: ({ row }) => formatDateTime(row.original.publishedAt),
     }),
     helper.accessor('updatedAt', { header: 'Cập nhật', cell: (info) => formatDateTime(info.getValue()) }),
     helper.display({

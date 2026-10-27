@@ -24,8 +24,8 @@ export const Route = createFileRoute('/_app/cms/pages/$pageId')({
     if (page.type === 'LANDING' && page.slug === MILI_TALKS_LANDING_SLUG) throw redirect({ to: '/cms/mili-talks', search: location.search, replace: true })
     if (page.type === 'STANDARD') {
       const stories = await context.queryClient.fetchQuery(storyListQuery({ page: 1, limit: 20, q: page.slug }))
-      if (stories.items.some((story) => story.pageId === page.id))
-        throw redirect({ to: '/cms/stories/$pageId', params, search: location.search, replace: true })
+      const story = stories.items.find((candidate) => candidate.pageId === page.id)
+      if (story) throw redirect({ to: '/cms/stories/$storyId', params: { storyId: story.id }, replace: true })
     }
     return page
   },

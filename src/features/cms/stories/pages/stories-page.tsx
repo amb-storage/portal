@@ -27,7 +27,7 @@ export function StoriesPage() {
       />
       <ListToolbar>
         <SearchInput value={search.q} onChange={(q) => setSearch({ q })} />
-        <FilterSelect value={search.status} onChange={(status) => setSearch({ status: status as StorySearch['status'] })} options={STORY_STATUSES} placeholder="Tất cả" />
+        <FilterSelect value={search.status} onChange={(status) => setSearch({ status: status as StorySearch['status'] })} options={STORY_STATUSES} placeholder="Mọi trạng thái" />
       </ListToolbar>
       <ErrorAlert error={list.error} />
       <DataTable
@@ -35,7 +35,7 @@ export function StoriesPage() {
         data={list.data?.items}
         isLoading={list.isPending}
         getRowId={(row) => row.id}
-        onRowClick={(row) => openStory(row.pageId)}
+        onRowClick={(row) => openStory(row.id)}
         emptyMessage="Chưa có bài viết nào."
       />
       <DataTablePagination page={search.page} limit={LIST_LIMIT} total={list.data?.total} onPageChange={(page) => setSearch({ page })} />

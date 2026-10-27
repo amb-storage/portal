@@ -68,7 +68,7 @@ export const PORTAL_MAP: GuideDiagram = {
 export const LIFECYCLE: GuideDiagram = {
   kind: 'flow',
   caption:
-    'Áp dụng cho Sản phẩm, Bài viết, Trang, Giới thiệu và Chính sách. Với bài viết và trang, sửa nội dung đang xuất bản chỉ sửa bản nháp: website chỉ đổi khi bạn bấm Xuất bản lại.',
+    'Áp dụng cho Sản phẩm, Bài viết, Trang, Giới thiệu và Chính sách. Với Trang, Giới thiệu và Chính sách, sửa nội dung đang xuất bản chỉ sửa bản nháp: website chỉ đổi khi bạn bấm Xuất bản lại. Riêng bài viết Mili Talks đã xuất bản: bấm lưu là website cập nhật ngay.',
   steps: [
     { label: 'Nháp', note: 'Chỉ Admin thấy. Lưu bao nhiêu lần cũng được.', tone: 'draft' },
     { label: 'Đăng bán / Xuất bản', note: 'Khách thấy trên website.', tone: 'live' },
@@ -248,9 +248,9 @@ export const GUIDE_GROUPS: GuideGroup[] = [
           steps: [
             { label: 'Thêm bài viết', note: 'Nhập slug' },
             { label: 'Soạn khối', note: 'Đầu bài viết, Đoạn văn, Ảnh…', tone: 'draft' },
-            { label: 'Lưu nháp', tone: 'draft' },
-            { label: 'Xem trước', note: 'Xem như trên website', tone: 'draft' },
-            { label: 'Xuất bản', tone: 'live' },
+            { label: 'Lưu', note: 'Chưa xuất bản: chỉ Admin thấy', tone: 'draft' },
+            { label: 'Xuất bản', note: 'Hiện ở trang Mili Talks', tone: 'live' },
+            { label: 'Sửa → Lưu', note: 'Cập nhật website ngay', tone: 'live' },
           ],
         },
         steps: [
@@ -258,7 +258,8 @@ export const GUIDE_GROUPS: GuideGroup[] = [
           'Ở tab Nháp, điền tiêu đề tiếng Nhật và tiếng Anh.',
           'Bấm “Thêm khối”: “Đầu bài viết” (ảnh bìa + tóm tắt, bắt buộc với bài viết), “Đoạn văn”, “Ảnh”, “Trích dẫn”… Gõ chữ trực tiếp, dùng thanh công cụ để in đậm, tạo tiêu đề, danh sách, link.',
           'Nút lên/xuống đổi thứ tự khối; công tắc “Hiển thị” để tạm ẩn một khối.',
-          'Bấm “Lưu nháp” ở thanh cuối màn hình, “Xem trước” để kiểm tra, rồi “Xuất bản” ở góc trên.',
+          'Bấm “Lưu” ở thanh cuối màn hình, “Xem trước” để kiểm tra, rồi “Xuất bản” ở góc trên.',
+          'Bài đã xuất bản: sửa xong bấm “Lưu và cập nhật website” là lên ngay. Muốn tạm ẩn thì bấm “Gỡ khỏi website”; bài vẫn còn trong admin để xuất bản lại.',
         ],
         tips: [
           'Khung bên phải liệt kê những gì còn thiếu để xuất bản.',

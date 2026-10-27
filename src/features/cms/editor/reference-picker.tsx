@@ -4,6 +4,7 @@ import { Search, X } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { productDetailQuery, productListQuery } from '@/features/catalog/products/queries'
 import { storyListQuery } from '@/features/cms/stories/queries'
+import { storyTitle } from '@/features/cms/stories/types'
 import { storyService } from '@/features/cms/stories/story.service'
 
 interface Option {
@@ -31,7 +32,7 @@ export function ReferencePicker({ kind, value, multiple, onChange, readOnly }: R
   const results: Option[] =
     kind === 'product'
       ? (products.data?.items ?? []).map((item) => ({ id: item.id, label: item.name_en || item.name_ja || 'Chưa đặt tên', hint: item.slug ?? undefined }))
-      : (stories.data?.items ?? []).map((item) => ({ id: item.id, label: item.published?.titleEn ?? item.draft?.titleEn ?? item.slug, hint: item.slug }))
+      : (stories.data?.items ?? []).map((item) => ({ id: item.id, label: storyTitle(item), hint: item.slug }))
 
   const pick = (id: string) => onChange(multiple ? [...value.filter((other) => other !== id), id] : [id])
 
@@ -80,7 +81,7 @@ function useSelectedLabels(kind: 'product' | 'story', ids: string[]) {
     queries: ids.map((id) =>
       kind === 'product'
         ? { ...productDetailQuery(id), select: (product: { nameEn: string | null; nameJa: string | null; slug: string | null }) => product.nameEn || product.nameJa || product.slug || id }
-        : { queryKey: ['cms', 'stories', 'detail', id], queryFn: () => storyService.get(id), select: (story: Awaited<ReturnType<typeof storyService.get>>) => story.published?.titleEn ?? story.draft?.titleEn ?? story.slug },
+        : { queryKey: ['cms', 'stories', 'detail', id], queryFn: () => storyService.get(id), select: (story: Awaited<ReturnType<typeof storyService.get>>) => storyTitle(story) },
     ),
   })
   return results.map((result) => (result.isError ? 'Không tìm thấy' : (result.data as string | undefined)))

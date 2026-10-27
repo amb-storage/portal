@@ -59,9 +59,69 @@ or attribute-dictionary routes, or migration-management routes.
 | Page versions | `GET /api/v1/admin/cms/pages/:id/versions`, `GET /api/v1/admin/cms/pages/:id/versions/:versionId`, `POST /api/v1/admin/cms/pages/:id/versions/:versionId/rollback` |
 | Preview | `POST /api/v1/admin/cms/pages/:id/preview-token`, `GET /api/v1/cms/preview/pages/:id` |
 | Fixed content (About/Policy) | `GET/PUT /api/v1/admin/cms/content-pages/:pageId` |
-| Story | `GET/POST /api/v1/admin/stories`, `GET/PATCH/DELETE /api/v1/admin/stories/:id` |
+| Story / Mili Talks articles | `GET/POST /api/v1/admin/stories`, `GET/PATCH/DELETE /api/v1/admin/stories/:id`, `POST /api/v1/admin/stories/:id/publish`, `POST /api/v1/admin/stories/:id/unpublish` |
 | Navigation | `GET /api/v1/admin/navigation/menus`, `GET/PUT /api/v1/admin/navigation/menus/:key` |
 | Store settings | `GET/PUT /api/v1/admin/store-settings` |
+
+### Stories API contract for Mili Talks
+
+The Stories API is the only Admin business API for Blog articles. It reuses
+the existing `story.read` and `story.manage` permissions. Every mutation
+requires the Admin session, allowed `Origin`, `X-CSRF-Token`, JSON validation,
+audit logging and the existing page/version transaction path.
+
+| Operation | Route | Body |
+| --- | --- | --- |
+| List | `GET /api/v1/admin/stories?page=1&limit=20&status=UNPUBLISHED\|PUBLISHED&q=...` | none |
+| Detail | `GET /api/v1/admin/stories/:id` | none |
+| Create | `POST /api/v1/admin/stories` | `slug`, optional localized titles/SEO, optional complete `content` |
+| Save | `PATCH /api/v1/admin/stories/:id` | optional `slug`, localized titles/SEO and complete `content` |
+| Publish | `POST /api/v1/admin/stories/:id/publish` | none |
+| Unpublish | `POST /api/v1/admin/stories/:id/unpublish` | none |
+| Archive | `DELETE /api/v1/admin/stories/:id` | none |
+
+The Admin response exposes `status: "UNPUBLISHED" | "PUBLISHED"`, localized
+metadata, `content`, `slug`, timestamps and page archival status. Internal
+`PageVersion` IDs and revisions are not required by this contract. A create
+without content remains an unpublished empty article for backward compatibility;
+the normal Blog UI sends the complete initial article in the create request.
+
+The content document uses the existing Story section registry. `TALK_HEADER`
+contains the cover media ID and bilingual excerpts; body sections such as
+`RICH_TEXT`, `IMAGE`, `IMAGE_WITH_TEXT`, `GALLERY`, `QUOTE` and `CONTACT` use
+the existing CMS document format. Media and other references are validated by
+the existing CMS service.
+
+Publication behavior:
+
+1. Create and update an unpublished Story: changes remain private.
+2. Publish: the saved Story becomes visible through `/api/v1/stories`.
+3. Update a published Story: the API saves and publishes the new validated
+   content in the same request while preserving historical versions.
+4. Unpublish: public list and detail endpoints stop exposing the Story; data
+   and history remain available to Admin.
+5. Delete/archive: the page and active versions are archived transactionally;
+   published data is not hard-deleted.
+
+Example create:
+
+```json
+{
+  "slug": "vintage-care",
+  "titleJa": "ヴィンテージの手入れ",
+  "titleEn": "Caring for Vintage",
+  "seoTitleJa": "ヴィンテージの手入れ",
+  "seoTitleEn": "Caring for Vintage",
+  "seoDescriptionJa": "手入れの基本",
+  "seoDescriptionEn": "The basics of care",
+  "content": { "schemaVersion": 1, "sections": [] }
+}
+```
+
+The response starts with `status: "UNPUBLISHED"`; the same resource is then
+published, updated, unpublished and archived using the routes above. Generic
+CMS Page, PageVersion and Policy routes remain available for their existing
+use cases and are not required for normal Story CRUD.
 
 About and Policy are separate pages with separate public endpoints
 (`/content/about`, `/content/policies[/:slug]`); the Web About/Policy tabs are
@@ -80,8 +140,8 @@ content routes, which accept only pages of type `ABOUT` or `POLICY`:
 4. `POST /api/v1/admin/cms/pages/:id/publish` with the returned
    `draftVersionId` and `expectedRevision` makes it public.
 
-Story is the sole backend content domain. “Mili Talk(s)” is only the Web
-display label. No duplicate Mili Talk or Blog API exists.
+Story remains the canonical backend content resource. “Mili Talk(s)” is the Web
+display label. There is no separate Blog API or Blog content store.
 
 ## Orders and Checkout
 
