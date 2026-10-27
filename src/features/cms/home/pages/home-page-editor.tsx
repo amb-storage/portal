@@ -21,7 +21,7 @@ import { storyListQuery } from '@/features/cms/stories/queries'
 import { storyTitle } from '@/features/cms/stories/types'
 import { describeError } from '@/lib/api/errors'
 import { PERMISSIONS } from '@/lib/permissions'
-import { emptyVoice, isHomePublishable, isStructuredHome, useHomeForm, type HomeForm } from '../hooks/use-home-form'
+import { emptyVoice, homeNeedsTitles, isHomePublishable, isStructuredHome, useHomeForm, type HomeForm } from '../hooks/use-home-form'
 import { scrollToId, useScrollToHash } from '@/features/cms/pages/scroll'
 
 const errorText = (errors: unknown[]) => {
@@ -100,6 +100,7 @@ function HeroSide({ form, side, readOnly, categories }: { form: HomeForm; side: 
 }
 
 const TOC = [
+  { id: 'home-title', label: 'Tiêu đề & SEO' },
   { id: 'home-hero', label: 'Hero 2 danh mục' },
   { id: 'home-special', label: 'Special Vintage' },
   { id: 'home-new', label: 'New Arrivals' },
@@ -112,6 +113,8 @@ function HomeEditor({ pageId, draft, readOnly }: { pageId: string; draft: PageVe
   useScrollToHash()
   const form = useHomeForm(pageId, draft)
   const legacy = !isStructuredHome(draft)
+  // Unsaved suggested titles still have to be saved once before publishing.
+  const mustSave = legacy || homeNeedsTitles(draft)
   const categories = useQuery(categoryListQuery({ page: 1, limit: 100 }))
   const stories = useQuery(storyListQuery({ page: 1, limit: 100, status: 'PUBLISHED' }))
   const categoryOptions = (categories.data?.items ?? []).map((category) => ({ id: category.id, slug: category.slug, label: `${category.name_ja} · ${category.name_en}` }))
@@ -143,6 +146,17 @@ function HomeEditor({ pageId, draft, readOnly }: { pageId: string; draft: PageVe
       </nav>
 
       <fieldset disabled={readOnly} className="grid gap-6">
+        <Section id="home-title" title="Tiêu đề trang & SEO" description="Tiêu đề Nhật/Anh bắt buộc để xuất bản; hiện trên tab trình duyệt và kết quả Google. SEO không bắt buộc.">
+          <div className="grid gap-4 md:grid-cols-2">
+            <form.AppField name="titleJa">{(field) => <field.TextField label="Tiêu đề (Nhật)" />}</form.AppField>
+            <form.AppField name="titleEn">{(field) => <field.TextField label="Tiêu đề (Anh)" />}</form.AppField>
+            <form.AppField name="seoTitleJa">{(field) => <field.TextField label="Tiêu đề SEO (Nhật)" />}</form.AppField>
+            <form.AppField name="seoTitleEn">{(field) => <field.TextField label="Tiêu đề SEO (Anh)" />}</form.AppField>
+            <form.AppField name="seoDescriptionJa">{(field) => <field.TextareaField label="Mô tả SEO (Nhật)" rows={2} />}</form.AppField>
+            <form.AppField name="seoDescriptionEn">{(field) => <field.TextareaField label="Mô tả SEO (Anh)" rows={2} />}</form.AppField>
+          </div>
+        </Section>
+
         <Section id="home-hero" title="Hero 2 danh mục" description="Hai ảnh lớn đầu trang chủ, mỗi ảnh dẫn tới một danh mục. Bắt buộc để xuất bản.">
           <div className="grid gap-4 lg:grid-cols-2">
             <HeroSide form={form} side="left" readOnly={readOnly} categories={categoryOptions} />
@@ -239,7 +253,7 @@ function HomeEditor({ pageId, draft, readOnly }: { pageId: string; draft: PageVe
       {readOnly ? null : (
         <form.AppForm>
           <form.StickySaveBar>
-            <form.SubmitButton requireDirty={!legacy}>{legacy ? 'Lưu nháp (chuyển định dạng mới)' : 'Lưu nháp'}</form.SubmitButton>
+            <form.SubmitButton requireDirty={!mustSave}>{legacy ? 'Lưu nháp (chuyển định dạng mới)' : 'Lưu nháp'}</form.SubmitButton>
           </form.StickySaveBar>
         </form.AppForm>
       )}
@@ -289,7 +303,7 @@ export function HomePageEditor() {
               confirmLabel="Xuất bản"
               onConfirm={() => publish.mutate()}
             >
-              {publishable ? 'Xuất bản' : 'Cần lưu Hero 2 danh mục để xuất bản'}
+              {publishable ? 'Xuất bản' : draft.data && homeNeedsTitles(draft.data) ? 'Cần lưu tiêu đề để xuất bản' : 'Cần lưu Hero 2 danh mục để xuất bản'}
             </ConfirmButton>
           ) : null
         }

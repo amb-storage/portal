@@ -32,6 +32,13 @@ export interface VoiceValues {
 }
 
 export interface HomeFormValues {
+  /** Publication requires both titles (requireLocalizedTitle on the API). */
+  titleJa: string
+  titleEn: string
+  seoTitleJa: string
+  seoTitleEn: string
+  seoDescriptionJa: string
+  seoDescriptionEn: string
   hero: { left: HeroSideValues; right: HeroSideValues }
   specialVintage: { enabled: boolean; productIds: string[] }
   newArrivals: { enabled: boolean; limit: number }
@@ -86,6 +93,13 @@ function toValues(draft: PageVersion): HomeFormValues {
   const featured = find('FEATURED_MILI_TALK')
   const voiceItems = (voice?.settings.items as Array<Record<string, unknown>> | undefined) ?? []
   return {
+    // A Home converted from the legacy format usually has no titles yet: suggest the store name.
+    titleJa: draft.titleJa ?? DEFAULT_TITLE,
+    titleEn: draft.titleEn ?? DEFAULT_TITLE,
+    seoTitleJa: draft.seoTitleJa ?? '',
+    seoTitleEn: draft.seoTitleEn ?? '',
+    seoDescriptionJa: draft.seoDescriptionJa ?? '',
+    seoDescriptionEn: draft.seoDescriptionEn ?? '',
     hero: { left: hero ? sideValues(hero.settings.left) : emptySide(), right: hero ? sideValues(hero.settings.right) : emptySide() },
     specialVintage: { enabled: on(special), productIds: ids(special?.settings.productIds) },
     newArrivals: { enabled: newest ? on(newest) : true, limit: typeof newest?.settings.limit === 'number' ? newest.settings.limit : 12 },
@@ -114,12 +128,17 @@ function toValues(draft: PageVersion): HomeFormValues {
   }
 }
 
+const DEFAULT_TITLE = 'AMB:STORAGE'
+
+/** The saved draft lacks the Japanese/English titles publication requires. */
+export const homeNeedsTitles = (draft: PageVersion) => !draft.titleJa?.trim() || !draft.titleEn?.trim()
+
 const heroComplete = (side: HeroSideValues) => Boolean(side.categoryId && side.mediaId && side.labelJa.trim() && side.labelEn.trim() && side.href.trim())
 
 /** True when the hero split is complete, i.e. the saved Home can be published. */
 export const isHomePublishable = (draft: PageVersion) => {
   const values = toValues(draft)
-  return isStructuredHome(draft) && sectionsOf(draft).some((section) => section.type === 'CATEGORY_HERO_SPLIT') && heroComplete(values.hero.left) && heroComplete(values.hero.right)
+  return isStructuredHome(draft) && !homeNeedsTitles(draft) && sectionsOf(draft).some((section) => section.type === 'CATEGORY_HERO_SPLIT') && heroComplete(values.hero.left) && heroComplete(values.hero.right)
 }
 
 function toContent(values: HomeFormValues, draft: PageVersion) {
@@ -173,6 +192,8 @@ function toContent(values: HomeFormValues, draft: PageVersion) {
 /* Mirrors validateHome / validateHomeSlot so mistakes show next to the field instead of as a 400. */
 const issue = (context: z.RefinementCtx, path: (string | number)[], message: string) => context.addIssue({ code: 'custom', path, message })
 const schema = z.custom<HomeFormValues>().superRefine((values, context) => {
+  if (!values.titleJa.trim()) issue(context, ['titleJa'], 'Bắt buộc để xuất bản')
+  if (!values.titleEn.trim()) issue(context, ['titleEn'], 'Bắt buộc để xuất bản')
   const { hero } = values
   const started = [hero.left, hero.right].some((side) => Object.values(side).some((value) => String(value).trim()))
   if (started)
@@ -209,13 +230,13 @@ export function useHomeForm(pageId: string, draft: PageVersion) {
       cmsPageService.updateDraft(pageId, {
         draftVersionId: draft.id,
         expectedRevision: draft.revision,
-        titleJa: draft.titleJa,
-        titleEn: draft.titleEn,
-        seoTitleJa: draft.seoTitleJa,
-        seoTitleEn: draft.seoTitleEn,
-        seoDescriptionJa: draft.seoDescriptionJa,
-        seoDescriptionEn: draft.seoDescriptionEn,
-        effectiveAt: draft.effectiveAt,
+        titleJa: values.titleJa.trim(),
+        titleEn: values.titleEn.trim(),
+        seoTitleJa: values.seoTitleJa.trim() || null,
+        seoTitleEn: values.seoTitleEn.trim() || null,
+        seoDescriptionJa: values.seoDescriptionJa.trim() || null,
+        seoDescriptionEn: values.seoDescriptionEn.trim() || null,
+        effectiveAt: null,
         content: toContent(values, draft),
       }),
     onSuccess: async (updated) => {
