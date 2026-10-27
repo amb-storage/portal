@@ -4,19 +4,19 @@ import { toast } from 'sonner'
 import { z } from 'zod'
 import { useAppForm } from '@/components/form/form-hook'
 import { describeError } from '@/lib/api/errors'
-import { storyService } from '../story.service'
-import { storyKeys } from '../queries'
+import { blogService } from '../blog.service'
+import { blogKeys } from '../blog.queries'
 
 /** Creates the Story identity + STANDARD page draft, then opens the page editor. */
 export function useCreateStoryForm() {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const create = useMutation({
-    mutationFn: storyService.create,
+    mutationFn: blogService.create,
     onSuccess: async (story) => {
       toast.success('Đã tạo bài viết')
-      await queryClient.invalidateQueries({ queryKey: storyKeys.all })
-      await navigate({ to: '/cms/stories/$pageId', params: { pageId: story.pageId } })
+      await queryClient.invalidateQueries({ queryKey: blogKeys.all })
+      await navigate({ to: '/cms/stories/$postId', params: { postId: story.id } })
     },
     onError: (error) => toast.error(describeError(error)),
   })

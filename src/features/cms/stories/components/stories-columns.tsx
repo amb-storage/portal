@@ -4,9 +4,9 @@ import { ConfirmButton } from '@/components/common/confirm-button'
 import { StatusBadge } from '@/components/common/status-badge'
 import { columnHelper } from '@/components/data-table/columns'
 import { formatDateTime } from '@/lib/format'
-import type { Story } from '../types'
+import type { BlogPostSummary } from '../blog.types'
 
-const helper = columnHelper<Story>()
+const helper = columnHelper<BlogPostSummary>()
 
 interface ColumnActions {
   canManage: boolean
@@ -21,7 +21,7 @@ export function buildStoryColumns(actions: ColumnActions) {
       cell: ({ row }) => {
         const title = row.original.published?.titleEn ?? row.original.draft?.titleEn ?? row.original.draft?.titleJa
         return (
-          <Link to="/cms/stories/$pageId" params={{ pageId: row.original.pageId }} className="grid gap-0.5 hover:underline">
+          <Link to="/cms/stories/$postId" params={{ postId: row.original.id }} className="grid gap-0.5 hover:underline">
             <span className="font-medium">{title || 'Chưa có tiêu đề'}</span>
             <code className="text-xs text-muted-foreground">{row.original.slug}</code>
           </Link>

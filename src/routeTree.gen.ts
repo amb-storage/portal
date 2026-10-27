@@ -35,7 +35,7 @@ import { Route as AppCmsPagesPageIdRouteImport } from './routes/_app/cms/pages/$
 import { Route as AppCmsPoliciesIndexRouteImport } from './routes/_app/cms/policies/index'
 import { Route as AppCmsPoliciesPageIdRouteImport } from './routes/_app/cms/policies/$pageId'
 import { Route as AppCmsStoriesIndexRouteImport } from './routes/_app/cms/stories/index'
-import { Route as AppCmsStoriesPageIdRouteImport } from './routes/_app/cms/stories/$pageId'
+import { Route as AppCmsStoriesPostIdRouteImport } from './routes/_app/cms/stories/$postId'
 
 const AppRoute = AppRouteImport.update({
   id: '/_app',
@@ -167,9 +167,9 @@ const AppCmsStoriesIndexRoute = AppCmsStoriesIndexRouteImport.update({
   path: '/cms/stories/',
   getParentRoute: () => AppRoute,
 } as any)
-const AppCmsStoriesPageIdRoute = AppCmsStoriesPageIdRouteImport.update({
-  id: '/cms/stories/$pageId',
-  path: '/cms/stories/$pageId',
+const AppCmsStoriesPostIdRoute = AppCmsStoriesPostIdRouteImport.update({
+  id: '/cms/stories/$postId',
+  path: '/cms/stories/$postId',
   getParentRoute: () => AppRoute,
 } as any)
 
@@ -195,7 +195,7 @@ export interface FileRoutesByFullPath {
   '/catalog/products/new': typeof AppCatalogProductsNewRoute
   '/cms/pages/$pageId': typeof AppCmsPagesPageIdRoute
   '/cms/policies/$pageId': typeof AppCmsPoliciesPageIdRoute
-  '/cms/stories/$pageId': typeof AppCmsStoriesPageIdRoute
+  '/cms/stories/$postId': typeof AppCmsStoriesPostIdRoute
   '/catalog/products/': typeof AppCatalogProductsIndexRoute
   '/cms/pages/': typeof AppCmsPagesIndexRoute
   '/cms/policies/': typeof AppCmsPoliciesIndexRoute
@@ -223,7 +223,7 @@ export interface FileRoutesByTo {
   '/catalog/products/new': typeof AppCatalogProductsNewRoute
   '/cms/pages/$pageId': typeof AppCmsPagesPageIdRoute
   '/cms/policies/$pageId': typeof AppCmsPoliciesPageIdRoute
-  '/cms/stories/$pageId': typeof AppCmsStoriesPageIdRoute
+  '/cms/stories/$postId': typeof AppCmsStoriesPostIdRoute
   '/catalog/products': typeof AppCatalogProductsIndexRoute
   '/cms/pages': typeof AppCmsPagesIndexRoute
   '/cms/policies': typeof AppCmsPoliciesIndexRoute
@@ -253,7 +253,7 @@ export interface FileRoutesById {
   '/_app/catalog/products/new': typeof AppCatalogProductsNewRoute
   '/_app/cms/pages/$pageId': typeof AppCmsPagesPageIdRoute
   '/_app/cms/policies/$pageId': typeof AppCmsPoliciesPageIdRoute
-  '/_app/cms/stories/$pageId': typeof AppCmsStoriesPageIdRoute
+  '/_app/cms/stories/$postId': typeof AppCmsStoriesPostIdRoute
   '/_app/catalog/products/': typeof AppCatalogProductsIndexRoute
   '/_app/cms/pages/': typeof AppCmsPagesIndexRoute
   '/_app/cms/policies/': typeof AppCmsPoliciesIndexRoute
@@ -283,7 +283,7 @@ export interface FileRouteTypes {
     | '/catalog/products/new'
     | '/cms/pages/$pageId'
     | '/cms/policies/$pageId'
-    | '/cms/stories/$pageId'
+    | '/cms/stories/$postId'
     | '/catalog/products/'
     | '/cms/pages/'
     | '/cms/policies/'
@@ -311,7 +311,7 @@ export interface FileRouteTypes {
     | '/catalog/products/new'
     | '/cms/pages/$pageId'
     | '/cms/policies/$pageId'
-    | '/cms/stories/$pageId'
+    | '/cms/stories/$postId'
     | '/catalog/products'
     | '/cms/pages'
     | '/cms/policies'
@@ -340,7 +340,7 @@ export interface FileRouteTypes {
     | '/_app/catalog/products/new'
     | '/_app/cms/pages/$pageId'
     | '/_app/cms/policies/$pageId'
-    | '/_app/cms/stories/$pageId'
+    | '/_app/cms/stories/$postId'
     | '/_app/catalog/products/'
     | '/_app/cms/pages/'
     | '/_app/cms/policies/'
@@ -538,11 +538,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCmsStoriesIndexRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/cms/stories/$pageId': {
-      id: '/_app/cms/stories/$pageId'
-      path: '/cms/stories/$pageId'
-      fullPath: '/cms/stories/$pageId'
-      preLoaderRoute: typeof AppCmsStoriesPageIdRouteImport
+    '/_app/cms/stories/$postId': {
+      id: '/_app/cms/stories/$postId'
+      path: '/cms/stories/$postId'
+      fullPath: '/cms/stories/$postId'
+      preLoaderRoute: typeof AppCmsStoriesPostIdRouteImport
       parentRoute: typeof AppRoute
     }
   }
@@ -567,7 +567,7 @@ interface AppRouteChildren {
   AppCatalogProductsNewRoute: typeof AppCatalogProductsNewRoute
   AppCmsPagesPageIdRoute: typeof AppCmsPagesPageIdRoute
   AppCmsPoliciesPageIdRoute: typeof AppCmsPoliciesPageIdRoute
-  AppCmsStoriesPageIdRoute: typeof AppCmsStoriesPageIdRoute
+  AppCmsStoriesPostIdRoute: typeof AppCmsStoriesPostIdRoute
   AppCatalogProductsIndexRoute: typeof AppCatalogProductsIndexRoute
   AppCmsPagesIndexRoute: typeof AppCmsPagesIndexRoute
   AppCmsPoliciesIndexRoute: typeof AppCmsPoliciesIndexRoute
@@ -593,7 +593,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppCatalogProductsNewRoute: AppCatalogProductsNewRoute,
   AppCmsPagesPageIdRoute: AppCmsPagesPageIdRoute,
   AppCmsPoliciesPageIdRoute: AppCmsPoliciesPageIdRoute,
-  AppCmsStoriesPageIdRoute: AppCmsStoriesPageIdRoute,
+  AppCmsStoriesPostIdRoute: AppCmsStoriesPostIdRoute,
   AppCatalogProductsIndexRoute: AppCatalogProductsIndexRoute,
   AppCmsPagesIndexRoute: AppCmsPagesIndexRoute,
   AppCmsPoliciesIndexRoute: AppCmsPoliciesIndexRoute,

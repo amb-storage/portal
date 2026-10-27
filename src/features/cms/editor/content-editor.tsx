@@ -16,12 +16,14 @@ interface ContentEditorProps {
   value: string
   onChange: (value: string) => void
   profile: ContentProfile
+  registry?: SectionRegistry
   readOnly?: boolean
 }
 
 export function ContentEditor(props: ContentEditorProps) {
-  const registry = useQuery(sectionRegistryQuery)
-  return <QueryState query={registry}>{(data) => <Editor {...props} registry={data} />}</QueryState>
+  const registryQuery = useQuery({ ...sectionRegistryQuery, enabled: !props.registry })
+  if (props.registry) return <Editor {...props} registry={props.registry} />
+  return <QueryState query={registryQuery}>{(data) => <Editor {...props} registry={data} />}</QueryState>
 }
 
 function Editor({ value, onChange, profile, readOnly, registry }: ContentEditorProps & { registry: SectionRegistry }) {

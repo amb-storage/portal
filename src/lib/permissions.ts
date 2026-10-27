@@ -9,6 +9,8 @@ export const PERMISSIONS = {
   pageEdit: 'page.edit',
   pagePublish: 'page.publish',
   pagePreview: 'page.preview',
+  blogRead: 'mili_talk.read',
+  blogManage: 'mili_talk.manage',
   storyRead: 'story.read',
   storyManage: 'story.manage',
   navigationRead: 'navigation.read',

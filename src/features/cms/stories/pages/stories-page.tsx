@@ -35,7 +35,7 @@ export function StoriesPage() {
         data={list.data?.items}
         isLoading={list.isPending}
         getRowId={(row) => row.id}
-        onRowClick={(row) => openStory(row.pageId)}
+        onRowClick={(row) => openStory(row.id)}
         emptyMessage="Chưa có bài viết nào."
       />
       <DataTablePagination page={search.page} limit={LIST_LIMIT} total={list.data?.total} onPageChange={(page) => setSearch({ page })} />

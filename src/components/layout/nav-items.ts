@@ -53,7 +53,7 @@ export const NAV_GROUPS: NavGroup[] = [
     // The blog ("Mili Talks" on the website) is its own section, apart from the fixed pages.
     label: 'Mili Talks (Blog)',
     items: [
-      { title: 'Bài viết', to: '/cms/stories', icon: MessagesSquare, permission: PERMISSIONS.storyRead },
+      { title: 'Bài viết', to: '/cms/stories', icon: MessagesSquare, permission: PERMISSIONS.blogRead },
       { title: 'Trang chủ blog', to: '/cms/mili-talks', icon: Newspaper, permission: PERMISSIONS.pageRead },
     ],
   },

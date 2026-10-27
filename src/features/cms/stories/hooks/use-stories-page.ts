@@ -7,27 +7,27 @@ import { useListSearch } from '@/hooks/use-list-search'
 import { describeError } from '@/lib/api/errors'
 import { PERMISSIONS } from '@/lib/permissions'
 import { LIST_LIMIT } from '@/lib/search'
-import { storyService } from '../story.service'
-import { storyKeys, storyListQuery } from '../queries'
+import { blogService } from '../blog.service'
+import { blogKeys, blogListQuery } from '../blog.queries'
 import type { StorySearch } from '../search'
 
 export function useStoriesPage() {
   const { search, setSearch } = useListSearch<StorySearch>()
-  const canManage = useCan(PERMISSIONS.storyManage)
+  const canManage = useCan(PERMISSIONS.blogManage)
   const queryClient = useQueryClient()
   const [creating, setCreating] = useState(false)
-  const list = useQuery(storyListQuery({ ...search, limit: LIST_LIMIT }))
+  const list = useQuery(blogListQuery({ ...search, limit: LIST_LIMIT }))
 
   const remove = useMutation({
-    mutationFn: storyService.remove,
+    mutationFn: blogService.archive,
     onSuccess: async () => {
       toast.success('Đã xoá bài viết')
-      await queryClient.invalidateQueries({ queryKey: storyKeys.all })
+      await queryClient.invalidateQueries({ queryKey: blogKeys.all })
     },
     onError: (error) => toast.error(describeError(error)),
   })
 
   const navigate = useNavigate()
-  const openStory = (pageId: string) => navigate({ to: '/cms/stories/$pageId', params: { pageId } })
+  const openStory = (postId: string) => navigate({ to: '/cms/stories/$postId', params: { postId } })
   return { search, setSearch, list, canManage, creating, setCreating, remove, openStory }
 }
