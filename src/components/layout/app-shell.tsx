@@ -1,4 +1,6 @@
+import { Suspense } from 'react'
 import { Link, Outlet } from '@tanstack/react-router'
+import { RoutePending } from '@/components/common/route-states'
 import { HelpCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -27,7 +29,10 @@ export function AppShell() {
           </div>
         </header>
         <main className="flex flex-1 flex-col gap-6 p-4 md:p-6">
-          <Outlet />
+          {/* Pages that suspend on first data load show a skeleton here, never a blank screen. */}
+          <Suspense fallback={<RoutePending />}>
+            <Outlet />
+          </Suspense>
         </main>
       </SidebarInset>
     </SidebarProvider>

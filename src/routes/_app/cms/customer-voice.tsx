@@ -1,7 +1,8 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { CustomerVoicePage } from '@/features/cms/home/pages/customer-voice-page'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 
+/** Customer Voice now lives in the Home editor; keep old links working. */
 export const Route = createFileRoute('/_app/cms/customer-voice')({
-  staticData: { crumb: { title: 'Customer Voice' } },
-  component: CustomerVoicePage,
+  beforeLoad: () => {
+    throw redirect({ to: '/cms/home', hash: 'customer-voice', replace: true })
+  },
 })

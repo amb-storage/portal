@@ -12,7 +12,7 @@ import {
   Inbox,
   LayoutDashboard,
   Menu,
-  MessageSquareQuote,
+  House,
   MessagesSquare,
   Newspaper,
   Package,
@@ -57,7 +57,7 @@ export const NAV_ENTRIES: NavEntry[] = [
     title: 'Trang website',
     icon: Globe,
     items: [
-      { title: 'Customer Voice', to: '/cms/customer-voice', icon: MessageSquareQuote, permission: PERMISSIONS.pageRead },
+      { title: 'Trang chủ', to: '/cms/home', icon: House, permission: PERMISSIONS.pageRead },
       { title: 'Giới thiệu', to: '/cms/about', icon: Info, permission: PERMISSIONS.pageRead },
       { title: 'Chính sách', to: '/cms/policies', icon: ScrollText, permission: PERMISSIONS.pageRead },
       { title: 'Trang khác', to: '/cms/pages', icon: FileText, permission: PERMISSIONS.pageRead },

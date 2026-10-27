@@ -23,6 +23,7 @@ import { Route as AppSettingsRouteImport } from './routes/_app/settings'
 import { Route as AppCatalogCategoriesRouteImport } from './routes/_app/catalog/categories'
 import { Route as AppCmsAboutRouteImport } from './routes/_app/cms/about'
 import { Route as AppCmsCustomerVoiceRouteImport } from './routes/_app/cms/customer-voice'
+import { Route as AppCmsHomeRouteImport } from './routes/_app/cms/home'
 import { Route as AppCmsMiliTalksRouteImport } from './routes/_app/cms/mili-talks'
 import { Route as AppInquiriesIndexRouteImport } from './routes/_app/inquiries/index'
 import { Route as AppInquiriesInquiryIdRouteImport } from './routes/_app/inquiries/$inquiryId'
@@ -105,6 +106,11 @@ const AppCmsAboutRoute = AppCmsAboutRouteImport.update({
 const AppCmsCustomerVoiceRoute = AppCmsCustomerVoiceRouteImport.update({
   id: '/cms/customer-voice',
   path: '/cms/customer-voice',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCmsHomeRoute = AppCmsHomeRouteImport.update({
+  id: '/cms/home',
+  path: '/cms/home',
   getParentRoute: () => AppRoute,
 } as any)
 const AppCmsMiliTalksRoute = AppCmsMiliTalksRouteImport.update({
@@ -193,6 +199,7 @@ export interface FileRoutesByFullPath {
   '/catalog/categories': typeof AppCatalogCategoriesRoute
   '/cms/about': typeof AppCmsAboutRoute
   '/cms/customer-voice': typeof AppCmsCustomerVoiceRoute
+  '/cms/home': typeof AppCmsHomeRoute
   '/cms/mili-talks': typeof AppCmsMiliTalksRoute
   '/inquiries/$inquiryId': typeof AppInquiriesInquiryIdRoute
   '/orders/$orderId': typeof AppOrdersOrderIdRoute
@@ -222,6 +229,7 @@ export interface FileRoutesByTo {
   '/catalog/categories': typeof AppCatalogCategoriesRoute
   '/cms/about': typeof AppCmsAboutRoute
   '/cms/customer-voice': typeof AppCmsCustomerVoiceRoute
+  '/cms/home': typeof AppCmsHomeRoute
   '/cms/mili-talks': typeof AppCmsMiliTalksRoute
   '/inquiries/$inquiryId': typeof AppInquiriesInquiryIdRoute
   '/orders/$orderId': typeof AppOrdersOrderIdRoute
@@ -253,6 +261,7 @@ export interface FileRoutesById {
   '/_app/catalog/categories': typeof AppCatalogCategoriesRoute
   '/_app/cms/about': typeof AppCmsAboutRoute
   '/_app/cms/customer-voice': typeof AppCmsCustomerVoiceRoute
+  '/_app/cms/home': typeof AppCmsHomeRoute
   '/_app/cms/mili-talks': typeof AppCmsMiliTalksRoute
   '/_app/inquiries/$inquiryId': typeof AppInquiriesInquiryIdRoute
   '/_app/orders/$orderId': typeof AppOrdersOrderIdRoute
@@ -284,6 +293,7 @@ export interface FileRouteTypes {
     | '/catalog/categories'
     | '/cms/about'
     | '/cms/customer-voice'
+    | '/cms/home'
     | '/cms/mili-talks'
     | '/inquiries/$inquiryId'
     | '/orders/$orderId'
@@ -313,6 +323,7 @@ export interface FileRouteTypes {
     | '/catalog/categories'
     | '/cms/about'
     | '/cms/customer-voice'
+    | '/cms/home'
     | '/cms/mili-talks'
     | '/inquiries/$inquiryId'
     | '/orders/$orderId'
@@ -343,6 +354,7 @@ export interface FileRouteTypes {
     | '/_app/catalog/categories'
     | '/_app/cms/about'
     | '/_app/cms/customer-voice'
+    | '/_app/cms/home'
     | '/_app/cms/mili-talks'
     | '/_app/inquiries/$inquiryId'
     | '/_app/orders/$orderId'
@@ -466,6 +478,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCmsCustomerVoiceRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/cms/home': {
+      id: '/_app/cms/home'
+      path: '/cms/home'
+      fullPath: '/cms/home'
+      preLoaderRoute: typeof AppCmsHomeRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/cms/mili-talks': {
       id: '/_app/cms/mili-talks'
       path: '/cms/mili-talks'
@@ -578,6 +597,7 @@ interface AppRouteChildren {
   AppCatalogCategoriesRoute: typeof AppCatalogCategoriesRoute
   AppCmsAboutRoute: typeof AppCmsAboutRoute
   AppCmsCustomerVoiceRoute: typeof AppCmsCustomerVoiceRoute
+  AppCmsHomeRoute: typeof AppCmsHomeRoute
   AppCmsMiliTalksRoute: typeof AppCmsMiliTalksRoute
   AppInquiriesInquiryIdRoute: typeof AppInquiriesInquiryIdRoute
   AppOrdersOrderIdRoute: typeof AppOrdersOrderIdRoute
@@ -605,6 +625,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppCatalogCategoriesRoute: AppCatalogCategoriesRoute,
   AppCmsAboutRoute: AppCmsAboutRoute,
   AppCmsCustomerVoiceRoute: AppCmsCustomerVoiceRoute,
+  AppCmsHomeRoute: AppCmsHomeRoute,
   AppCmsMiliTalksRoute: AppCmsMiliTalksRoute,
   AppInquiriesInquiryIdRoute: AppInquiriesInquiryIdRoute,
   AppOrdersOrderIdRoute: AppOrdersOrderIdRoute,

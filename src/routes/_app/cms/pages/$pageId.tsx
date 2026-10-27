@@ -18,6 +18,7 @@ export const Route = createFileRoute('/_app/cms/pages/$pageId')({
   loader: async ({ context, params, location }) => {
     const page = await context.queryClient.ensureQueryData(pageDetailQuery(params.pageId))
     // About and Policy have their own screens; old links land there.
+    if (page.type === 'HOME') throw redirect({ to: '/cms/home', replace: true })
     if (page.type === 'ABOUT') throw redirect({ to: '/cms/about', search: location.search, replace: true })
     if (page.type === 'POLICY') throw redirect({ to: '/cms/policies/$pageId', params, search: location.search, replace: true })
     // Mili Talks has its own menu: the blog home and every article open under it.
