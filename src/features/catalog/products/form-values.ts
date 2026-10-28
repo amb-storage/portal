@@ -18,6 +18,8 @@ export interface ProductFormValues {
   seoDescriptionEn: string
   categoryIds: string[]
   details: ProductDetailEntry[]
+  /** Related Mili Talks article (Story id); '' = none. */
+  miliTalkId: string
 }
 
 const TEXT_FIELDS = [
@@ -44,6 +46,7 @@ export function toFormValues(product?: Product): ProductFormValues {
     seoDescriptionEn: product?.seoDescriptionEn ?? '',
     categoryIds: product?.categories.map((item) => item.id) ?? [],
     details: product?.details ?? [],
+    miliTalkId: product?.miliTalkId ?? '',
   }
 }
 
@@ -54,6 +57,7 @@ export function toCreatePayload(values: ProductFormValues): Record<string, unkno
   for (const key of ARRAY_FIELDS) if (values[key].length > 0) payload[key] = values[key]
   if (values.price !== undefined) payload.price = values.price
   if (values.quantity !== undefined) payload.quantity = values.quantity
+  if (values.miliTalkId) payload.miliTalkId = values.miliTalkId
   return payload
 }
 
@@ -71,5 +75,7 @@ export function toUpdatePayload(values: ProductFormValues, initial: ProductFormV
   for (const key of ARRAY_FIELDS) {
     if (JSON.stringify(values[key]) !== JSON.stringify(initial[key])) payload[key] = values[key]
   }
+  // Clearing the selection sends null, which removes the link.
+  if (values.miliTalkId !== initial.miliTalkId) payload.miliTalkId = values.miliTalkId || null
   return payload
 }

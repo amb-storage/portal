@@ -44,8 +44,8 @@ export interface HomeFormValues {
   newArrivals: { enabled: boolean; limit: number }
   mostPopular: { enabled: boolean; productIds: string[] }
   customerVoice: { enabled: boolean; items: VoiceValues[] }
-  talksIntro: { enabled: boolean; headingJa: string; headingEn: string; bodyJa: string; bodyEn: string }
-  featuredTalk: { enabled: boolean; talkId: string }
+  /** `mediaId`: image beside the intro, linking to /blog on the website ('' = none). */
+  talksIntro: { enabled: boolean; headingJa: string; headingEn: string; bodyJa: string; bodyEn: string; mediaId: string }
 }
 
 export const HOME_SLOTS = [
@@ -90,7 +90,6 @@ function toValues(draft: PageVersion): HomeFormValues {
   const popular = find('MOST_POPULAR')
   const voice = find('CUSTOMER_VOICE')
   const intro = find('MILI_TALKS_INTRO')
-  const featured = find('FEATURED_MILI_TALK')
   const voiceItems = (voice?.settings.items as Array<Record<string, unknown>> | undefined) ?? []
   return {
     // A Home converted from the legacy format usually has no titles yet: suggest the store name.
@@ -123,8 +122,8 @@ function toValues(draft: PageVersion): HomeFormValues {
       headingEn: str(intro?.settings.headingEn),
       bodyJa: str(intro?.settings.bodyJa),
       bodyEn: str(intro?.settings.bodyEn),
+      mediaId: str(intro?.settings.mediaId),
     },
-    featuredTalk: { enabled: on(featured), talkId: str(featured?.settings.talkId) },
   }
 }
 
@@ -183,8 +182,10 @@ function toContent(values: HomeFormValues, draft: PageVersion) {
       headingEn: values.talksIntro.headingEn.trim(),
       bodyJa: values.talksIntro.bodyJa.trim(),
       bodyEn: values.talksIntro.bodyEn.trim(),
+      ...(values.talksIntro.mediaId ? { mediaId: values.talksIntro.mediaId } : {}),
     }),
-    section('FEATURED_MILI_TALK', values.featuredTalk.enabled, { talkId: values.featuredTalk.talkId }),
+    // The intro image replaced the featured article; the slot stays (publishing needs it) but off.
+    section('FEATURED_MILI_TALK', false, {}),
   ]
   return { schemaVersion: 2, sections }
 }
@@ -220,7 +221,6 @@ const schema = z.custom<HomeFormValues>().superRefine((values, context) => {
   if (values.talksIntro.enabled)
     for (const key of ['headingJa', 'headingEn', 'bodyJa', 'bodyEn'] as const)
       if (!values.talksIntro[key].trim()) issue(context, ['talksIntro', key], 'Bắt buộc, hoặc tắt mục này')
-  if (values.featuredTalk.enabled && !values.featuredTalk.talkId) issue(context, ['featuredTalk', 'talkId'], 'Chọn bài, hoặc tắt mục này')
 })
 
 export function useHomeForm(pageId: string, draft: PageVersion) {

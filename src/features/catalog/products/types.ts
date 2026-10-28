@@ -74,6 +74,8 @@ export interface Product {
   seoDescriptionEn?: string | null
   categories: ProductCategoryRow[]
   media: ProductMediaRow[]
+  /** Linked Mili Talks article (Story id); absent on API builds before the link existed. */
+  miliTalkId?: string | null
 }
 
 export interface ProductListQuery {

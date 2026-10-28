@@ -7,6 +7,7 @@ import { FinancialSummary } from '../components/financial-summary'
 import { OrderStatusChart } from '../components/order-status-chart'
 import { RevenueChart } from '../components/revenue-chart'
 import { StatCard } from '../components/stat-card'
+import { ViewsCard } from '../components/views-card'
 import { useDashboardCharts } from '../hooks/use-dashboard-charts'
 import { useDashboardPage } from '../hooks/use-dashboard-page'
 import { analyticsQuery, financialQuery } from '../queries'
@@ -64,7 +65,13 @@ export function DashboardPage() {
           <StatCard key={stat.label} {...stat} />
         ))}
       </div>
-      {charts.enabled ? <AnalyticsCard envelope={analytics.data} isLoading={analytics.isPending} error={analytics.error} /> : null}
+      {charts.enabled ? (
+        <>
+          {/* First-party views do not depend on GoatCounter, so they come first. */}
+          <ViewsCard envelope={analytics.data?.views} isLoading={analytics.isPending} />
+          <AnalyticsCard envelope={analytics.data} isLoading={analytics.isPending} error={analytics.error} />
+        </>
+      ) : null}
       {stats.length === 0 ? <p className="text-sm text-muted-foreground">Tài khoản của bạn chưa có quyền xem mục nào. Liên hệ quản trị viên.</p> : null}
     </>
   )
