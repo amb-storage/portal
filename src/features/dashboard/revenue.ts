@@ -1,31 +1,27 @@
 import type { OrderSummary } from '@/features/orders/types'
-
-export const REVENUE_DAYS = 30
+import type { DateRange } from './types'
 
 export interface DailyRevenue {
-  /** Local calendar day, YYYY-MM-DD. */
+  /** UTC calendar day, YYYY-MM-DD (the financial dashboard API counts days in UTC too). */
   day: string
-  date: Date
   amount: number
+  /** Tax included in `amount` (Order tax snapshot), not added on top. */
+  tax: number
   orders: number
 }
 
-const dayKey = (date: Date) =>
-  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
-
-/** Buckets paid orders into the last REVENUE_DAYS local days (oldest first, empty days included). */
-export function dailyRevenue(orders: OrderSummary[], today = new Date()): DailyRevenue[] {
+/** Buckets paid orders into each UTC day of the range (oldest first, empty days included). */
+export function dailyRevenue(orders: OrderSummary[], range: DateRange): DailyRevenue[] {
   const days: DailyRevenue[] = []
-  for (let offset = REVENUE_DAYS - 1; offset >= 0; offset -= 1) {
-    const date = new Date(today.getFullYear(), today.getMonth(), today.getDate() - offset)
-    days.push({ day: dayKey(date), date, amount: 0, orders: 0 })
-  }
+  for (let date = new Date(`${range.from}T00:00:00Z`); date.toISOString().slice(0, 10) <= range.to; date.setUTCDate(date.getUTCDate() + 1))
+    days.push({ day: date.toISOString().slice(0, 10), amount: 0, tax: 0, orders: 0 })
   const byDay = new Map(days.map((entry) => [entry.day, entry]))
   for (const order of orders) {
     if (!order.paid_at) continue
-    const bucket = byDay.get(dayKey(new Date(order.paid_at)))
+    const bucket = byDay.get(new Date(order.paid_at).toISOString().slice(0, 10))
     if (!bucket) continue
     bucket.amount += order.total_amount
+    bucket.tax += order.tax_amount
     bucket.orders += 1
   }
   return days

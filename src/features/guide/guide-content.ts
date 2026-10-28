@@ -104,6 +104,28 @@ export const GUIDE_GROUPS: GuideGroup[] = [
     ],
   },
   {
+    title: 'Theo dõi',
+    sections: [
+      {
+        id: 'bang-dieu-khien',
+        title: 'Bảng điều khiển: doanh thu, thuế, truy cập',
+        summary: 'Số liệu bán hàng và lượt truy cập website theo khoảng thời gian.',
+        to: '/',
+        linkLabel: 'Mở Bảng điều khiển',
+        steps: [
+          'Chọn khoảng thời gian 7 / 30 / 90 ngày ở góc trên; mọi khung bên dưới dùng chung khoảng này (tính theo ngày UTC).',
+          'Khung Tài chính: Tổng doanh thu là tổng tiền khách đã trả (đã gồm thuế); Tổng thuế là phần thuế nằm trong số đó, như ghi trên hoá đơn (không cộng thêm); Hoàn tiền; Doanh thu thuần = Tổng doanh thu − Thuế − Hoàn tiền; số đơn đã thanh toán.',
+          'Khung Truy cập website (GoatCounter): lượt khách theo ngày, trang được xem nhiều, nguồn truy cập, quốc gia/trình duyệt, và số lượt Xem sản phẩm / Thêm vào giỏ / Bắt đầu thanh toán.',
+        ],
+        tips: [
+          '“Lượt khách” là cách đếm của GoatCounter, không phải số người duy nhất hay số lượt xem trang.',
+          'Nếu khung Truy cập báo “Chưa kết nối GoatCounter” hoặc lỗi, số liệu không phải 0 mà là chưa lấy được; liên hệ kỹ thuật.',
+          'Thuế trên từng đơn là thuế lúc khách đặt; đổi cài đặt thuế không làm thay đổi đơn cũ.',
+        ],
+      },
+    ],
+  },
+  {
     title: 'Bán hàng',
     sections: [
       {
@@ -447,7 +469,10 @@ export const GUIDE_GROUPS: GuideGroup[] = [
         to: '/settings',
         linkLabel: 'Mở Cài đặt',
         steps: ['Sửa thông tin cần thiết rồi bấm “Lưu cài đặt” ở thanh cuối màn hình. Không cần xuất bản.'],
-        tips: ['Email liên hệ ở đây cũng hiện trên trang お問い合わせ của website.'],
+        tips: [
+          'Email liên hệ ở đây cũng hiện trên trang お問い合わせ của website.',
+          '“Cách tính thuế”: với “Giá đã gồm thuế 10%”, khách trả đúng giá sản phẩm, thuế chỉ được tách ra để ghi trên hoá đơn. Chỉ “Giá chưa gồm thuế” mới cộng thêm 10% khi thanh toán. Áp dụng cho đơn mới giao trong Nhật. “Cách hiển thị thuế” chỉ là chữ cạnh giá trên website, nên để khớp với cách tính.',
+        ],
       },
     ],
   },

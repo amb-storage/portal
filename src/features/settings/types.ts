@@ -18,6 +18,8 @@ export interface StoreSettings {
   contactEmail: string | null
   instagramUrl: string | null
   taxDisplayMode: TaxDisplayMode
+  /** Money for newly created Orders; separate from the display-only taxDisplayMode. */
+  taxCalculationMode: TaxDisplayMode
   taxNoteJa: string | null
   taxNoteEn: string | null
   footerTextJa: string | null

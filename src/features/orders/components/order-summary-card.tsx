@@ -17,7 +17,9 @@ export function OrderSummaryCard({ order }: { order: Order }) {
         <Row label="Giao hàng"><StatusBadge status={order.fulfillment_status} /></Row>
         <Row label="Tạm tính">{money(order.subtotal_amount)}</Row>
         <Row label="Phí vận chuyển">{money(order.shipping_amount)}</Row>
-        <Row label="Thuế">{money(order.tax_amount)}</Row>
+        <Row label="Thuế">
+          <TaxLine order={order} money={money} />
+        </Row>
         <Row label="Tổng cộng"><span className="font-semibold">{money(order.total_amount)}</span></Row>
         <Row label="Ngày tạo">{formatDateTime(order.created_at)}</Row>
         <Row label="Thanh toán lúc">{formatDateTime(order.paid_at)}</Row>
@@ -30,6 +32,33 @@ export function OrderSummaryCard({ order }: { order: Order }) {
         <Row label="Mã hoàn tiền"><code className="text-xs break-all">{order.stripe_refund_id ?? '—'}</code></Row>
       </CardContent>
     </Card>
+  )
+}
+
+const TAX_MODE_TEXT = {
+  NONE: 'Không tính thuế',
+  TAX_INCLUDED: 'đã gồm trong giá',
+  TAX_EXCLUDED: 'cộng thêm vào giá',
+} as const
+
+/** Tax snapshot stored on the Order when it was created; later setting changes do not affect it. */
+function TaxLine({ order, money }: { order: Order; money: (amount: number) => string }) {
+  const mode = order.tax_calculation_mode
+  if (!mode || mode === 'NONE' || !order.tax_rate_percent)
+    return (
+      <>
+        {money(order.tax_amount)}
+        {mode === 'NONE' ? <span className="text-muted-foreground"> · không tính thuế</span> : null}
+      </>
+    )
+  return (
+    <>
+      {money(order.tax_amount)}
+      <span className="text-muted-foreground">
+        {' '}
+        · {order.tax_rate_percent}% {TAX_MODE_TEXT[mode]}
+      </span>
+    </>
   )
 }
 

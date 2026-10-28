@@ -4,11 +4,12 @@ import { orderListQuery } from '@/features/orders/queries'
 import { ORDER_STATUSES } from '@/features/orders/types'
 import { PERMISSIONS } from '@/lib/permissions'
 import { dailyRevenue } from '../revenue'
+import type { DateRange } from '../types'
 
 /** API max page size; revenue is computed from the most recent paid orders. */
 const RECENT_PAID_LIMIT = 100
 
-export function useDashboardCharts() {
+export function useDashboardCharts(range: DateRange) {
   const enabled = useCan(PERMISSIONS.ordersRead)
   const paid = useQuery({ ...orderListQuery({ page: 1, limit: RECENT_PAID_LIMIT, status: 'PAID' }), enabled })
   const byStatus = useQueries({
@@ -19,7 +20,7 @@ export function useDashboardCharts() {
   return {
     enabled,
     revenue: {
-      days: dailyRevenue(items),
+      days: dailyRevenue(items, range),
       currency: items[0]?.currency ?? 'JPY',
       // Older paid orders beyond the page are not counted.
       truncated: (paid.data?.total ?? 0) > RECENT_PAID_LIMIT,

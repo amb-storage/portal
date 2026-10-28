@@ -143,6 +143,83 @@ content routes, which accept only pages of type `ABOUT` or `POLICY`:
 Story remains the canonical backend content resource. “Mili Talk(s)” is the Web
 display label. There is no separate Blog API or Blog content store.
 
+## Website Analytics
+
+| Capability | Route | Permission |
+| --- | --- | --- |
+| Normalized GoatCounter dashboard | `GET /api/v1/admin/analytics?from=YYYY-MM-DD&to=YYYY-MM-DD` | `orders.read` |
+
+The route requires the existing `amb_admin_session` cookie and is protected by
+`AdminSessionGuard` and `PermissionsGuard`. `from` and `to` are optional UTC
+calendar dates, inclusive, with a maximum range of 90 days. The default is the
+current UTC date and the preceding 29 calendar days. Invalid dates or ranges
+return `400`.
+
+The API server calls the fixed hosted site only, using the server-side
+`GOATCOUNTER_API_TOKEN` and `Authorization: Bearer ...`; the token is never
+returned to Admin or logged. The validated provider request is
+`GET /api/v0/me`, followed by the documented `/stats/total`, `/stats/hits`,
+`/stats/toprefs`, `/stats/browsers`, `/stats/systems` and `/stats/locations`
+requests. Results are cached per process for 120 seconds and concurrent
+requests for the same range are coalesced. The client spaces provider calls to
+stay below GoatCounter's documented 4 requests/second limit. Current caching is
+intentionally process-local; use shared cache infrastructure before scaling the
+API horizontally.
+
+Response shape:
+
+```json
+{
+  "status": "ok",
+  "stale": false,
+  "data": {
+    "provider": "goatcounter",
+    "from": "2026-10-01",
+    "to": "2026-10-30",
+    "metricSemantics": {
+      "visitors": "GoatCounter visitor counts; not unique people and not pageview totals",
+      "events": "GoatCounter visitor counts attributed to event paths; not raw click totals",
+      "pageviews": null
+    },
+    "metrics": { "visitors": 42, "eventVisitors": 9 },
+    "traffic": [{ "day": "2026-10-01", "visitors": 4 }],
+    "topPages": [{ "path": "/en/shop/example", "title": "Example", "visitors": 3 }],
+    "referrers": [{ "name": "google.com", "visitors": 2 }],
+    "devices": {
+      "browsers": [{ "name": "Chrome", "visitors": 2 }],
+      "systems": [{ "name": "macOS", "visitors": 2 }],
+      "locations": [{ "name": "Japan", "visitors": 2 }]
+    },
+    "events": [{ "name": "view_product", "count": 4 }]
+  }
+}
+```
+
+`visitors`, page rows, breakdowns and event counts retain GoatCounter's
+provider meaning: visitor counts for the requested dimension/path. They are not
+unique people, raw pageview totals or purchase conversions. The dashboard does
+not display a fabricated pageview KPI or conversion percentage. Supported
+events are `view_product`, `add_to_cart` and `begin_checkout`; `purchase` is not
+tracked because browser checkout return is not verified settlement.
+
+When the token is absent the response is `status: "not_configured"`. Provider
+`401`, `403`, `429` and timeout/5xx failures map to safe statuses without
+exposing provider response bodies. If a cached range exists during a provider
+failure, it is returned with `status: "ok"`, `stale: true`; otherwise the Admin
+must show an unavailable/error state rather than zero data.
+
+Required server configuration:
+
+```dotenv
+GOATCOUNTER_BASE_URL=https://amb-storage.goatcounter.com
+GOATCOUNTER_API_TOKEN=<server-only-token>
+GOATCOUNTER_TIMEOUT_MS=5000
+```
+
+Do not put the token in `NEXT_PUBLIC_*` or `VITE_*` variables. The Web tracker
+uses the fixed hosted collection endpoint and consent; it does not need a
+provider token.
+
 ## Orders and Checkout
 
 | Capability | Routes |
@@ -150,8 +227,86 @@ display label. There is no separate Blog API or Blog content store.
 | Admin order list/detail | `GET /api/v1/admin/orders`, `GET /api/v1/admin/orders/:id` |
 | Fulfillment/order notes | `PATCH /api/v1/admin/orders/:id` |
 | Refund | `POST /api/v1/admin/orders/:id/refunds` |
+| Financial dashboard | `GET /api/v1/admin/orders/financial-dashboard?from=YYYY-MM-DD&to=YYYY-MM-DD` |
 | Checkout creation | `POST /api/v1/checkout/sessions` (Web owner/session, not Admin auth) |
 | Stripe webhook | `POST /api/v1/checkout/webhook` (raw signature-verified Stripe request) |
+
+All Admin reads require an authenticated Admin session and the corresponding
+permission. The financial dashboard requires `orders.read`; Admin mutations
+also require the existing Origin, JSON and CSRF checks and are audited.
+
+### Financial dashboard contract
+
+`from` and `to` are optional calendar dates in `YYYY-MM-DD` format. They are
+interpreted as UTC dates, both endpoints inclusive: the query uses
+`paid_at >= from 00:00:00Z` and `< (to + 1 day) 00:00:00Z`. If omitted, the
+default range is the current UTC date and the preceding 29 calendar days.
+
+All amount fields are integer JPY minor units (JPY is zero-decimal):
+
+```json
+{
+  "from": "2026-10-01",
+  "to": "2026-10-31",
+  "currency": "JPY",
+  "paidOrders": 12,
+  "grossRevenue": 38500,
+  "taxCollected": 3500,
+  "netSales": 28000,
+  "refunds": 7000
+}
+```
+
+The API sums `orders.total_amount` and `orders.tax_amount` for Orders with a
+non-null `paid_at` in the range. `refunds` sums `total_amount` for those same
+Orders with a non-null `refunded_at`; the current refund flow is full-order,
+not partial. `netSales = grossRevenue - taxCollected - refunds`.
+
+### Fulfillment and customer email behavior
+
+For a paid Order, the allowed transitions are:
+
+```text
+UNFULFILLED → SHIPPED → DELIVERED
+```
+
+The same-status update is a successful no-op. Invalid transitions and updates
+to unpaid Orders fail before an email job is created. A real transition
+creates one durable customer notification job using a unique key for
+`order_id + target status`; webhook replay and worker retry therefore do not
+create duplicate logical notifications. The recipient is the Order's stored
+customer email. Payment settlement also creates one durable shop notification
+job whose recipient is the mailbox extracted from `RESEND_FROM_EMAIL`.
+
+## Tax management and source of truth
+
+The existing Store Settings API is the Admin tax configuration API:
+
+| Operation | Route | Permission |
+| --- | --- | --- |
+| Read settings | `GET /api/v1/admin/store-settings` | `settings.read` |
+| Update settings | `PUT /api/v1/admin/store-settings` | `settings.manage` |
+
+`taxDisplayMode` controls storefront presentation only. `taxCalculationMode`
+controls money for newly created Orders and is persisted in PostgreSQL with
+default `NONE`:
+
+- `NONE`: tax amount 0; preserve current payment behavior.
+- `TAX_INCLUDED`: for applicable Japanese orders, extract 10% from the stored
+  price; total charged does not increase.
+- `TAX_EXCLUDED`: for applicable Japanese orders, add 10% to the stored price.
+
+The selected mode and resulting `tax_amount`/`tax_rate_percent` are immutable
+Order snapshots. Reusing a pending Checkout keeps its existing snapshot;
+changing Store Settings affects only newly created Orders. Receipt variables,
+Stripe line items, Admin Order responses and financial dashboard totals all
+read that snapshot.
+
+Backend is the sole tax calculator. Stripe Checkout is used to process the
+already calculated amount; this integration does not enable Stripe Tax
+`automatic_tax` or pass Stripe `tax_rates`. See Stripe's [Checkout Session
+create API](https://docs.stripe.com/api/checkout/sessions/create) for the
+provider fields and semantics.
 
 Cart does not reserve stock. Checkout locks referenced Product rows in a
 deterministic order, counts active `PENDING_PAYMENT` Order lines, creates an

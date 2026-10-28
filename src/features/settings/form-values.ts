@@ -10,6 +10,7 @@ export const settingsSchema = z.object({
   contactEmail: z.union([z.literal(''), z.email('Email không hợp lệ')]),
   instagramUrl: https,
   taxDisplayMode: z.enum(TAX_DISPLAY_MODES),
+  taxCalculationMode: z.enum(TAX_DISPLAY_MODES),
   taxNoteJa: z.string().max(5000),
   taxNoteEn: z.string().max(5000),
   footerTextJa: z.string().max(5000),
@@ -40,6 +41,8 @@ export function toSettingsValues(settings: StoreSettings): SettingsFormValues {
     ...(values as Record<(typeof NULLABLE)[number], string>),
     defaultCurrency: settings.defaultCurrency,
     taxDisplayMode: settings.taxDisplayMode,
+    // Older API builds do not return it yet; NONE is the API default.
+    taxCalculationMode: settings.taxCalculationMode ?? 'NONE',
     socialLinks: settings.socialLinks.map(({ platform, label, href }) => ({ platform, label, href })),
   }
 }
@@ -51,6 +54,7 @@ export function toSettingsPayload(values: SettingsFormValues, revision: number) 
     expectedRevision: revision,
     defaultCurrency: values.defaultCurrency,
     taxDisplayMode: values.taxDisplayMode,
+    taxCalculationMode: values.taxCalculationMode,
     ...nullable,
     socialLinks: values.socialLinks,
   }

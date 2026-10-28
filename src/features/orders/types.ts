@@ -18,6 +18,9 @@ export interface OrderSummary {
   subtotal_amount: number
   shipping_amount: number
   tax_amount: number
+  /** Order tax snapshot, fixed when the Order was created (0 when no tax applied). */
+  tax_rate_percent: number | null
+  tax_calculation_mode: 'NONE' | 'TAX_INCLUDED' | 'TAX_EXCLUDED' | null
   total_amount: number
   status: OrderStatus
   fulfillment_status: FulfillmentStatus
