@@ -32,12 +32,41 @@ export interface AnalyticsData {
   events: Array<{ name: (typeof ANALYTICS_EVENTS)[number]; count: number }>
 }
 
+/** First-party views counted by the API from the Web's POST /views (independent of GoatCounter). */
+export interface FirstPartyViews {
+  from: string
+  to: string
+  /** e.g. "1 visitor (IP + browser) = 1 view per 12 hours" */
+  rule: string
+  metrics: { siteViews: number; productViews: number; uniqueVisitors: number }
+  traffic: Array<{ day: string; siteViews: number; productViews: number }>
+  topProducts: Array<{
+    productId: string
+    slug: string | null
+    nameJa: string | null
+    nameEn: string | null
+    views: number
+    /** Paid Orders in the range containing the product. */
+    orders: number
+    /** orders / views as a percentage, one decimal. */
+    conversionRate: number
+  }>
+}
+
+export interface FirstPartyViewsEnvelope {
+  status: 'ok' | 'not_configured' | 'unavailable'
+  data: FirstPartyViews | null
+}
+
 export interface AnalyticsEnvelope {
+  /** GoatCounter status. */
   status: AnalyticsStatus
   /** Provider failed; this is the last cached data for the range. */
   stale: boolean
   message?: string
   data: AnalyticsData | null
+  /** Missing on API builds before first-party views. */
+  views?: FirstPartyViewsEnvelope
 }
 
 export const RANGE_PRESETS = [7, 30, 90] as const

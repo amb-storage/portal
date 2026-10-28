@@ -154,6 +154,7 @@ export const GUIDE_GROUPS: GuideGroup[] = [
         tips: [
           'Thanh “Lưu” luôn ở cuối màn hình. Rời trang khi chưa lưu, hệ thống sẽ hỏi lại.',
           'Sản phẩm đang bán không đổi được slug. Muốn đổi đường dẫn, dùng tab Alias để link cũ vẫn chạy.',
+          'Ô “Bài Mili Talks liên quan”: chọn 1 bài blog để hiện ở trang sản phẩm trên website (chỉ hiện khi bài đã xuất bản). Chọn “Không chọn” để bỏ.',
         ],
       },
       {
@@ -400,14 +401,14 @@ export const GUIDE_GROUPS: GuideGroup[] = [
             { from: 'Special Vintage, Most Popular', to: 'Dải sản phẩm bạn tự chọn' },
             { from: 'New Arrivals', to: 'Dải sản phẩm mới nhất, tự động' },
             { from: 'Customer Voice', to: 'Thẻ đánh giá của khách kèm ảnh sản phẩm' },
-            { from: 'Mili Talks trên trang chủ', to: 'Đoạn giới thiệu blog và một bài nổi bật' },
+            { from: 'Mili Talks trên trang chủ', to: 'Đoạn giới thiệu blog và một hình; bấm hình mở trang Mili Talks' },
           ],
         },
         steps: [
           'Vào Trang website → Trang chủ. Bấm tên mục ở hàng nút trên cùng để nhảy tới mục đó.',
           'Hero 2 danh mục: mỗi bên chọn danh mục, ảnh và chữ trên ảnh (Nhật/Anh). Ô “Bấm vào thì mở” tự điền link tới danh mục; hai bên phải là hai danh mục khác nhau.',
           'Customer Voice: “Thêm đánh giá” → tên khách (không bắt buộc), câu đánh giá Nhật/Anh, và chọn sản phẩm khách đã mua (bắt buộc, ảnh sản phẩm là hình của thẻ).',
-          'Bật/tắt các mục còn lại bằng công tắc “Hiện trên website”, chọn sản phẩm hoặc bài cho mục đang bật.',
+          'Bật/tắt các mục còn lại bằng công tắc “Hiện trên website”, chọn sản phẩm cho mục đang bật. Mục Mili Talks: viết giới thiệu và chọn 1 hình từ Thư viện ảnh; khách bấm hình sẽ vào trang Mili Talks.',
           'Bấm “Lưu nháp”, rồi “Xuất bản” ở góc trên. Nút Xuất bản chỉ bật khi Hero đã lưu đủ 2 bên.',
         ],
         tips: [

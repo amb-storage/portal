@@ -5,6 +5,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { ErrorAlert } from '@/components/common/query-state'
 import type { AnalyticsEnvelope, AnalyticsStatus, Breakdown } from '../types'
 import { DailyBars } from './daily-bars'
+import { RankedList } from './ranked-list'
 
 const count = new Intl.NumberFormat('vi-VN')
 
@@ -22,35 +23,6 @@ const EVENT_LABELS = {
   begin_checkout: 'Bắt đầu thanh toán',
 } as const
 
-/** Ranked single-hue bar list: share is relative to the top row, the number is the real count. */
-function RankedList({ title, rows, empty = 'Chưa có dữ liệu' }: { title: string; rows: Array<{ key: string; label: string; hint?: string; value: number }>; empty?: string }) {
-  const top = Math.max(...rows.map((row) => row.value), 1)
-  return (
-    <div className="grid content-start gap-2">
-      <h3 className="text-sm font-semibold">{title}</h3>
-      {rows.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{empty}</p>
-      ) : (
-        <ol className="grid gap-1.5">
-          {rows.map((row) => (
-            <li key={row.key} className="grid gap-1 text-sm">
-              <div className="flex items-baseline justify-between gap-3">
-                <span className="min-w-0 truncate" title={row.hint ?? row.label}>
-                  {row.label}
-                </span>
-                <span className="shrink-0 tabular-nums text-muted-foreground">{count.format(row.value)}</span>
-              </div>
-              <div className="h-1.5 rounded-full bg-muted">
-                <div className="h-1.5 rounded-full" style={{ width: `${(row.value / top) * 100}%`, background: 'var(--viz-series-1)' }} />
-              </div>
-            </li>
-          ))}
-        </ol>
-      )}
-    </div>
-  )
-}
-
 const toRows = (items: Breakdown[]) => items.map((item) => ({ key: item.name, label: item.name, value: item.visitors }))
 
 interface AnalyticsCardProps {
@@ -67,7 +39,7 @@ export function AnalyticsCard({ envelope, isLoading, error }: AnalyticsCardProps
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Truy cập website</CardTitle>
+        <CardTitle>Truy cập (GoatCounter)</CardTitle>
         <CardDescription>Số liệu từ GoatCounter: “lượt khách” là số khách GoatCounter ghi nhận, không phải số người duy nhất hay số lượt xem trang.</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-6">
@@ -125,11 +97,6 @@ export function AnalyticsCard({ envelope, isLoading, error }: AnalyticsCardProps
             <div className="grid gap-6 md:grid-cols-2">
               <RankedList title="Trang được xem nhiều" rows={data.topPages.map((page) => ({ key: page.path, label: page.title || page.path, hint: page.path, value: page.visitors }))} />
               <RankedList title="Nguồn truy cập" rows={toRows(data.referrers)} empty="Chưa có (khách vào trực tiếp)" />
-            </div>
-            <div className="grid gap-6 md:grid-cols-3">
-              <RankedList title="Quốc gia" rows={toRows(data.devices.locations)} />
-              <RankedList title="Trình duyệt" rows={toRows(data.devices.browsers)} />
-              <RankedList title="Hệ điều hành" rows={toRows(data.devices.systems)} />
             </div>
           </>
         ) : null}

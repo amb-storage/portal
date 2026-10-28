@@ -1,6 +1,9 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { withForm } from '@/components/form/form-hook'
+import { useQuery } from '@tanstack/react-query'
 import { useCategoryOptions } from '@/features/catalog/categories/hooks/use-category-options'
+import { storyListQuery } from '@/features/cms/stories/queries'
+import { storyTitle } from '@/features/cms/stories/types'
 import { toFormValues } from '../form-values'
 
 export const ProductBasicFields = withForm({
@@ -8,6 +11,11 @@ export const ProductBasicFields = withForm({
   props: { slugLocked: false, isEdit: false },
   render: function Render({ form, slugLocked, isEdit }) {
     const categories = useCategoryOptions()
+    const stories = useQuery(storyListQuery({ page: 1, limit: 100 }))
+    const storyOptions = (stories.data?.items ?? []).map((story) => ({
+      value: story.id,
+      label: story.status === 'PUBLISHED' ? storyTitle(story) : `${storyTitle(story)} (chưa xuất bản)`,
+    }))
     return (
       <Card>
         <CardHeader>
@@ -46,6 +54,17 @@ export const ProductBasicFields = withForm({
               {(field) => <field.MultiSelectField label="Danh mục" options={categories.options} placeholder="Chọn danh mục…" />}
             </form.AppField>
           </div>
+          <form.AppField name="miliTalkId">
+            {(field) => (
+              <field.SelectField
+                label="Bài Mili Talks liên quan"
+                description="Hiện ở trang sản phẩm trên website (chỉ khi bài đã xuất bản)."
+                options={storyOptions}
+                allowEmpty
+                placeholder={stories.isPending ? 'Đang tải…' : 'Không gắn bài'}
+              />
+            )}
+          </form.AppField>
           <form.AppField name="descriptionJa">{(field) => <field.TextareaField label="Mô tả (Nhật)" rows={4} />}</form.AppField>
           <form.AppField name="descriptionEn">{(field) => <field.TextareaField label="Mô tả (Anh)" rows={4} />}</form.AppField>
           <form.AppField name="conditionJa">{(field) => <field.TextareaField label="Tình trạng (Nhật)" rows={3} />}</form.AppField>

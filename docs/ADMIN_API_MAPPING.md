@@ -45,6 +45,12 @@ dedicated stock adjustment is authorized, reasoned and audited, and rejects a
 result below active Checkout reservations with
 `PRODUCT_STOCK_RESERVED_CONFLICT`.
 
+A Product may link one Mili Talks article: `miliTalkId` (a Story id, or
+`null` to clear) is accepted by Product create and PATCH and returned on the
+Admin Product. Any existing Story may be linked (`PRODUCT_MILI_TALK_INVALID`
+otherwise); the public product detail shows it only while the Story is
+published. Deleting the Story clears the link.
+
 There are no Admin Product block routes, Variant/Inventory Unit routes, Period
 or attribute-dictionary routes, or migration-management routes.
 
@@ -62,6 +68,10 @@ or attribute-dictionary routes, or migration-management routes.
 | Story / Mili Talks articles | `GET/POST /api/v1/admin/stories`, `GET/PATCH/DELETE /api/v1/admin/stories/:id`, `POST /api/v1/admin/stories/:id/publish`, `POST /api/v1/admin/stories/:id/unpublish` |
 | Navigation | `GET /api/v1/admin/navigation/menus`, `GET/PUT /api/v1/admin/navigation/menus/:key` |
 | Store settings | `GET/PUT /api/v1/admin/store-settings` |
+
+The Home `MILI_TALKS_INTRO` slot accepts an optional `mediaId` (a READY media
+asset, checked on publish) next to `headingJa/En` and `bodyJa/En`; the public
+Home returns it as `miliTalksIntro.media`.
 
 ### Stories API contract for Mili Talks
 
@@ -147,7 +157,7 @@ display label. There is no separate Blog API or Blog content store.
 
 | Capability | Route | Permission |
 | --- | --- | --- |
-| Normalized GoatCounter dashboard | `GET /api/v1/admin/analytics?from=YYYY-MM-DD&to=YYYY-MM-DD` | `orders.read` |
+| GoatCounter dashboard and first-party views | `GET /api/v1/admin/analytics?from=YYYY-MM-DD&to=YYYY-MM-DD` | `orders.read` |
 
 The route requires the existing `amb_admin_session` cookie and is protected by
 `AdminSessionGuard` and `PermissionsGuard`. `from` and `to` are optional UTC
@@ -191,6 +201,27 @@ Response shape:
       "locations": [{ "name": "Japan", "visitors": 2 }]
     },
     "events": [{ "name": "view_product", "count": 4 }]
+  },
+  "views": {
+    "status": "ok",
+    "data": {
+      "from": "2026-10-01",
+      "to": "2026-10-30",
+      "rule": "1 visitor (IP + browser) = 1 view per 12 hours",
+      "metrics": { "siteViews": 1240, "productViews": 860, "uniqueVisitors": 530 },
+      "traffic": [{ "day": "2026-10-01", "siteViews": 52, "productViews": 31 }],
+      "topProducts": [
+        {
+          "productId": "6f1c…",
+          "slug": "levis-501",
+          "nameJa": "リーバイス 501",
+          "nameEn": "Levi's 501",
+          "views": 120,
+          "orders": 4,
+          "conversionRate": 3.3
+        }
+      ]
+    }
   }
 }
 ```
@@ -220,6 +251,43 @@ Do not put the token in `NEXT_PUBLIC_*` or `VITE_*` variables. The Web tracker
 uses the fixed hosted collection endpoint and consent; it does not need a
 provider token.
 
+### First-party views (`views`)
+
+`views` is counted by the API itself from the Web's `POST /api/v1/views`
+calls (see the Web API mapping) and stored in `visitor_views`. It does not
+depend on GoatCounter: show it even when `status` is `not_configured` or
+`unavailable`.
+
+- A visitor is one IP + User-Agent pair, stored only as an HMAC hash.
+- Each visitor counts as **1 site view per 12-hour window**, however many pages
+  they open, and **1 view per product per window** for each product page.
+  Windows are fixed: 00:00–12:00 and 12:00–24:00 Japan time.
+- Bots (by User-Agent) and unknown or unpublished product slugs are ignored.
+- `metrics.siteViews` and `metrics.productViews` sum those counts over the
+  range; `uniqueVisitors` counts distinct visitors in the range.
+- `traffic` has one row per UTC day in the range, including days with zero.
+- `topProducts` lists up to 10 products by views. `orders` is the number of
+  paid Orders in the same range containing the product, and `conversionRate` is
+  `orders / views` as a percentage with one decimal.
+- Rows older than 90 days are deleted daily, so ranges beyond that show zero.
+
+`views.status` is `ok`, `not_configured` (`ANALYTICS_VISITOR_SECRET` unset; no
+views are recorded) or `unavailable` (query failed); `data` is `null` unless
+`ok`. Results are not cached.
+
+```dotenv
+# At least 32 random characters, e.g. `openssl rand -hex 32`.
+ANALYTICS_VISITOR_SECRET=<server-only-secret>
+# Reverse proxies in front of the API whose X-Forwarded-For is trusted.
+TRUST_PROXY_HOPS=1
+```
+
+`TRUST_PROXY_HOPS` must match the real proxy chain (1 for Nginx Proxy Manager
+→ API, 2 for Nginx Proxy Manager → Caddy → API). With `0` behind a proxy every
+visitor shares the proxy's IP, which also affects Cart and login rate limits.
+Changing the secret starts new visitor hashes, so views in the current window
+may be counted again.
+
 ## Orders and Checkout
 
 | Capability | Routes |
@@ -234,6 +302,27 @@ provider token.
 All Admin reads require an authenticated Admin session and the corresponding
 permission. The financial dashboard requires `orders.read`; Admin mutations
 also require the existing Origin, JSON and CSRF checks and are audited.
+
+### New-order alert
+
+When an Order becomes `PAID`, one plain-text alert is queued for the shop with
+the items, amount, tax and delivery address. It goes to `SHOP_NOTIFICATION_EMAIL`,
+or to the `RESEND_FROM_EMAIL` mailbox when that is unset; a verified sending
+domain does not make that mailbox receive mail. With `ADMIN_PORTAL_URL` set,
+the alert ends with `Open in admin: <ADMIN_PORTAL_URL>/orders/<orderId>`.
+
+### Fulfillment emails
+
+Changing `fulfillmentStatus` (`UNFULFILLED → SHIPPED → DELIVERED`) queues one
+customer email per Order and status in `order_notification_jobs`; a background
+job sends it through Resend with retries.
+
+- `DELIVERED` uses the Resend template `RESEND_DELIVERED_TEMPLATE_ID`, built from
+  `docs/email/delivered-template.html`. The recipient name, address, items and
+  delivery date are captured when the status changes; a missing carrier or
+  tracking number is sent as `—`.
+- Without that variable, for `SHIPPED`, and for jobs queued before the template
+  existed, the email is the plain-text status update.
 
 ### Financial dashboard contract
 

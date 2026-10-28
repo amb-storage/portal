@@ -17,8 +17,6 @@ import { ReferencePicker } from '@/features/cms/editor/reference-picker'
 import { cmsPageService } from '@/features/cms/pages/cms-page.service'
 import { cmsPageKeys, pageDetailQuery, pageDraftQuery, pageListQuery } from '@/features/cms/pages/queries'
 import type { PageVersion } from '@/features/cms/pages/types'
-import { storyListQuery } from '@/features/cms/stories/queries'
-import { storyTitle } from '@/features/cms/stories/types'
 import { describeError } from '@/lib/api/errors'
 import { PERMISSIONS } from '@/lib/permissions'
 import { emptyVoice, homeNeedsTitles, isHomePublishable, isStructuredHome, useHomeForm, type HomeForm } from '../hooks/use-home-form'
@@ -116,9 +114,7 @@ function HomeEditor({ pageId, draft, readOnly }: { pageId: string; draft: PageVe
   // Unsaved suggested titles still have to be saved once before publishing.
   const mustSave = legacy || homeNeedsTitles(draft)
   const categories = useQuery(categoryListQuery({ page: 1, limit: 100 }))
-  const stories = useQuery(storyListQuery({ page: 1, limit: 100, status: 'PUBLISHED' }))
   const categoryOptions = (categories.data?.items ?? []).map((category) => ({ id: category.id, slug: category.slug, label: `${category.name_ja} · ${category.name_en}` }))
-  const storyOptions = (stories.data?.items ?? []).map((story) => ({ value: story.id, label: storyTitle(story) }))
   const toggle = (name: string) => <form.AppField name={name as never}>{(field) => <field.SwitchField label="Hiện trên website" />}</form.AppField>
 
   return (
@@ -225,7 +221,7 @@ function HomeEditor({ pageId, draft, readOnly }: { pageId: string; draft: PageVe
           </form.Field>
         </Section>
 
-        <Section id="home-talks" title="Mili Talks trên trang chủ" description="Đoạn giới thiệu blog và một bài nổi bật ở cuối trang chủ.">
+        <Section id="home-talks" title="Mili Talks trên trang chủ" description="Đoạn giới thiệu blog và một hình ở cuối trang chủ; bấm hình sẽ mở trang Mili Talks.">
           <div className="grid gap-3 rounded-lg border p-3">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">Giới thiệu</span>
@@ -238,15 +234,15 @@ function HomeEditor({ pageId, draft, readOnly }: { pageId: string; draft: PageVe
               <form.AppField name="talksIntro.bodyEn">{(field) => <field.TextareaField label="Đoạn văn (Anh)" rows={4} />}</form.AppField>
             </div>
           </div>
-          <div className="grid gap-3 rounded-lg border p-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Bài nổi bật</span>
-              {toggle('featuredTalk.enabled')}
-            </div>
-            <form.AppField name="featuredTalk.talkId">
-              {(field) => <field.SelectField label="Chọn bài đã xuất bản" options={storyOptions} placeholder={storyOptions.length ? 'Chọn bài' : 'Chưa có bài nào đã xuất bản'} />}
-            </form.AppField>
-          </div>
+          <form.Field name="talksIntro.mediaId">
+            {(field) => (
+              <div className="grid gap-1.5 rounded-lg border p-3">
+                <Label>Hình</Label>
+                <MediaSetting value={field.state.value ? [field.state.value] : []} multiple={false} readOnly={readOnly} onChange={(next) => field.handleChange(next[0] ?? '')} />
+                <p className="text-xs text-muted-foreground">Hiện cạnh đoạn giới thiệu trên trang chủ; khách bấm vào hình sẽ mở trang Mili Talks (/blog).</p>
+              </div>
+            )}
+          </form.Field>
         </Section>
       </fieldset>
 

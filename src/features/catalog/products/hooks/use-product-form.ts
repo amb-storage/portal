@@ -38,6 +38,7 @@ const productSchema = z.object({
   seoDescriptionEn: text(10000),
   categoryIds: z.array(z.string()),
   details: z.array(detailSchema),
+  miliTalkId: z.string(),
 })
 
 export function useProductForm(product: Product | undefined, onSaved: (product: Product) => void) {
