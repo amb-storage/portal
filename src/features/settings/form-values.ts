@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { emptyToNull } from '@/lib/format'
-import { TAX_DISPLAY_MODES, type StoreSettings } from './types'
+import type { StoreSettings } from './types'
 
 const https = z.string().refine((value) => value === '' || /^https:\/\//.test(value), 'Phải là link https://')
 
@@ -9,8 +9,8 @@ export const settingsSchema = z.object({
   storeName: z.string().max(500),
   contactEmail: z.union([z.literal(''), z.email('Email không hợp lệ')]),
   instagramUrl: https,
-  taxDisplayMode: z.enum(TAX_DISPLAY_MODES),
-  taxCalculationMode: z.enum(TAX_DISPLAY_MODES),
+  /** One switch: prices include 10% consumption tax (calculation and website label together). */
+  taxIncluded: z.boolean(),
   taxNoteJa: z.string().max(5000),
   taxNoteEn: z.string().max(5000),
   footerTextJa: z.string().max(5000),
@@ -40,9 +40,8 @@ export function toSettingsValues(settings: StoreSettings): SettingsFormValues {
   return {
     ...(values as Record<(typeof NULLABLE)[number], string>),
     defaultCurrency: settings.defaultCurrency,
-    taxDisplayMode: settings.taxDisplayMode,
-    // Older API builds do not return it yet; NONE is the API default.
-    taxCalculationMode: settings.taxCalculationMode ?? 'NONE',
+    // Older API builds do not return taxCalculationMode; NONE is the API default.
+    taxIncluded: (settings.taxCalculationMode ?? 'NONE') !== 'NONE',
     socialLinks: settings.socialLinks.map(({ platform, label, href }) => ({ platform, label, href })),
   }
 }
@@ -53,8 +52,8 @@ export function toSettingsPayload(values: SettingsFormValues, revision: number) 
   return {
     expectedRevision: revision,
     defaultCurrency: values.defaultCurrency,
-    taxDisplayMode: values.taxDisplayMode,
-    taxCalculationMode: values.taxCalculationMode,
+    taxDisplayMode: values.taxIncluded ? 'TAX_INCLUDED' : 'NONE',
+    taxCalculationMode: values.taxIncluded ? 'TAX_INCLUDED' : 'NONE',
     ...nullable,
     socialLinks: values.socialLinks,
   }
