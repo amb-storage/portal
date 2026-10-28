@@ -292,9 +292,14 @@ controls money for newly created Orders and is persisted in PostgreSQL with
 default `NONE`:
 
 - `NONE`: tax amount 0; preserve current payment behavior.
-- `TAX_INCLUDED`: for applicable Japanese orders, extract 10% from the stored
-  price; total charged does not increase.
-- `TAX_EXCLUDED`: for applicable Japanese orders, add 10% to the stored price.
+- `TAX_INCLUDED`: extract 10% from the stored price; total charged does not
+  increase (¥95,700 includes ¥8,700 tax).
+- `TAX_EXCLUDED`: add 10% to the stored price.
+
+The rate applies to every Order regardless of the delivery country. The Admin
+portal exposes a single “prices include 10% tax” switch that writes both modes
+as `TAX_INCLUDED` (on) or `NONE` (off); `TAX_EXCLUDED` remains accepted by the
+API but is not offered there.
 
 The selected mode and resulting `tax_amount`/`tax_rate_percent` are immutable
 Order snapshots. Reusing a pending Checkout keeps its existing snapshot;
