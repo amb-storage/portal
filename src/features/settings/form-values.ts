@@ -26,6 +26,17 @@ export const settingsSchema = z.object({
       href: https.refine((value) => value !== '', 'Bắt buộc'),
     }),
   ),
+  invoiceFields: z
+    .array(
+      z.object({
+        id: z.string(),
+        labelJa: z.string().trim().min(1, 'Bắt buộc').max(255),
+        labelEn: z.string().max(255),
+        valueJa: z.string().trim().min(1, 'Bắt buộc').max(2000),
+        valueEn: z.string().max(2000),
+      }),
+    )
+    .max(30, 'Tối đa 30 trường'),
 })
 
 export type SettingsFormValues = z.infer<typeof settingsSchema>
@@ -43,11 +54,12 @@ export function toSettingsValues(settings: StoreSettings): SettingsFormValues {
     // Older API builds do not return taxCalculationMode; NONE is the API default.
     taxIncluded: (settings.taxCalculationMode ?? 'NONE') !== 'NONE',
     socialLinks: settings.socialLinks.map(({ platform, label, href }) => ({ platform, label, href })),
+    invoiceFields: settings.invoiceFields ?? [],
   }
 }
 
 /** Full replace with CAS on `revision`; socialLinks order = position. */
-export function toSettingsPayload(values: SettingsFormValues, revision: number) {
+export function toSettingsPayload(values: SettingsFormValues, revision: number, supportsInvoiceFields = true) {
   const nullable = Object.fromEntries(NULLABLE.map((key) => [key, emptyToNull(values[key])]))
   return {
     expectedRevision: revision,
@@ -56,5 +68,7 @@ export function toSettingsPayload(values: SettingsFormValues, revision: number) 
     taxCalculationMode: values.taxIncluded ? 'TAX_INCLUDED' : 'NONE',
     ...nullable,
     socialLinks: values.socialLinks,
+    // Older API builds reject unknown fields; only send the list when the API returned it.
+    ...(supportsInvoiceFields ? { invoiceFields: values.invoiceFields } : {}),
   }
 }

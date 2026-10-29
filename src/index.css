@@ -157,3 +157,27 @@
     animation: none;
   }
 }
+
+/* Printing (e.g. Đơn hàng → Xuất hoá đơn): only the page content, no app chrome. */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+  [data-slot='sidebar'],
+  [data-slot='sidebar-gap'],
+  [data-slot='sidebar-container'],
+  [data-slot='sidebar-inset'] > header,
+  [data-sonner-toaster] {
+    display: none !important;
+  }
+  [data-slot='sidebar-inset'] {
+    margin: 0 !important;
+  }
+  [data-slot='sidebar-inset'] > main {
+    padding: 0 !important;
+  }
+  body {
+    background: #fff !important;
+  }
+}

@@ -10,6 +10,15 @@ export interface SocialLink {
   position?: number
 }
 
+/** Shop-defined fixed row printed on every invoice; English may be empty (prints the Japanese). */
+export interface InvoiceField {
+  id: string
+  labelJa: string
+  labelEn: string
+  valueJa: string
+  valueEn: string
+}
+
 export interface StoreSettings {
   id: number
   revision: number
@@ -29,6 +38,8 @@ export interface StoreSettings {
   seoDescriptionJa: string | null
   seoDescriptionEn: string | null
   socialLinks: SocialLink[]
+  /** Missing on API builds before invoice fields existed. */
+  invoiceFields?: InvoiceField[]
   createdAt: ISODate
   updatedAt: ISODate
 }

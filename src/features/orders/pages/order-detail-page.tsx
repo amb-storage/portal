@@ -1,3 +1,6 @@
+import { Link } from '@tanstack/react-router'
+import { FileText } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { PageHeader } from '@/components/common/page-header'
 import { StatusBadge } from '@/components/common/status-badge'
 import { FulfillmentCard } from '../components/fulfillment-card'
@@ -22,9 +25,16 @@ export function OrderDetailPage() {
         }
         description={order.email}
         actions={
-          canManage ? (
-            <RefundDialog disabled={!canRefund(order)} isPending={refund.isPending} onRefund={(reason) => refund.mutate(reason)} />
-          ) : null
+          <>
+            <Button asChild variant="outline">
+              <Link to="/orders/invoice/$orderId" params={{ orderId: order.id }}>
+                <FileText /> Xuất hoá đơn
+              </Link>
+            </Button>
+            {canManage ? (
+              <RefundDialog disabled={!canRefund(order)} isPending={refund.isPending} onRefund={(reason) => refund.mutate(reason)} />
+            ) : null}
+          </>
         }
       />
       <div className="grid gap-6 lg:grid-cols-[1fr_380px]">

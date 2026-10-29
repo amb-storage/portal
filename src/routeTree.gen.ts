@@ -38,6 +38,7 @@ import { Route as AppCmsPoliciesIndexRouteImport } from './routes/_app/cms/polic
 import { Route as AppCmsPoliciesPageIdRouteImport } from './routes/_app/cms/policies/$pageId'
 import { Route as AppCmsStoriesIndexRouteImport } from './routes/_app/cms/stories/index'
 import { Route as AppCmsStoriesStoryIdRouteImport } from './routes/_app/cms/stories/$storyId'
+import { Route as AppOrdersInvoiceOrderIdRouteImport } from './routes/_app/orders/invoice.$orderId'
 
 const AppRoute = AppRouteImport.update({
   id: '/_app',
@@ -184,6 +185,11 @@ const AppCmsStoriesStoryIdRoute = AppCmsStoriesStoryIdRouteImport.update({
   path: '/cms/stories/$storyId',
   getParentRoute: () => AppRoute,
 } as any)
+const AppOrdersInvoiceOrderIdRoute = AppOrdersInvoiceOrderIdRouteImport.update({
+  id: '/orders/invoice/$orderId',
+  path: '/orders/invoice/$orderId',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
@@ -210,6 +216,7 @@ export interface FileRoutesByFullPath {
   '/cms/pages/$pageId': typeof AppCmsPagesPageIdRoute
   '/cms/policies/$pageId': typeof AppCmsPoliciesPageIdRoute
   '/cms/stories/$storyId': typeof AppCmsStoriesStoryIdRoute
+  '/orders/invoice/$orderId': typeof AppOrdersInvoiceOrderIdRoute
   '/catalog/products/': typeof AppCatalogProductsIndexRoute
   '/cms/pages/': typeof AppCmsPagesIndexRoute
   '/cms/policies/': typeof AppCmsPoliciesIndexRoute
@@ -240,6 +247,7 @@ export interface FileRoutesByTo {
   '/cms/pages/$pageId': typeof AppCmsPagesPageIdRoute
   '/cms/policies/$pageId': typeof AppCmsPoliciesPageIdRoute
   '/cms/stories/$storyId': typeof AppCmsStoriesStoryIdRoute
+  '/orders/invoice/$orderId': typeof AppOrdersInvoiceOrderIdRoute
   '/catalog/products': typeof AppCatalogProductsIndexRoute
   '/cms/pages': typeof AppCmsPagesIndexRoute
   '/cms/policies': typeof AppCmsPoliciesIndexRoute
@@ -272,6 +280,7 @@ export interface FileRoutesById {
   '/_app/cms/pages/$pageId': typeof AppCmsPagesPageIdRoute
   '/_app/cms/policies/$pageId': typeof AppCmsPoliciesPageIdRoute
   '/_app/cms/stories/$storyId': typeof AppCmsStoriesStoryIdRoute
+  '/_app/orders/invoice/$orderId': typeof AppOrdersInvoiceOrderIdRoute
   '/_app/catalog/products/': typeof AppCatalogProductsIndexRoute
   '/_app/cms/pages/': typeof AppCmsPagesIndexRoute
   '/_app/cms/policies/': typeof AppCmsPoliciesIndexRoute
@@ -304,6 +313,7 @@ export interface FileRouteTypes {
     | '/cms/pages/$pageId'
     | '/cms/policies/$pageId'
     | '/cms/stories/$storyId'
+    | '/orders/invoice/$orderId'
     | '/catalog/products/'
     | '/cms/pages/'
     | '/cms/policies/'
@@ -334,6 +344,7 @@ export interface FileRouteTypes {
     | '/cms/pages/$pageId'
     | '/cms/policies/$pageId'
     | '/cms/stories/$storyId'
+    | '/orders/invoice/$orderId'
     | '/catalog/products'
     | '/cms/pages'
     | '/cms/policies'
@@ -365,6 +376,7 @@ export interface FileRouteTypes {
     | '/_app/cms/pages/$pageId'
     | '/_app/cms/policies/$pageId'
     | '/_app/cms/stories/$storyId'
+    | '/_app/orders/invoice/$orderId'
     | '/_app/catalog/products/'
     | '/_app/cms/pages/'
     | '/_app/cms/policies/'
@@ -583,6 +595,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCmsStoriesStoryIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/orders/invoice/$orderId': {
+      id: '/_app/orders/invoice/$orderId'
+      path: '/orders/invoice/$orderId'
+      fullPath: '/orders/invoice/$orderId'
+      preLoaderRoute: typeof AppOrdersInvoiceOrderIdRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
@@ -608,6 +627,7 @@ interface AppRouteChildren {
   AppCmsPagesPageIdRoute: typeof AppCmsPagesPageIdRoute
   AppCmsPoliciesPageIdRoute: typeof AppCmsPoliciesPageIdRoute
   AppCmsStoriesStoryIdRoute: typeof AppCmsStoriesStoryIdRoute
+  AppOrdersInvoiceOrderIdRoute: typeof AppOrdersInvoiceOrderIdRoute
   AppCatalogProductsIndexRoute: typeof AppCatalogProductsIndexRoute
   AppCmsPagesIndexRoute: typeof AppCmsPagesIndexRoute
   AppCmsPoliciesIndexRoute: typeof AppCmsPoliciesIndexRoute
@@ -636,6 +656,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppCmsPagesPageIdRoute: AppCmsPagesPageIdRoute,
   AppCmsPoliciesPageIdRoute: AppCmsPoliciesPageIdRoute,
   AppCmsStoriesStoryIdRoute: AppCmsStoriesStoryIdRoute,
+  AppOrdersInvoiceOrderIdRoute: AppOrdersInvoiceOrderIdRoute,
   AppCatalogProductsIndexRoute: AppCatalogProductsIndexRoute,
   AppCmsPagesIndexRoute: AppCmsPagesIndexRoute,
   AppCmsPoliciesIndexRoute: AppCmsPoliciesIndexRoute,
