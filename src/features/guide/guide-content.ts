@@ -205,6 +205,7 @@ export const GUIDE_GROUPS: GuideGroup[] = [
           'Ô Giao hàng: chọn “Đã gửi hàng”, nhập đơn vị vận chuyển và mã vận đơn rồi lưu.',
           'Khi khách đã nhận, chuyển sang “Đã giao”.',
           'Cần hoàn tiền: bấm “Hoàn tiền” ở góc trên, ghi lý do (không bắt buộc) và xác nhận.',
+          'Xuất hoá đơn: bấm “Xuất hoá đơn” ở góc trên → chọn 領収書 hoặc 請求書, tiếng Nhật/Anh, sửa người nhận (宛名), nội dung (但し書き), ngày, thêm dòng nếu khách cần → “In / Lưu PDF”. Những chỉnh sửa này chỉ cho lần in đó.',
         ],
         tips: ['Ghi chú nội bộ chỉ Admin thấy, khách không nhận được.'],
       },
@@ -472,6 +473,7 @@ export const GUIDE_GROUPS: GuideGroup[] = [
         steps: ['Sửa thông tin cần thiết rồi bấm “Lưu cài đặt” ở thanh cuối màn hình. Không cần xuất bản.'],
         tips: [
           'Email liên hệ ở đây cũng hiện trên trang お問い合わせ của website.',
+          'Mục “Hoá đơn”: tự thêm các dòng cố định in trên mọi hoá đơn (số đăng ký 登録番号, người phát hành, địa chỉ, tài khoản ngân hàng…), sắp xếp thứ tự tuỳ ý. Bấm “Thêm trường mẫu” để bắt đầu nhanh. Các dòng này không hiện trên website.',
           '“Cách tính thuế”: với “Giá đã gồm thuế 10%”, khách trả đúng giá sản phẩm, thuế chỉ được tách ra để ghi trên hoá đơn. Chỉ “Giá chưa gồm thuế” mới cộng thêm 10% khi thanh toán. Áp dụng cho đơn mới giao trong Nhật. “Cách hiển thị thuế” chỉ là chữ cạnh giá trên website, nên để khớp với cách tính.',
         ],
       },

@@ -305,24 +305,30 @@ also require the existing Origin, JSON and CSRF checks and are audited.
 
 ### New-order alert
 
-When an Order becomes `PAID`, one plain-text alert is queued for the shop with
-the items, amount, tax and delivery address. It goes to `SHOP_NOTIFICATION_EMAIL`,
-or to the `RESEND_FROM_EMAIL` mailbox when that is unset; a verified sending
-domain does not make that mailbox receive mail. With `ADMIN_PORTAL_URL` set,
-the alert ends with `Open in admin: <ADMIN_PORTAL_URL>/orders/<orderId>`.
+When an Order becomes `PAID`, one alert is queued for the shop with the items,
+amount, tax, order time, phone number and delivery address. It goes to
+`SHOP_NOTIFICATION_EMAIL`, or to the `RESEND_FROM_EMAIL` mailbox when that is
+unset; a verified sending domain does not make that mailbox receive mail.
+
+- With both `RESEND_SHOP_ORDER_TEMPLATE_ID` (built from
+  `docs/email/shop-order-template.html`) and `ADMIN_PORTAL_URL` set, the alert
+  uses that template with an "open in admin" button linking to
+  `<ADMIN_PORTAL_URL>/orders/<orderId>`.
+- Otherwise it is plain text, ending with the admin link when
+  `ADMIN_PORTAL_URL` is set.
 
 ### Fulfillment emails
 
-Changing `fulfillmentStatus` (`UNFULFILLED → SHIPPED → DELIVERED`) queues one
-customer email per Order and status in `order_notification_jobs`; a background
-job sends it through Resend with retries.
+Changing `fulfillmentStatus` to `SHIPPED` queues one customer email per Order in
+`order_notification_jobs`; a background job sends it through Resend with
+retries. `DELIVERED` sends no email, to save Resend quota.
 
-- `DELIVERED` uses the Resend template `RESEND_DELIVERED_TEMPLATE_ID`, built from
-  `docs/email/delivered-template.html`. The recipient name, address, items and
-  delivery date are captured when the status changes; a missing carrier or
+- `SHIPPED` uses the Resend template `RESEND_SHIPPED_TEMPLATE_ID`, built from
+  `docs/email/shipped-template.html`. The recipient name, address, items and
+  shipping date are captured when the status changes; a missing carrier or
   tracking number is sent as `—`.
-- Without that variable, for `SHIPPED`, and for jobs queued before the template
-  existed, the email is the plain-text status update.
+- Without that variable, for other statuses, and for jobs queued before the
+  template existed, the email is the plain-text status update.
 
 ### Financial dashboard contract
 
@@ -416,6 +422,44 @@ Repeated Checkout requests use the same Order and stable Stripe idempotency key.
 Uncertain provider results remain pending for reconciliation/retry. Duplicate
 or out-of-order webhook events are idempotent. Refund completion does not
 automatically restock Product quantity.
+
+## Invoices (Admin-issued)
+
+Admins print an invoice for an Order from the Admin portal; the API stores no
+invoice document. The portal combines:
+
+- the Order (`GET /api/v1/admin/orders/:id`): number, items, `subtotal_amount`,
+  `shipping_amount`, `tax_amount`, `tax_rate_percent`, `tax_calculation_mode`,
+  `total_amount`, `paid_at` and the delivery snapshot;
+- the shop-defined fixed rows in Store Settings `invoiceFields`.
+
+`invoiceFields` is read by `GET /api/v1/admin/store-settings` and replaced as a
+whole by `PUT /api/v1/admin/store-settings` (same `expectedRevision` CAS and
+audit as the other settings; omitting it leaves the list unchanged):
+
+```json
+{
+  "invoiceFields": [
+    {
+      "id": "00000000-0000-4000-8000-000000000001",
+      "labelJa": "登録番号",
+      "labelEn": "Registration No.",
+      "valueJa": "T1234567890123",
+      "valueEn": ""
+    }
+  ]
+}
+```
+
+- At most 30 rows; `id` is a unique UUID; list order is print order.
+- `labelJa` (≤255) and `valueJa` (≤2000) are required; `labelEn`/`valueEn` may
+  be empty, in which case English invoices print the Japanese text.
+- Rows are free-form so the shop can add any fixed line (registration number,
+  issuer, address, bank details…) without an API change.
+- The public `GET /api/v1/settings` does not expose `invoiceFields`.
+
+Values edited while printing (addressee, 但し書き, issue date, extra one-off
+rows) apply to that print only and are not stored.
 
 ## Namespace boundary
 

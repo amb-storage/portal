@@ -10,7 +10,7 @@ import type { StoreSettings } from '../types'
 export function useSettingsForm(settings: StoreSettings) {
   const queryClient = useQueryClient()
   const save = useMutation({
-    mutationFn: (values: SettingsFormValues) => storeSettingsService.update(toSettingsPayload(values, settings.revision)),
+    mutationFn: (values: SettingsFormValues) => storeSettingsService.update(toSettingsPayload(values, settings.revision, settings.invoiceFields !== undefined)),
     onSuccess: (updated) => {
       toast.success('Đã lưu cài đặt')
       queryClient.setQueryData(settingsKeys.all, updated)
