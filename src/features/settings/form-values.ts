@@ -8,6 +8,8 @@ export const settingsSchema = z.object({
   defaultCurrency: z.string().regex(/^[A-Z]{3}$/, 'Mã ISO 4217 (3 chữ in hoa)'),
   storeName: z.string().max(500),
   contactEmail: z.union([z.literal(''), z.email('Email không hợp lệ')]),
+  // Same rule as the API: digits with optional +, spaces, hyphens and parentheses.
+  contactPhone: z.string().trim().max(32, 'Tối đa 32 ký tự').refine((value) => value === '' || /^\+?[0-9(][0-9 ()-]{5,30}$/.test(value), 'Số điện thoại không hợp lệ, vd. 03-1234-5678'),
   instagramUrl: https,
   /** One switch: prices include 10% consumption tax (calculation and website label together). */
   taxIncluded: z.boolean(),
@@ -55,11 +57,17 @@ export function toSettingsValues(settings: StoreSettings): SettingsFormValues {
     taxIncluded: (settings.taxCalculationMode ?? 'NONE') !== 'NONE',
     socialLinks: settings.socialLinks.map(({ platform, label, href }) => ({ platform, label, href })),
     invoiceFields: settings.invoiceFields ?? [],
+    contactPhone: settings.contactPhone ?? '',
   }
 }
 
 /** Full replace with CAS on `revision`; socialLinks order = position. */
-export function toSettingsPayload(values: SettingsFormValues, revision: number, supportsInvoiceFields = true) {
+export function toSettingsPayload(
+  values: SettingsFormValues,
+  revision: number,
+  supportsInvoiceFields = true,
+  supportsContactPhone = true,
+) {
   const nullable = Object.fromEntries(NULLABLE.map((key) => [key, emptyToNull(values[key])]))
   return {
     expectedRevision: revision,
@@ -70,5 +78,6 @@ export function toSettingsPayload(values: SettingsFormValues, revision: number, 
     socialLinks: values.socialLinks,
     // Older API builds reject unknown fields; only send the list when the API returned it.
     ...(supportsInvoiceFields ? { invoiceFields: values.invoiceFields } : {}),
+    ...(supportsContactPhone ? { contactPhone: emptyToNull(values.contactPhone) } : {}),
   }
 }

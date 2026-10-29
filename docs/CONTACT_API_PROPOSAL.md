@@ -1,18 +1,17 @@
-# お問い合わせ (Contact) API — proposal
+# お問い合わせ (Contact) API
 
-Status: proposal. The API (`../api`) has no contact endpoints yet. The portal's
-**Liên hệ** screen (`src/features/inquiries`) is a mock-up that uses sample data
-saved in the browser. It already uses the shapes below, so connecting it later
-only means replacing each method in `inquiry.service.ts` with its `api.*` call
-and setting `INQUIRIES_ARE_MOCK` to `false`.
+Status: implemented in the API (`../api`, `docs/api/ADMIN_API_MAPPING.md` →
+Inquiries and `docs/api/WEB_API_MAPPING.md` → Contact form). The portal's
+**Liên hệ** screen (`src/features/inquiries`) calls the routes below. Each new
+inquiry also emails the shop inbox with Reply-To set to the customer; the API
+sends no auto-reply.
 
 ## Public route (website form)
 
 The website form already exists: `amb-storage-web` →
 `app/[locale]/(legal)/contact` (`/contact`, `/en/contact`). It posts exactly
 this body through the same-origin `/api/v1` rewrite and sends no session or
-CSRF token, so this route must not require one. Until the route exists, the
-form shows an error with the store email as a fallback.
+CSRF token, so this route does not require one.
 
 `POST /api/v1/contact`
 

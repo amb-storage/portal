@@ -16,6 +16,9 @@ export const GeneralSection = withForm({
             {(field) => <field.TextField label="Tiền tệ mặc định" maxLength={3} description="Mã ISO 4217, vd. JPY" />}
           </form.AppField>
           <form.AppField name="contactEmail">{(field) => <field.TextField label="Email liên hệ" type="email" />}</form.AppField>
+          <form.AppField name="contactPhone">
+            {(field) => <field.TextField label="Số điện thoại" type="tel" description="In trên hoá đơn và hiện trên website, vd. 03-1234-5678" />}
+          </form.AppField>
           <form.AppField name="instagramUrl">{(field) => <field.TextField label="Instagram URL (cũ)" />}</form.AppField>
         </CardContent>
       </Card>
