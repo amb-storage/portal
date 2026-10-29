@@ -134,7 +134,7 @@ export function InvoicePage() {
         </Card>
       </aside>
       <div className="min-w-0 overflow-x-auto rounded-lg border bg-muted/30 p-4 print:overflow-visible print:border-0 print:bg-transparent print:p-0">
-        <InvoiceSheet order={order} items={items} storeName={settings.data?.storeName ?? null} fields={fields} options={options} />
+        <InvoiceSheet order={order} items={items} storeName={settings.data?.storeName ?? null} contactPhone={settings.data?.contactPhone ?? null} fields={fields} options={options} />
       </div>
     </div>
   )

@@ -25,6 +25,8 @@ export interface StoreSettings {
   defaultCurrency: string
   storeName: string | null
   contactEmail: string | null
+  /** Missing on API builds before the contact phone existed. */
+  contactPhone?: string | null
   instagramUrl: string | null
   taxDisplayMode: TaxDisplayMode
   /** Money for newly created Orders; separate from the display-only taxDisplayMode. */

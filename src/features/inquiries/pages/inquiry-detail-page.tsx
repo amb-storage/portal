@@ -6,7 +6,6 @@ import { Textarea } from '@/components/ui/textarea'
 import { PageHeader } from '@/components/common/page-header'
 import { StatusBadge } from '@/components/common/status-badge'
 import { formatDateTime } from '@/lib/format'
-import { MockNotice } from '../components/mock-notice'
 import { useInquiryDetailPage } from '../hooks/use-inquiry-detail-page'
 import { INQUIRY_CATEGORY_LABELS } from '../types'
 
@@ -61,7 +60,6 @@ export function InquiryDetailPage() {
           </>
         }
       />
-      <MockNotice />
       <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
         <div className="grid content-start gap-6">
           <Card>

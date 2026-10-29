@@ -6,6 +6,7 @@ interface InvoiceSheetProps {
   order: Order
   items: OrderItem[]
   storeName: string | null
+  contactPhone?: string | null
   fields: InvoiceField[]
   options: InvoiceOptions
 }
@@ -17,7 +18,7 @@ const dateText = (iso: string | null, lang: 'ja' | 'en') =>
  * Printable A4 invoice/receipt. Amounts come from the Order's tax snapshot: with tax included the
  * tax is shown as part of the total (内消費税), never added on top.
  */
-export function InvoiceSheet({ order, items, storeName, fields, options }: InvoiceSheetProps) {
+export function InvoiceSheet({ order, items, storeName, contactPhone, fields, options }: InvoiceSheetProps) {
   const t = TEXT[options.lang]
   const m = (amount: number) => money(amount, order.currency)
   const rate = order.tax_rate_percent ?? 0
@@ -60,6 +61,12 @@ export function InvoiceSheet({ order, items, storeName, fields, options }: Invoi
         </div>
         <div className="grid content-start gap-1 text-xs sm:text-right print:text-right">
           {storeName ? <p className="text-sm font-semibold">{storeName}</p> : null}
+          {contactPhone ? (
+            <p>
+              <span className="text-neutral-500">TEL：</span>
+              {contactPhone}
+            </p>
+          ) : null}
           {rows.map((row) => (
             <p key={row.id} className="whitespace-pre-line">
               {row.label ? <span className="text-neutral-500">{row.label}：</span> : null}

@@ -5,13 +5,12 @@ import { DataTable } from '@/components/data-table/data-table'
 import { DataTablePagination } from '@/components/data-table/data-table-pagination'
 import { LIST_LIMIT } from '@/lib/search'
 import { inquiryColumns } from '../components/inquiries-columns'
-import { MockNotice } from '../components/mock-notice'
 import { useInquiriesPage } from '../hooks/use-inquiries-page'
 import type { InquirySearch } from '../search'
 import { INQUIRY_CATEGORIES, INQUIRY_CATEGORY_LABELS, INQUIRY_STATUSES, type InquiryCategory } from '../types'
 
 export function InquiriesPage() {
-  const { search, setSearch, list, unreadCount, openInquiry, resetSamples } = useInquiriesPage()
+  const { search, setSearch, list, unreadCount, openInquiry } = useInquiriesPage()
 
   return (
     <>
@@ -19,7 +18,6 @@ export function InquiriesPage() {
         title="Liên hệ"
         description={`Tin nhắn khách gửi từ form お問い合わせ trên website.${unreadCount ? ` ${unreadCount} tin chưa đọc.` : ''}`}
       />
-      <MockNotice onReset={() => void resetSamples()} />
       <ListToolbar>
         <SearchInput value={search.q} onChange={(q) => setSearch({ q })} placeholder="Tên, email, nội dung, mã đơn…" />
         <FilterSelect
