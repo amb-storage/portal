@@ -38,6 +38,8 @@ const productSchema = z.object({
   seoDescriptionEn: text(10000),
   categoryIds: z.array(z.string()),
   details: z.array(detailSchema),
+  measurementsJa: text(2000),
+  measurementsEn: text(2000),
   miliTalkId: z.string(),
 })
 

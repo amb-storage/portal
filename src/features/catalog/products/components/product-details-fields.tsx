@@ -10,12 +10,27 @@ export const ProductDetailsFields = withForm({
   defaultValues: toFormValues(),
   render: function Render({ form }) {
     return (
+      <div className="grid gap-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Số đo</CardTitle>
+          <CardDescription>Dán nguyên khối số đo, mỗi số đo một dòng (vd. 肩幅…45cm). Giữ nguyên xuống dòng khi hiện trên website.</CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-4 md:grid-cols-2">
+          <form.AppField name="measurementsJa">
+            {(field) => <field.TextareaField label="Số đo (Nhật)" rows={6} placeholder={'肩幅…45cm\n身幅…51cm\n袖丈…62cm'} />}
+          </form.AppField>
+          <form.AppField name="measurementsEn">
+            {(field) => <field.TextareaField label="Số đo (Anh)" rows={6} placeholder={'Shoulder: 47cm\nPit to pit: 57cm\nSleeve: 56cm'} />}
+          </form.AppField>
+        </CardContent>
+      </Card>
       <form.AppField name="details" mode="array">
         {(details) => (
           <Card>
             <CardHeader>
               <CardTitle>Thông số</CardTitle>
-              <CardDescription>Các dòng thông số (chất liệu, số đo…).</CardDescription>
+              <CardDescription>Các dòng thông số khác (chất liệu, xuất xứ…). Số đo dán ở ô phía trên.</CardDescription>
               <CardAction>
                 <Button type="button" variant="outline" size="sm" onClick={() => details.pushValue(EMPTY_DETAIL)}>
                   <Plus /> Thêm dòng
@@ -42,6 +57,7 @@ export const ProductDetailsFields = withForm({
           </Card>
         )}
       </form.AppField>
+      </div>
     )
   },
 })
