@@ -82,7 +82,7 @@ export const ERROR_MESSAGES: Record<string, string> = {
   STORY_NOT_PUBLISHABLE: 'Bài viết chưa đủ điều kiện xuất bản: cần đúng một khối “Đầu bài viết” đang hiển thị (có ảnh bìa và tóm tắt Nhật/Anh) và ít nhất một khối nội dung như Đoạn văn hoặc Ảnh.',
   CMS_DOCUMENT_INVALID: 'Nội dung JSON không hợp lệ.',
   CMS_SECTION_UNSUPPORTED: 'Có section không được hỗ trợ ở loại trang này.',
-  CMS_REFERENCE_INVALID: 'Nội dung tham chiếu tới dữ liệu không tồn tại.',
+  CMS_REFERENCE_INVALID: 'Không xuất bản được vì có mục đang dùng dữ liệu không còn hợp lệ: sản phẩm chưa đăng bán hoặc đã ngừng bán (thường gặp ở Customer Voice, Special Vintage, Most Popular), ảnh chưa Sẵn sàng hoặc đã lưu trữ, hay danh mục đã xoá. Chọn lại sản phẩm hoặc ảnh đó rồi xuất bản lại.',
   CMS_PREVIEW_TOKEN_STALE: 'Bản nháp đã thay đổi sau khi tạo mã. Đóng lại và bấm Xem trước lần nữa.',
   CMS_PREVIEW_TOKEN_EXPIRED: 'Mã xem trước đã hết hạn. Đóng lại và bấm Xem trước lần nữa.',
   CMS_PREVIEW_TOKEN_INVALID: 'Mã xem trước không hợp lệ.',

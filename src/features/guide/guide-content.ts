@@ -289,7 +289,7 @@ export const GUIDE_GROUPS: GuideGroup[] = [
           'Bài viết → “Thêm bài viết”, nhập slug (phần đường dẫn, vd. ma-1-history → /blog/ma-1-history). Bạn được đưa tới màn soạn bài.',
           'Tab Nội dung: điền tiêu đề tiếng Nhật và tiếng Anh (SEO không bắt buộc).',
           'Bấm “Thêm khối” → “Đầu bài viết”: chọn ảnh bìa, viết tóm tắt tiếng Nhật và tiếng Anh. Đây là phần hiện trên thẻ bài ở trang Mili Talks, mỗi bài cần đúng MỘT khối này.',
-          'Thêm các khối nội dung: “Đoạn văn”, “Ảnh”, “Trích dẫn”, “Thư viện ảnh”… Gõ chữ trực tiếp, dùng thanh công cụ để in đậm, tạo tiêu đề, danh sách, link. Nút lên/xuống đổi thứ tự; công tắc “Hiển thị” để tạm ẩn khối.',
+          'Thêm các khối nội dung: “Đoạn văn”, “Ảnh”, “Trích dẫn”, “Thư viện ảnh”… Gõ chữ trực tiếp, dùng thanh công cụ để in đậm, đổi màu chữ (4 màu thương hiệu), tạo tiêu đề, danh sách, link. Mỗi khối có thể đặt “Tiêu đề khối” (không bắt buộc) hiện phía trên khối. Chỉ bài đã xuất bản mới hiện trên website và trong các ô chọn bài. Nút lên/xuống đổi thứ tự; công tắc “Hiển thị” để tạm ẩn khối.',
           'Bấm “Lưu” ở thanh cuối màn hình, “Xem trước” để xem như trên website.',
           'Khi khung “Cần hoàn thành để xuất bản” bên phải đã đủ, bấm “Xuất bản” ở góc trên.',
           'Bài đã xuất bản: sửa xong bấm “Lưu và cập nhật website”. Muốn tạm ẩn: “Gỡ khỏi website” (bài vẫn còn, xuất bản lại được). Bỏ hẳn: “Xoá bài”.',

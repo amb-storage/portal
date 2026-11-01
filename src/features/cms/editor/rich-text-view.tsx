@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { isSafeLink } from './rich-text'
+import { isSafeLink, textColorCss } from './rich-text'
 import type { RichNode } from './types'
 
 /** Renders API rich text as React elements (no innerHTML); unknown nodes are skipped. */
@@ -43,6 +43,7 @@ function Text({ node }: { node: RichNode }) {
   for (const mark of node.marks ?? []) {
     if (mark.type === 'bold') element = <strong>{element}</strong>
     if (mark.type === 'italic') element = <em>{element}</em>
+    if (mark.type === 'textColor') element = <span style={{ color: textColorCss(mark.attrs?.color) }}>{element}</span>
     if (mark.type === 'link' && isSafeLink(mark.attrs?.href))
       element = <a href={mark.attrs.href as string} target="_blank" rel="noreferrer" className="text-primary underline">{element}</a>
   }

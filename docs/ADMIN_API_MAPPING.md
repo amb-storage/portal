@@ -102,6 +102,11 @@ contains the cover media ID and bilingual excerpts; body sections such as
 the existing CMS document format. Media and other references are validated by
 the existing CMS service.
 
+`RICH_TEXT`, `IMAGE`, `IMAGE_WITH_TEXT`, `GALLERY` and `QUOTE` accept an
+optional localized `heading` string setting. Rich text accepts the marks
+`bold`, `italic`, `link` and `textColor` (`attrs.color`: `GREEN`, `RED`, `BLUE`
+or `GRAY`); any other color is rejected.
+
 Publication behavior:
 
 1. Create and update an unpublished Story: changes remain private.
@@ -278,13 +283,18 @@ views are recorded) or `unavailable` (query failed); `data` is `null` unless
 ```dotenv
 # At least 32 random characters, e.g. `openssl rand -hex 32`.
 ANALYTICS_VISITOR_SECRET=<server-only-secret>
-# Reverse proxies in front of the API whose X-Forwarded-For is trusted.
-TRUST_PROXY_HOPS=1
+# Trust loopback/private-network proxies for the client IP.
+TRUST_PROXY_HOPS=private
 ```
 
-`TRUST_PROXY_HOPS` must match the real proxy chain (1 for Nginx Proxy Manager
-→ API, 2 for Nginx Proxy Manager → Caddy → API). With `0` behind a proxy every
-visitor shares the proxy's IP, which also affects Cart and login rate limits.
+Use `TRUST_PROXY_HOPS=private` in production. Web requests reach the API as
+browser → Nginx Proxy Manager → Web (`/api/v1` rewrite) → API, Admin requests
+as browser → Nginx Proxy Manager → API; a fixed hop count cannot fit both.
+`private` trusts every loopback/private-network address in `X-Forwarded-For`, so
+the client is the first public address and cannot be spoofed by a header the
+browser sends. A number still trusts exactly that many hops. With `0` behind a
+proxy every visitor shares the proxy's IP, which also affects Cart, contact and
+login rate limits.
 Changing the secret starts new visitor hashes, so views in the current window
 may be counted again.
 
@@ -423,6 +433,52 @@ Uncertain provider results remain pending for reconciliation/retry. Duplicate
 or out-of-order webhook events are idempotent. Refund completion does not
 automatically restock Product quantity.
 
+## Inquiries (お問い合わせ)
+
+Messages from the Web contact form (`POST /api/v1/contact`, see the Web API
+mapping) are stored in `inquiries`. Each new inquiry also sends a plain-text
+alert to `SHOP_NOTIFICATION_EMAIL` (or the `RESEND_FROM_EMAIL` mailbox) with
+`Reply-To` set to the customer, so replying from the shop inbox answers them,
+and with `<ADMIN_PORTAL_URL>/inquiries/<id>` when that is set. A failed alert
+does not fail the customer's request; the Admin inbox is the source of truth.
+The API sends no replies and no customer auto-reply.
+
+| Capability | Route | Permission |
+| --- | --- | --- |
+| List | `GET /api/v1/admin/inquiries?page&limit&q&status&category` | `inquiries.read` |
+| Detail | `GET /api/v1/admin/inquiries/:id` | `inquiries.read` |
+| Update | `PATCH /api/v1/admin/inquiries/:id` | `inquiries.manage` |
+
+- The list returns `{ items, total, page, limit }`, newest first. `limit` is
+  1–100 (default 20). `q` matches name, email, subject, message and order
+  number (case-insensitive). `status` is `NEW | READ | REPLIED | ARCHIVED`,
+  `category` is `PRODUCT | BUYING | ORDER | FEEDBACK | OTHER`; other values
+  return `400 INQUIRY_QUERY_INVALID`.
+- `PATCH` takes `{ status?, adminNote? }` (note ≤ 5000, trimmed, empty clears
+  it) with the usual Origin and CSRF checks. `repliedAt` is set the first time
+  the status becomes `REPLIED` and kept afterwards. Changes are audited as
+  `INQUIRY_UPDATED` with `changedFields`; a no-op update is not audited.
+  Opening an inquiry does not mark it `READ`; the portal sends that `PATCH`.
+- Unknown ids return `404 INQUIRY_NOT_FOUND`.
+
+```ts
+interface Inquiry {
+  id: string
+  name: string
+  email: string
+  category: 'PRODUCT' | 'BUYING' | 'ORDER' | 'FEEDBACK' | 'OTHER'
+  subject: string
+  message: string
+  locale: 'ja' | 'en'
+  orderNumber: string | null
+  status: 'NEW' | 'READ' | 'REPLIED' | 'ARCHIVED'
+  adminNote: string | null
+  createdAt: string
+  updatedAt: string
+  repliedAt: string | null
+}
+```
+
 ## Invoices (Admin-issued)
 
 Admins print an invoice for an Order from the Admin portal; the API stores no
@@ -431,7 +487,14 @@ invoice document. The portal combines:
 - the Order (`GET /api/v1/admin/orders/:id`): number, items, `subtotal_amount`,
   `shipping_amount`, `tax_amount`, `tax_rate_percent`, `tax_calculation_mode`,
   `total_amount`, `paid_at` and the delivery snapshot;
-- the shop-defined fixed rows in Store Settings `invoiceFields`.
+- the shop-defined fixed rows in Store Settings `invoiceFields`;
+- the shop contact details in Store Settings: `storeName`, `contactEmail` and
+  `contactPhone`.
+
+`contactPhone` (≤ 32 characters: digits with an optional leading `+`, spaces,
+hyphens and parentheses, e.g. `03-1234-5678`; empty or `null` clears it) is
+edited with the other Store Settings and is also public in
+`GET /api/v1/settings` for the Web contact page and footer.
 
 `invoiceFields` is read by `GET /api/v1/admin/store-settings` and replaced as a
 whole by `PUT /api/v1/admin/store-settings` (same `expectedRevision` CAS and

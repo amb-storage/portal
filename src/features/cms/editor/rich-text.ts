@@ -1,5 +1,15 @@
 import type { RichNode } from './types'
 
+/** Brand colors the API accepts for the textColor mark. */
+export const TEXT_COLORS = [
+  { value: 'GREEN', label: 'Xanh lá', css: '#2f5d3a' },
+  { value: 'RED', label: 'Đỏ', css: '#b3261e' },
+  { value: 'BLUE', label: 'Xanh dương', css: '#1f4e8c' },
+  { value: 'GRAY', label: 'Xám', css: '#6b6b6b' },
+] as const
+export type TextColor = (typeof TEXT_COLORS)[number]['value']
+export const textColorCss = (color: unknown) => TEXT_COLORS.find((item) => item.value === color)?.css
+
 const CONTAINERS = new Set(['doc', 'paragraph', 'bulletList', 'orderedList', 'listItem', 'blockquote', 'heading'])
 
 export const emptyRichText = (): RichNode => ({ type: 'doc', content: [{ type: 'paragraph', content: [] }] })
@@ -15,6 +25,7 @@ export function normalizeRichText(node: RichNode): RichNode | null {
     const marks = (node.marks ?? []).flatMap((mark) => {
       if (mark.type === 'bold' || mark.type === 'italic') return [{ type: mark.type }]
       if (mark.type === 'link' && typeof mark.attrs?.href === 'string') return [{ type: 'link', attrs: { href: mark.attrs.href } }]
+      if (mark.type === 'textColor' && textColorCss(mark.attrs?.color)) return [{ type: 'textColor', attrs: { color: mark.attrs!.color } }]
       return []
     })
     return marks.length ? { type: 'text', text: node.text, marks } : { type: 'text', text: node.text }

@@ -1,3 +1,4 @@
+import { Mark, mergeAttributes } from '@tiptap/core'
 import { EditorContent, useEditor, useEditorState, type Editor } from '@tiptap/react'
 import Document from '@tiptap/extension-document'
 import Paragraph from '@tiptap/extension-paragraph'
@@ -10,11 +11,27 @@ import Blockquote from '@tiptap/extension-blockquote'
 import HardBreak from '@tiptap/extension-hard-break'
 import { BulletList, ListItem, OrderedList } from '@tiptap/extension-list'
 import { Placeholder, UndoRedo } from '@tiptap/extensions'
-import { Bold as BoldIcon, Heading2, Heading3, Italic as ItalicIcon, Link2, List, ListOrdered, Quote, Redo2, Undo2 } from 'lucide-react'
+import { Bold as BoldIcon, Heading2, Heading3, Italic as ItalicIcon, Palette, Link2, List, ListOrdered, Quote, Redo2, Undo2 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { cn } from '@/lib/utils'
-import { isSafeLink, normalizeRichText } from './rich-text'
+import { isSafeLink, normalizeRichText, TEXT_COLORS, textColorCss } from './rich-text'
 import type { RichNode } from './types'
+
+/** Text color limited to the brand palette; stored as `{ type: 'textColor', attrs: { color } }`. */
+const TextColor = Mark.create({
+  name: 'textColor',
+  addAttributes() {
+    return {
+      color: {
+        default: null,
+        parseHTML: (element) => element.getAttribute('data-color'),
+        renderHTML: (attributes) => ({ 'data-color': attributes.color, style: `color: ${textColorCss(attributes.color) ?? 'inherit'}` }),
+      },
+    }
+  },
+  parseHTML: () => [{ tag: 'span[data-color]' }],
+  renderHTML: ({ HTMLAttributes }) => ['span', mergeAttributes(HTMLAttributes), 0],
+})
 
 /** Only the node and mark types the API's rich-text schema allows. */
 const extensions = (placeholder: string) => [
@@ -24,6 +41,7 @@ const extensions = (placeholder: string) => [
   Heading.configure({ levels: [1, 2, 3] }),
   Bold,
   Italic,
+  TextColor,
   Link.configure({ openOnClick: false, autolink: true, defaultProtocol: 'https', isAllowedUri: (url) => isSafeLink(url) }),
   Blockquote,
   HardBreak,
@@ -99,6 +117,7 @@ function Toolbar({ editor }: { editor: Editor }) {
     <div className="flex flex-wrap items-center gap-0.5 border-b bg-muted/40 p-1" role="toolbar" aria-label="Định dạng chữ">
       <Tool label="Đậm (Ctrl+B)" active={state.bold} onClick={() => chain().toggleBold().run()}><BoldIcon /></Tool>
       <Tool label="Nghiêng (Ctrl+I)" active={state.italic} onClick={() => chain().toggleItalic().run()}><ItalicIcon /></Tool>
+      <ColorPicker editor={editor} />
       <Divider />
       <Tool label="Tiêu đề lớn" active={state.h2} onClick={() => chain().toggleHeading({ level: 2 }).run()}><Heading2 /></Tool>
       <Tool label="Tiêu đề nhỏ" active={state.h3} onClick={() => chain().toggleHeading({ level: 3 }).run()}><Heading3 /></Tool>
@@ -134,3 +153,33 @@ function Tool({ label, active, disabled, onClick, children }: { label: string; a
 }
 
 const Divider = () => <span className="mx-1 h-5 w-px bg-border" aria-hidden />
+
+function ColorPicker({ editor }: { editor: Editor }) {
+  const current = useEditorState({ editor, selector: ({ editor: e }) => e.getAttributes('textColor').color as string | undefined })
+  return (
+    <div className="flex items-center gap-0.5" role="group" aria-label="Màu chữ">
+      <Palette className="mx-1 size-4 text-muted-foreground" aria-hidden />
+      {TEXT_COLORS.map((color) => (
+        <button
+          key={color.value}
+          type="button"
+          title={`Màu chữ: ${color.label}`}
+          aria-label={`Màu chữ: ${color.label}`}
+          aria-pressed={current === color.value}
+          onClick={() => editor.chain().focus().setMark('textColor', { color: color.value }).run()}
+          className={cn('size-5 rounded-full border-2 border-transparent', current === color.value && 'border-foreground')}
+          style={{ backgroundColor: color.css }}
+        />
+      ))}
+      <button
+        type="button"
+        title="Bỏ màu chữ"
+        aria-label="Bỏ màu chữ"
+        onClick={() => editor.chain().focus().unsetMark('textColor').run()}
+        className="ml-0.5 rounded px-1 text-xs text-muted-foreground hover:bg-background hover:text-foreground"
+      >
+        Mặc định
+      </button>
+    </div>
+  )
+}

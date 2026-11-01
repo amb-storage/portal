@@ -33,6 +33,7 @@ export const SETTING_LABELS: Record<string, string> = {
   coverMediaId: 'Ảnh bìa',
   alt: 'Mô tả ảnh (alt)',
   imagePosition: 'Vị trí ảnh',
+  heading: 'Tiêu đề khối (không bắt buộc)',
   headingJa: 'Tiêu đề (Nhật)',
   headingEn: 'Tiêu đề (Anh)',
   text: 'Câu trích dẫn',

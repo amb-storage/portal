@@ -11,11 +11,9 @@ export const ProductBasicFields = withForm({
   props: { slugLocked: false, isEdit: false },
   render: function Render({ form, slugLocked, isEdit }) {
     const categories = useCategoryOptions()
-    const stories = useQuery(storyListQuery({ page: 1, limit: 100 }))
-    const storyOptions = (stories.data?.items ?? []).map((story) => ({
-      value: story.id,
-      label: story.status === 'PUBLISHED' ? storyTitle(story) : `${storyTitle(story)} (chưa xuất bản)`,
-    }))
+    // Only published articles: drafts are never offered (and would not show on the website anyway).
+    const stories = useQuery(storyListQuery({ page: 1, limit: 100, status: 'PUBLISHED' }))
+    const storyOptions = (stories.data?.items ?? []).map((story) => ({ value: story.id, label: storyTitle(story) }))
     return (
       <Card>
         <CardHeader>
@@ -58,7 +56,7 @@ export const ProductBasicFields = withForm({
             {(field) => (
               <field.SelectField
                 label="Bài Mili Talks liên quan"
-                description="Hiện ở trang sản phẩm trên website (chỉ khi bài đã xuất bản)."
+                description="Chỉ liệt kê bài đã xuất bản; bài hiện ở trang sản phẩm trên website."
                 options={storyOptions}
                 allowEmpty
                 placeholder={stories.isPending ? 'Đang tải…' : 'Không gắn bài'}
