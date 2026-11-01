@@ -29,6 +29,19 @@ function Block({ block, lang }: { block: CmsBlock; lang: PreviewLang }) {
 
 /** Approximates how a v1 section reads on the storefront; commerce sections render as labelled placeholders. */
 export function SectionPreview({ section, lang }: { section: CmsSection; lang: PreviewLang }) {
+  const heading = str(section.settings.heading).trim()
+  const body = <SectionBody section={section} lang={lang} />
+  return heading && section.type !== 'CONTACT' ? (
+    <div className="grid gap-4">
+      <h2 className="text-center text-2xl font-semibold">{heading}</h2>
+      {body}
+    </div>
+  ) : (
+    body
+  )
+}
+
+function SectionBody({ section, lang }: { section: CmsSection; lang: PreviewLang }) {
   const s = section.settings
   const blocks = section.blocks.map((block) => <Block key={block.id} block={block} lang={lang} />)
   switch (section.type) {
