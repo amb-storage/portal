@@ -14,7 +14,7 @@ import { Placeholder, UndoRedo } from '@tiptap/extensions'
 import { Bold as BoldIcon, Heading2, Heading3, Italic as ItalicIcon, Palette, Link2, List, ListOrdered, Quote, Redo2, Undo2 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { cn } from '@/lib/utils'
-import { isSafeLink, normalizeRichText, TEXT_COLORS, textColorCss } from './rich-text'
+import { isSafeLink, normalizeRichText, TEXT_COLORS, textColorCss, WEBSITE_RICH_TEXT } from './rich-text'
 import type { RichNode } from './types'
 
 /** Text color limited to the brand palette; stored as `{ type: 'textColor', attrs: { color } }`. */
@@ -72,8 +72,7 @@ export function RichTextEditor({ value, onChange, placeholder = 'Viết nội du
     },
     editorProps: {
       attributes: {
-        class:
-          'min-h-32 px-3 py-2 text-sm outline-none [&_h1]:text-2xl [&_h1]:font-semibold [&_h2]:text-xl [&_h2]:font-semibold [&_h3]:text-lg [&_h3]:font-semibold [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-5 [&_ol]:pl-5 [&_blockquote]:border-l-2 [&_blockquote]:pl-3 [&_blockquote]:text-muted-foreground [&_a]:text-primary [&_a]:underline [&_p]:my-1.5 [&_p.is-editor-empty:first-child]:before:pointer-events-none [&_p.is-editor-empty:first-child]:before:float-left [&_p.is-editor-empty:first-child]:before:h-0 [&_p.is-editor-empty:first-child]:before:text-muted-foreground [&_p.is-editor-empty:first-child]:before:content-[attr(data-placeholder)]',
+        class: cn('min-h-32 px-3 py-2 outline-none', WEBSITE_RICH_TEXT, '[&_p.is-editor-empty:first-child]:before:pointer-events-none [&_p.is-editor-empty:first-child]:before:float-left [&_p.is-editor-empty:first-child]:before:h-0 [&_p.is-editor-empty:first-child]:before:text-muted-foreground [&_p.is-editor-empty:first-child]:before:content-[attr(data-placeholder)]'),
       },
     },
   })

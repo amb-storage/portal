@@ -1,10 +1,6 @@
 import type { ReactNode } from 'react'
-import { isSafeLink, textColorCss } from './rich-text'
+import { isSafeLink, textColorCss, WEBSITE_RICH_TEXT } from './rich-text'
 import type { RichNode } from './types'
-
-/** Same typography as richTextClassName in amb-storage-web's CmsSections. */
-const WEBSITE_RICH_TEXT =
-  'text-[15px] tracking-[0.1em] [&_a]:text-[#2C5F34] [&_a]:underline [&_h1]:mb-4 [&_h1]:mt-2 [&_h1]:text-3xl [&_h1]:font-bold [&_h1]:leading-tight [&_h1]:text-[#2C5F34] md:[&_h1]:text-4xl [&_h2]:mb-4 [&_h2]:mt-2 [&_h2]:text-3xl [&_h2]:font-bold [&_h2]:leading-tight [&_h2]:text-[#2C5F34] md:[&_h2]:text-4xl [&_h3]:mb-3 [&_h3]:mt-2 [&_h3]:text-2xl [&_h3]:font-bold [&_h3]:text-[#2C5F34] md:[&_h3]:text-[1.75rem] [&_p]:mb-6 [&_p]:leading-[1.45] [&_p]:text-gray-900 [&_li]:mb-2 [&_li_p]:mb-0 [&_ul]:mb-6 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:mb-6 [&_ol]:list-decimal [&_ol]:pl-5 [&_strong]:font-semibold [&_strong]:text-gray-900 [&_blockquote]:border-l-2 [&_blockquote]:border-[#2C5F34] [&_blockquote]:pl-4'
 
 /** Renders API rich text as React elements (no innerHTML); unknown nodes are skipped. */
 export function RichTextView({ value, className }: { value: unknown; className?: string }) {

@@ -12,6 +12,10 @@ export const textColorCss = (color: unknown) => TEXT_COLORS.find((item) => item.
 
 const CONTAINERS = new Set(['doc', 'paragraph', 'bulletList', 'orderedList', 'listItem', 'blockquote', 'heading'])
 
+/** Same typography as richTextClassName in amb-storage-web's CmsSections. */
+export const WEBSITE_RICH_TEXT =
+  'text-[15px] tracking-[0.1em] [&_a]:text-[#2C5F34] [&_a]:underline [&_h1]:mb-4 [&_h1]:mt-2 [&_h1]:text-3xl [&_h1]:font-bold [&_h1]:leading-tight [&_h1]:text-[#2C5F34] md:[&_h1]:text-4xl [&_h2]:mb-4 [&_h2]:mt-2 [&_h2]:text-3xl [&_h2]:font-bold [&_h2]:leading-tight [&_h2]:text-[#2C5F34] md:[&_h2]:text-4xl [&_h3]:mb-3 [&_h3]:mt-2 [&_h3]:text-2xl [&_h3]:font-bold [&_h3]:text-[#2C5F34] md:[&_h3]:text-[1.75rem] [&_p]:mb-1.5 [&_p]:leading-[1.45] [&_p]:text-gray-900 [&_li]:mb-2 [&_li_p]:mb-0 [&_ul]:mb-1.5 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:mb-1.5 [&_ol]:list-decimal [&_ol]:pl-5 [&_strong]:font-semibold [&_strong]:text-gray-900 [&_blockquote]:border-l-2 [&_blockquote]:border-[#2C5F34] [&_blockquote]:pl-4'
+
 export const emptyRichText = (): RichNode => ({ type: 'doc', content: [{ type: 'paragraph', content: [] }] })
 
 /**
