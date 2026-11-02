@@ -48,6 +48,11 @@ export function useStoryEditor(story: StoryDetail) {
 
   return useAppForm({
     defaultValues,
-    onSubmit: ({ value }) => save.mutateAsync(value).catch(() => undefined),
+    // The API does not bump story.updatedAt on content saves, so the editor stays mounted: clear dirty here.
+    onSubmit: ({ value, formApi }) =>
+      save
+        .mutateAsync(value)
+        .then(() => formApi.reset(value))
+        .catch(() => undefined),
   })
 }
