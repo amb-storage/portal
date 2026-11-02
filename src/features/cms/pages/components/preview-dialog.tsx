@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { JsonView } from '@/components/common/json-view'
+import { MediaThumb } from '@/components/common/media-thumb'
 import { ErrorAlert, LoadingBlock } from '@/components/common/query-state'
 import { SectionPreview, type PreviewLang } from '@/features/cms/editor/section-preview'
 import type { CmsSection } from '@/features/cms/editor/types'
@@ -23,15 +24,19 @@ export function PreviewDialog({ pageId, preview, onClose }: { pageId: string; pr
   })
   const draft = result.data?.draft
   const content = draft?.content as { schemaVersion?: number; sections?: CmsSection[] } | undefined
+  const sections = content?.sections?.filter((section) => section.enabled) ?? []
+  // The website shows TALK_HEADER as the cover above the blocks and starts the striping after it.
+  const cover = sections.find((section) => section.type === 'TALK_HEADER')?.settings.coverMediaId
+  const blocks = sections.filter((section) => section.type !== 'TALK_HEADER')
   const title = lang === 'ja' ? draft?.titleJa : draft?.titleEn
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="flex max-h-[92vh] flex-col gap-4 sm:max-w-4xl">
+      <DialogContent className="flex max-h-[92vh] flex-col gap-4 sm:max-w-6xl">
         <DialogHeader className="flex-row items-center justify-between gap-4 pr-8">
           <div className="grid gap-1">
             <DialogTitle>Xem trước bản nháp</DialogTitle>
-            <DialogDescription>Theo bản nháp đã lưu, hiển thị gần đúng với website. Mã xem trước hết hạn sau {Math.round(preview.expiresInSeconds / 60)} phút.</DialogDescription>
+            <DialogDescription>Theo nội dung đã lưu, trình bày giống website. Mã xem trước hết hạn sau {Math.round(preview.expiresInSeconds / 60)} phút.</DialogDescription>
           </div>
           <div className="inline-flex shrink-0 rounded-lg border bg-muted/40 p-0.5 text-sm">
             {(['ja', 'en'] as const).map((value) => (
@@ -46,16 +51,21 @@ export function PreviewDialog({ pageId, preview, onClose }: { pageId: string; pr
           <ErrorAlert error={result.error} />
           {result.isPending ? <div className="p-6"><LoadingBlock /></div> : null}
           {draft ? (
-            <article className="mx-auto grid max-w-3xl gap-8 px-6 py-8">
-              <h1 className="text-3xl font-semibold tracking-tight">{title || <span className="text-muted-foreground">Chưa có tiêu đề</span>}</h1>
+            <article className="bg-[#eff5f0] text-gray-900">
+              <header className="bg-white px-5 py-8">
+                <h1 className="mx-auto line-clamp-2 max-w-3xl text-3xl font-bold leading-tight text-[#2C5F34] md:text-[40px]">{title || <span className="text-muted-foreground">Chưa có tiêu đề</span>}</h1>
+              </header>
+              {typeof cover === 'string' ? (
+                <div className="mx-auto max-w-2xl px-5 pb-10">
+                  <MediaThumb id={cover} status="READY" fit="contain" className="w-full rounded-none bg-transparent [&_img]:h-auto" />
+                </div>
+              ) : null}
               {content?.schemaVersion === 1 ? (
-                content.sections?.filter((section) => section.enabled).map((section) => <SectionPreview key={section.id} section={section} lang={lang} />)
+                blocks.map((section, index) => <SectionPreview key={section.id} section={section} lang={lang} index={index} />)
               ) : (
                 <JsonView value={content} />
               )}
-              {content?.schemaVersion === 1 && !content.sections?.some((section) => section.enabled) ? (
-                <p className="text-sm text-muted-foreground">Bản nháp chưa có khối nội dung nào đang hiển thị.</p>
-              ) : null}
+              {content?.schemaVersion === 1 && sections.length === 0 ? <p className="p-6 text-sm text-muted-foreground">Bản nháp chưa có khối nội dung nào đang hiển thị.</p> : null}
             </article>
           ) : null}
         </div>

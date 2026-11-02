@@ -2,10 +2,10 @@ import type { RichNode } from './types'
 
 /** Brand colors the API accepts for the textColor mark. */
 export const TEXT_COLORS = [
-  { value: 'GREEN', label: 'Xanh lá', css: '#2f5d3a' },
+  { value: 'GREEN', label: 'Xanh lá', css: '#2C5F34' },
   { value: 'RED', label: 'Đỏ', css: '#b3261e' },
   { value: 'BLUE', label: 'Xanh dương', css: '#1f4e8c' },
-  { value: 'GRAY', label: 'Xám', css: '#6b6b6b' },
+  { value: 'GRAY', label: 'Xám', css: '#6a7282' },
 ] as const
 export type TextColor = (typeof TEXT_COLORS)[number]['value']
 export const textColorCss = (color: unknown) => TEXT_COLORS.find((item) => item.value === color)?.css
