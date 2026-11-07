@@ -1,8 +1,17 @@
 import { z } from 'zod'
 import { emptyToNull } from '@/lib/format'
-import type { StoreSettings } from './types'
+import { PAGE_SEO_KEYS, type StoreSettings } from './types'
 
 const https = z.string().refine((value) => value === '' || /^https:\/\//.test(value), 'Phải là link https://')
+
+const pageSeoSchema = z.object({
+  titleJa: z.string().max(200, 'Tối đa 200 ký tự'),
+  titleEn: z.string().max(200, 'Tối đa 200 ký tự'),
+  descriptionJa: z.string().max(500, 'Tối đa 500 ký tự'),
+  descriptionEn: z.string().max(500, 'Tối đa 500 ký tự'),
+})
+
+const EMPTY_PAGE_SEO = { titleJa: '', titleEn: '', descriptionJa: '', descriptionEn: '' }
 
 export const settingsSchema = z.object({
   defaultCurrency: z.string().regex(/^[A-Z]{3}$/, 'Mã ISO 4217 (3 chữ in hoa)'),
@@ -39,6 +48,9 @@ export const settingsSchema = z.object({
       }),
     )
     .max(30, 'Tối đa 30 trường'),
+  pageSeo: z.object(
+    Object.fromEntries(PAGE_SEO_KEYS.map((key) => [key, pageSeoSchema])) as Record<(typeof PAGE_SEO_KEYS)[number], typeof pageSeoSchema>,
+  ),
 })
 
 export type SettingsFormValues = z.infer<typeof settingsSchema>
@@ -58,6 +70,7 @@ export function toSettingsValues(settings: StoreSettings): SettingsFormValues {
     socialLinks: settings.socialLinks.map(({ platform, label, href }) => ({ platform, label, href })),
     invoiceFields: settings.invoiceFields ?? [],
     contactPhone: settings.contactPhone ?? '',
+    pageSeo: Object.fromEntries(PAGE_SEO_KEYS.map((key) => [key, { ...EMPTY_PAGE_SEO, ...settings.pageSeo?.[key] }])) as SettingsFormValues['pageSeo'],
   }
 }
 
@@ -67,6 +80,7 @@ export function toSettingsPayload(
   revision: number,
   supportsInvoiceFields = true,
   supportsContactPhone = true,
+  supportsPageSeo = true,
 ) {
   const nullable = Object.fromEntries(NULLABLE.map((key) => [key, emptyToNull(values[key])]))
   return {
@@ -79,5 +93,6 @@ export function toSettingsPayload(
     // Older API builds reject unknown fields; only send the list when the API returned it.
     ...(supportsInvoiceFields ? { invoiceFields: values.invoiceFields } : {}),
     ...(supportsContactPhone ? { contactPhone: emptyToNull(values.contactPhone) } : {}),
+    ...(supportsPageSeo ? { pageSeo: values.pageSeo } : {}),
   }
 }

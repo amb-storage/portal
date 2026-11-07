@@ -42,6 +42,19 @@ export interface StoreSettings {
   socialLinks: SocialLink[]
   /** Missing on API builds before invoice fields existed. */
   invoiceFields?: InvoiceField[]
+  /** Missing on API builds before page SEO existed. */
+  pageSeo?: Partial<Record<PageSeoKey, PageSeo>>
   createdAt: ISODate
   updatedAt: ISODate
+}
+
+export const PAGE_SEO_KEYS = ['shop', 'contact', 'customerVoice'] as const
+export type PageSeoKey = (typeof PAGE_SEO_KEYS)[number]
+
+/** Browser-tab title and search description for a website page without a CMS page. */
+export interface PageSeo {
+  titleJa: string
+  titleEn: string
+  descriptionJa: string
+  descriptionEn: string
 }

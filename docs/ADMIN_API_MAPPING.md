@@ -548,3 +548,26 @@ rows) apply to that print only and are not stored.
 The obsolete locale-prefixed Store API and `/api/v2` are not compatibility
 routes. Public Web localization uses `Accept-Language`; Web `/blog` remains a
 frontend route that consumes the canonical Story API.
+
+## Page SEO (fixed website pages)
+
+Website pages that have no CMS page (`/shop`, `/contact`, `/customer-voice`)
+take their browser title and search description from Store Settings
+`pageSeo`, read by `GET /api/v1/admin/store-settings` and saved with
+`PUT /api/v1/admin/store-settings`:
+
+```json
+{
+  "expectedRevision": 7,
+  "pageSeo": {
+    "shop": { "titleJa": "ショップ", "titleEn": "Shop", "descriptionJa": "", "descriptionEn": "" }
+  }
+}
+```
+
+- Keys: `shop`, `contact`, `customerVoice`; any other key returns `400`.
+- Each page sends all four strings (title ≤ 200, description ≤ 500); values are
+  trimmed. Pages left out of the request keep their saved values.
+- Empty strings mean "use the website default". Requires migration
+  `0041_store_page_seo`; older API builds do not return `pageSeo`.
+

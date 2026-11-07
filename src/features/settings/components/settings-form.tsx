@@ -3,6 +3,7 @@ import { useSettingsForm } from '../hooks/use-settings-form'
 import type { StoreSettings } from '../types'
 import { GeneralSection, SeoSection, TaxFooterSection } from './settings-sections'
 import { InvoiceFieldsSection } from './invoice-fields-section'
+import { PageSeoSection } from './page-seo-section'
 import { SocialLinksSection } from './social-links-section'
 
 /** Key by revision so the form resets after a successful save. */
@@ -20,6 +21,7 @@ export function SettingsForm({ settings, canManage }: { settings: StoreSettings;
         <GeneralSection form={form} />
         <TaxFooterSection form={form} />
         <SeoSection form={form} />
+        <PageSeoSection form={form} supported={settings.pageSeo !== undefined} />
         <SocialLinksSection form={form} />
         <InvoiceFieldsSection form={form} supported={settings.invoiceFields !== undefined} />
       </fieldset>
