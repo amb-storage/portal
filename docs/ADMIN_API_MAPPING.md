@@ -213,7 +213,7 @@ Response shape:
       "from": "2026-10-01",
       "to": "2026-10-30",
       "rule": "1 visitor (IP + browser) = 1 view per 12 hours",
-      "metrics": { "siteViews": 1240, "productViews": 860, "uniqueVisitors": 530 },
+      "metrics": { "siteViews": 1240, "productViews": 860, "uniqueVisitors": 530, "pageViews": 2100 },
       "traffic": [{ "day": "2026-10-01", "siteViews": 52, "productViews": 31 }],
       "topProducts": [
         {
@@ -225,11 +225,27 @@ Response shape:
           "orders": 4,
           "conversionRate": 3.3
         }
+      ],
+      "topPages": [
+        { "path": "/", "kind": "HOME", "titleJa": null, "titleEn": null, "views": 410 },
+        { "path": "/blog/cwu", "kind": "BLOG", "titleJa": "CWU", "titleEn": "CWU", "views": 95 },
+        { "path": "/shop/levis-501", "kind": "PRODUCT", "titleJa": "リーバイス 501", "titleEn": "Levi's 501", "views": 120 }
       ]
     }
   }
 }
 ```
+
+`views.data.topPages` is the first-party count for every website page (up to
+100, most viewed first). `path` is locale-free, so `/en/blog/x` counts as
+`/blog/x`. `kind` is `HOME`, `PRODUCT`, `BLOG` (`/blog` and its articles) or
+`PAGE`; titles come from the product or published CMS page with that slug and
+are `null` otherwise. `metrics.pageViews` is the total of these rows. Page
+counting starts with migration `0040_page_views`, so earlier dates show no pages.
+
+GoatCounter's `data.topPages` lists up to 100 paths, most visited first. Japanese and English
+paths are separate rows (for example `/shop/a` and `/en/shop/a`); `title` is
+the page's `<title>`. The Admin groups them into home, blog and product pages.
 
 `visitors`, page rows, breakdowns and event counts retain GoatCounter's
 provider meaning: visitor counts for the requested dimension/path. They are not

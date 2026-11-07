@@ -115,10 +115,12 @@ export const GUIDE_GROUPS: GuideGroup[] = [
         steps: [
           'Chọn khoảng thời gian 7 / 30 / 90 ngày ở góc trên; mọi khung bên dưới dùng chung khoảng này (tính theo ngày UTC).',
           'Khung Tài chính: Tổng doanh thu là tổng tiền khách đã trả (đã gồm thuế); Tổng thuế là phần thuế nằm trong số đó, như ghi trên hoá đơn (không cộng thêm); Hoàn tiền; Doanh thu thuần = Tổng doanh thu − Thuế − Hoàn tiền; số đơn đã thanh toán.',
-          'Khung Truy cập website (GoatCounter): lượt khách theo ngày, trang được xem nhiều, nguồn truy cập, quốc gia/trình duyệt, và số lượt Xem sản phẩm / Thêm vào giỏ / Bắt đầu thanh toán.',
+          'Khung Truy cập website (GoatCounter): lượt khách theo ngày, trang được xem nhiều (lọc theo Trang chủ, Blog, Sản phẩm; gộp tiếng Nhật và tiếng Anh), nguồn truy cập, quốc gia/trình duyệt, và số lượt Xem sản phẩm / Thêm vào giỏ / Bắt đầu thanh toán.',
+          'Khung Lượt xem website (hệ thống tự đếm): “Trang được xem nhiều nhất” liệt kê mọi trang (trang chủ, bài blog, sản phẩm, liên hệ…), bấm Trang chủ / Blog / Sản phẩm để lọc. Bên dưới là danh sách sản phẩm kèm số đơn và tỉ lệ mua.',
         ],
         tips: [
           '“Lượt khách” là cách đếm của GoatCounter, không phải số người duy nhất hay số lượt xem trang.',
+          'Lượt xem theo trang chỉ có từ ngày cập nhật tính năng này; ngày trước đó danh sách trang sẽ trống.',
           'Nếu khung Truy cập báo “Chưa kết nối GoatCounter” hoặc lỗi, số liệu không phải 0 mà là chưa lấy được; liên hệ kỹ thuật.',
           'Thuế trên từng đơn là thuế lúc khách đặt; đổi cài đặt thuế không làm thay đổi đơn cũ.',
         ],

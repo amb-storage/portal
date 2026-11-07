@@ -6,6 +6,8 @@ import { ErrorAlert } from '@/components/common/query-state'
 import type { AnalyticsEnvelope, AnalyticsStatus, Breakdown } from '../types'
 import { DailyBars } from './daily-bars'
 import { RankedList } from './ranked-list'
+import { TopPages } from './top-pages'
+import { toPageRows } from '../page-groups'
 
 const count = new Intl.NumberFormat('vi-VN')
 
@@ -94,8 +96,8 @@ export function AnalyticsCard({ envelope, isLoading, error }: AnalyticsCardProps
                 isLoading={false}
               />
             </div>
-            <div className="grid gap-6 md:grid-cols-2">
-              <RankedList title="Trang được xem nhiều" rows={data.topPages.map((page) => ({ key: page.path, label: page.title || page.path, hint: page.path, value: page.visitors }))} />
+            <div className="grid gap-6 lg:grid-cols-[3fr_2fr]">
+              <TopPages rows={toPageRows(data.topPages)} />
               <RankedList title="Nguồn truy cập" rows={toRows(data.referrers)} empty="Chưa có (khách vào trực tiếp)" />
             </div>
           </>

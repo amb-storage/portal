@@ -5,6 +5,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 import type { FirstPartyViewsEnvelope } from '../types'
 import { DailyBars } from './daily-bars'
 import { RankedList } from './ranked-list'
+import { TopPages } from './top-pages'
+import { firstPartyPageRows } from '../page-groups'
 
 const count = new Intl.NumberFormat('vi-VN')
 
@@ -25,7 +27,7 @@ export function ViewsCard({ envelope, isLoading }: { envelope: FirstPartyViewsEn
     <Card>
       <CardHeader>
         <CardTitle>Lượt xem website</CardTitle>
-        <CardDescription>Đếm trên server: mỗi khách (IP + trình duyệt) tính 1 lượt xem site và 1 lượt cho mỗi sản phẩm trong mỗi nửa ngày (giờ Nhật).</CardDescription>
+        <CardDescription>Đếm trên server: mỗi khách (IP + trình duyệt) tính 1 lượt xem site và 1 lượt cho mỗi trang (trang chủ, blog, sản phẩm…) trong mỗi nửa ngày (giờ Nhật). Tiếng Nhật và tiếng Anh của cùng một trang được tính chung.</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-6">
         {isLoading && !envelope ? (
@@ -42,8 +44,9 @@ export function ViewsCard({ envelope, isLoading }: { envelope: FirstPartyViewsEn
           </Alert>
         ) : (
           <>
-            <div className="grid gap-3 sm:grid-cols-3">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <Tile label="Lượt xem site" value={data.metrics.siteViews} />
+              {data.metrics.pageViews !== undefined ? <Tile label="Lượt xem các trang" value={data.metrics.pageViews} hint="Cộng lượt xem của từng trang" /> : null}
               <Tile label="Lượt xem sản phẩm" value={data.metrics.productViews} />
               <Tile label="Số khách" value={data.metrics.uniqueVisitors} hint="Khách khác nhau trong khoảng thời gian" />
             </div>
@@ -61,6 +64,14 @@ export function ViewsCard({ envelope, isLoading }: { envelope: FirstPartyViewsEn
                 isLoading={false}
               />
             </div>
+            {data.topPages ? (
+              <TopPages
+                rows={firstPartyPageRows(data.topPages)}
+                title="Trang được xem nhiều nhất"
+                unit="lượt xem"
+                empty="Chưa có lượt xem trang nào trong khoảng này (đếm theo trang bắt đầu từ bản cập nhật mới)."
+              />
+            ) : null}
             <RankedList
               title="Sản phẩm được xem nhiều nhất"
               unit="lượt xem"
@@ -70,7 +81,8 @@ export function ViewsCard({ envelope, isLoading }: { envelope: FirstPartyViewsEn
                 label: product.nameJa || product.nameEn || product.slug || product.productId,
                 hint: [product.nameJa, product.nameEn, product.slug].filter(Boolean).join(' · '),
                 value: product.views,
-                meta: `${count.format(product.orders)} đơn đã thanh toán · tỉ lệ mua ${product.conversionRate.toFixed(1)}%`,
+                // Same names are common (several MA-1s): the slug tells them apart.
+                meta: `${product.slug ? `${product.slug} · ` : ''}${count.format(product.orders)} đơn đã thanh toán · tỉ lệ mua ${product.conversionRate.toFixed(1)}%`,
                 link: { to: '/catalog/products/$productId', params: { productId: product.productId } },
               }))}
             />

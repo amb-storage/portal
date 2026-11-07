@@ -38,7 +38,8 @@ export interface FirstPartyViews {
   to: string
   /** e.g. "1 visitor (IP + browser) = 1 view per 12 hours" */
   rule: string
-  metrics: { siteViews: number; productViews: number; uniqueVisitors: number }
+  /** pageViews: missing from APIs older than page tracking. */
+  metrics: { siteViews: number; productViews: number; uniqueVisitors: number; pageViews?: number }
   traffic: Array<{ day: string; siteViews: number; productViews: number }>
   topProducts: Array<{
     productId: string
@@ -50,6 +51,14 @@ export interface FirstPartyViews {
     orders: number
     /** orders / views as a percentage, one decimal. */
     conversionRate: number
+  }>
+  /** Every website page, locale-free path; missing from APIs older than page tracking. */
+  topPages?: Array<{
+    path: string
+    kind: 'HOME' | 'PRODUCT' | 'BLOG' | 'PAGE'
+    titleJa: string | null
+    titleEn: string | null
+    views: number
   }>
 }
 
