@@ -51,6 +51,9 @@
 :root {
     /* Data-viz series slot 1, validated against light and dark chart surfaces. */
     --viz-series-1: #2a78d6;
+    --viz-series-2: #eb6834;
+    --viz-series-3: #1baf7a;
+    --viz-series-4: #eda100;
     /* Brand: vintage military — olive primary, warm ivory neutrals, amber accent. */
     --background: oklch(0.982 0.008 88);
     --foreground: oklch(0.21 0.02 95);
@@ -88,6 +91,9 @@
 
 .dark {
     --viz-series-1: #3987e5;
+    --viz-series-2: #d95926;
+    --viz-series-3: #199e70;
+    --viz-series-4: #c98500;
     --background: oklch(0.17 0.012 115);
     --foreground: oklch(0.95 0.012 95);
     --card: oklch(0.21 0.016 118);

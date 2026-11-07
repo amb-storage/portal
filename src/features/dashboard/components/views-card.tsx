@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Skeleton } from '@/components/ui/skeleton'
 import type { FirstPartyViewsEnvelope } from '../types'
 import { DailyBars } from './daily-bars'
+import { PageTrafficChart } from './page-traffic-chart'
 import { RankedList } from './ranked-list'
 import { TopPages } from './top-pages'
 import { firstPartyPageRows } from '../page-groups'
@@ -50,20 +51,27 @@ export function ViewsCard({ envelope, isLoading }: { envelope: FirstPartyViewsEn
               <Tile label="Lượt xem sản phẩm" value={data.metrics.productViews} />
               <Tile label="Số khách" value={data.metrics.uniqueVisitors} hint="Khách khác nhau trong khoảng thời gian" />
             </div>
-            <div className="grid gap-2">
-              <h3 className="text-sm font-semibold">Lượt xem site theo ngày</h3>
-              <DailyBars
-                points={data.traffic.map((point) => ({
-                  key: point.day,
-                  date: new Date(`${point.day}T00:00:00Z`),
-                  value: point.siteViews,
-                  detail: `${count.format(point.productViews)} lượt xem sản phẩm`,
-                }))}
-                format={(value) => count.format(Math.round(value))}
-                ariaLabel={`Lượt xem site theo ngày, tổng ${count.format(data.metrics.siteViews)}`}
-                isLoading={false}
-              />
-            </div>
+            {data.pageTraffic?.some((day) => day.home + day.product + day.blog + day.other > 0) ? (
+              <div className="grid gap-2">
+                <h3 className="text-sm font-semibold">Lượt xem theo ngày, chia theo loại trang</h3>
+                <PageTrafficChart days={data.pageTraffic} />
+              </div>
+            ) : (
+              <div className="grid gap-2">
+                <h3 className="text-sm font-semibold">Lượt xem site theo ngày</h3>
+                <DailyBars
+                  points={data.traffic.map((point) => ({
+                    key: point.day,
+                    date: new Date(`${point.day}T00:00:00Z`),
+                    value: point.siteViews,
+                    detail: `${count.format(point.productViews)} lượt xem sản phẩm`,
+                  }))}
+                  format={(value) => count.format(Math.round(value))}
+                  ariaLabel={`Lượt xem site theo ngày, tổng ${count.format(data.metrics.siteViews)}`}
+                  isLoading={false}
+                />
+              </div>
+            )}
             {data.topPages ? (
               <TopPages
                 rows={firstPartyPageRows(data.topPages)}

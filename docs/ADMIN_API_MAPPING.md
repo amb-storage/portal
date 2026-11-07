@@ -226,6 +226,7 @@ Response shape:
           "conversionRate": 3.3
         }
       ],
+      "pageTraffic": [{ "day": "2026-10-01", "home": 14, "product": 40, "blog": 6, "other": 3 }],
       "topPages": [
         { "path": "/", "kind": "HOME", "titleJa": null, "titleEn": null, "views": 410 },
         { "path": "/blog/cwu", "kind": "BLOG", "titleJa": "CWU", "titleEn": "CWU", "views": 95 },
@@ -240,7 +241,9 @@ Response shape:
 100, most viewed first). `path` is locale-free, so `/en/blog/x` counts as
 `/blog/x`. `kind` is `HOME`, `PRODUCT`, `BLOG` (`/blog` and its articles) or
 `PAGE`; titles come from the product or published CMS page with that slug and
-are `null` otherwise. `metrics.pageViews` is the total of these rows. Page
+are `null` otherwise. `metrics.pageViews` is the total of these rows. `pageTraffic` gives page views
+per day in four groups: `home` (`/`), `product` (`/shop/…`), `blog` (`/blog`
+and articles) and `other` (every other page, including `/shop`). Page
 counting starts with migration `0040_page_views`, so earlier dates show no pages.
 
 GoatCounter's `data.topPages` lists up to 100 paths, most visited first. Japanese and English

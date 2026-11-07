@@ -52,6 +52,8 @@ export interface FirstPartyViews {
     /** orders / views as a percentage, one decimal. */
     conversionRate: number
   }>
+  /** Page views per day by page group; missing from APIs older than page tracking. */
+  pageTraffic?: Array<{ day: string; home: number; product: number; blog: number; other: number }>
   /** Every website page, locale-free path; missing from APIs older than page tracking. */
   topPages?: Array<{
     path: string
